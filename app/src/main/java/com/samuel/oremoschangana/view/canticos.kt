@@ -1,11 +1,15 @@
 package com.samuel.oremoschangana.view
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.outlined.ArrowBack
@@ -25,9 +29,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.samuel.oremoschangana.R
 import com.samuel.oremoschangana.components.BottomAppBarPrincipal
 import com.samuel.oremoschangana.components.InputPesquisa
 import com.samuel.oremoschangana.ui.theme.Purple40
@@ -35,6 +43,11 @@ import com.samuel.oremoschangana.ui.theme.Purple40
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CanticosPage(navController: NavController){
+
+    var pesquisaTexto by remember {
+        mutableStateOf("")
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -43,14 +56,22 @@ fun CanticosPage(navController: NavController){
                     containerColor = Color.Transparent
                 ),
                 navigationIcon = {
-                    IconButton(onClick={
-                        navController.popBackStack()
-                    }
-                    ){
+                    IconButton(onClick={ navController.popBackStack() } ){
                         Icon(imageVector = Icons.Outlined.ArrowBack, contentDescription = null)
                     }
+                },
+                actions = {
+                    InputPesquisa(
+                        value = pesquisaTexto,
+                        onValueChange = { pesquisaTexto = it },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(50.dp, 0.dp, 20.dp, 10.dp)
+                            .height(52.dp),
+                        label = "Pesquisar cantico",
+                        maxLines = 1
+                    )
                 }
-
             )
         },
         bottomBar = {
@@ -58,43 +79,31 @@ fun CanticosPage(navController: NavController){
         }
     ){paddingVales ->
 
-        var pesquisaTexto by remember {
-            mutableStateOf("")
-        }
-
         Column(modifier = Modifier
             .fillMaxSize()
             .padding(paddingVales),
         ){
-            InputPesquisa(
-                value = pesquisaTexto,
-                onValueChange = { pesquisaTexto = it },
-                modifier = Modifier.fillMaxWidth().padding(20.dp, 0.dp, 20.dp, 10.dp),
-                label = "Pesquisar oracao",
-                maxLines = 1
-            )
-
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize(),
-//                    .padding(paddingVales),
                 contentPadding = PaddingValues(10.dp)
             ){
-
-                items(7){
+                items(20){
                     ListItem(
-                        modifier = Modifier.padding(2.dp, 0.dp, 2.dp, 7.dp),
+                        modifier = Modifier
+                            .padding(2.dp, 0.dp, 2.dp, 7.dp)
+                            .clip(RoundedCornerShape(9.dp)),
                         headlineContent = { Text(text = "Item $it")},
                         leadingContent = {
-                            Icon(imageVector = Icons.Default.Face, contentDescription = null)
+                            Image(
+                                imageVector = ImageVector.vectorResource(id = R.drawable.ic_music), contentDescription = null, modifier = Modifier.size(26.dp)
+                            )
                         },
-                        shadowElevation = 6.dp,
+                        shadowElevation = 9.dp,
                         colors = ListItemDefaults.colors(containerColor = Purple40),
                     )
                 }
             }
         }
-
-
     }
 }

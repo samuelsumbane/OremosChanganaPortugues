@@ -52,12 +52,12 @@ fun IconTextButton(
             }
             "Oracao" -> {
                 Image(
-                   imageVector = ImageVector.vectorResource(id = R.drawable.ic_pray), contentDescription = null, modifier = Modifier.size(28.dp)
+                   imageVector = ImageVector.vectorResource(id = R.drawable.ic_pray), contentDescription = null, modifier = Modifier.size(26.dp)
                 )
             }
             "Cantico" -> {
                 Image(
-                    imageVector = ImageVector.vectorResource(id = R.drawable.ic_music), contentDescription = null, modifier = Modifier.size(27.dp)
+                    imageVector = ImageVector.vectorResource(id = R.drawable.ic_music), contentDescription = null, modifier = Modifier.size(25.dp)
                 )
             }
             "Favoritos" -> {
@@ -68,14 +68,10 @@ fun IconTextButton(
                 )
             }
         }
-
         Spacer(modifier = Modifier.height(4.dp))
         Text(
             text = text,
-//            style = MaterialTheme.typography.caption,
-            fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(4.dp),
-//            color = MaterialTheme.colorScheme.tertiary
             color = White
         )
     }

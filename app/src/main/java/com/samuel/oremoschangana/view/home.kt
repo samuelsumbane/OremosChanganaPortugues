@@ -38,11 +38,10 @@ import com.samuel.oremoschangana.ui.theme.Purple40
 import com.samuel.oremoschangana.ui.theme.PurpleGrey40
 import com.samuel.oremoschangana.ui.theme.White
 
-
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Home(navController: NavController){
+fun Home(navController: NavController) {
 
     Scaffold(
         bottomBar = {
@@ -93,51 +92,4 @@ fun Home(navController: NavController){
             }
         }
     }
-
-
-
-
-
-
-//    Scaffold(
-//        bottomBar = {
-//           BottomAppBarPrincipal(navController)
-//        }
-//    ){
-//        Column(
-//            modifier = Modifier
-//                .fillMaxSize()
-//        ){
-//            Column(
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//                    .fillMaxHeight(0.3f)
-//                    .background(
-//                        color = Color.Green,
-//                        shape = RoundedCornerShape(0.dp, 0.dp, 0.dp, 40.dp)
-//                    ),
-//                verticalArrangement = Arrangement.Center,
-//                horizontalAlignment = Alignment.CenterHorizontally
-//
-//
-//            ){
-//                Text(
-//                    text = "Oremos",
-//                    fontWeight = FontWeight.Bold,
-////                    modifier = Modifier.padding(4.dp, 0.dp, 4.dp, 0.dp),
-//                    textAlign = TextAlign.Center,
-//                    color = White,
-//                    fontSize = 20.sp
-//                )
-//                Spacer(modifier = Modifier.height(4.dp))
-//                Text(
-//                    text = "A HI KHONGELENI",
-//                    fontWeight = FontWeight.Bold,
-////                    modifier = Modifier.padding(4.dp),
-//                    textAlign = TextAlign.Center,
-//                    color = White
-//                )
-//            }
-//        }
-//    }
 }

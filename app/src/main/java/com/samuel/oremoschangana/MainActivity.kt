@@ -8,6 +8,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.key.Key.Companion.Home
 import androidx.compose.ui.tooling.preview.Preview
@@ -20,7 +21,6 @@ import com.samuel.oremoschangana.view.FavoritosPage
 import com.samuel.oremoschangana.view.Home
 import com.samuel.oremoschangana.view.OracoesPage
 
-
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,30 +31,16 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-//                    Text("ola mundo de novo again")
                     val navController = rememberNavController()
                     NavHost(navController = navController, startDestination="home"){
-
-                        composable(route = "home"){
-                            Home(navController)
-                        }
-
-                        composable(route = "oracoespage"){
-                            OracoesPage(navController)
-                        }
-
-                        composable(route = "canticospage"){
-                            CanticosPage(navController)
-                        }
-
-                        composable(route = "favoritospage"){
-                            FavoritosPage(navController)
-                        }
-
+                        // define rotas
+                        composable(route = "home"){ Home(navController) }
+                        composable(route = "oracoespage"){ OracoesPage(navController) }
+                        composable(route = "canticospage"){ CanticosPage(navController) }
+                        composable(route = "favoritospage"){ FavoritosPage(navController) }
                     }
                 }
             }
         }
     }
 }
-
