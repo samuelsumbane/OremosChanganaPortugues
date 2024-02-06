@@ -20,3 +20,4 @@ val thirdColorLight = Color(0xFF000000)
 
 val White = Color(0xFFFFFFFF)
 val HomeColor = Color(0xCE1D0202)
+val Orange = Color(0xFFFF9800)

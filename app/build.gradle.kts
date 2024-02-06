@@ -1,6 +1,8 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+
+    id("kotlin-kapt")
 }
 
 android {
@@ -68,53 +70,11 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 
 
-    // ============= navigation ==============
-    val nav_version = "2.5.3"
+    // Room
+    val roomVersion = "2.6.1"
+    implementation("androidx.room:room-ktx:$roomVersion")
+    kapt("androidx.room:room-compiler:$roomVersion")
 
-    // Java language implementation
-    implementation("androidx.navigation:navigation-fragment:$nav_version")
-    implementation("androidx.navigation:navigation-ui:$nav_version")
-
-    // Kotlin
-    implementation("androidx.navigation:navigation-fragment-ktx:$nav_version")
-    implementation("androidx.navigation:navigation-ui-ktx:$nav_version")
-
-    // Feature module Support
-    implementation("androidx.navigation:navigation-dynamic-features-fragment:$nav_version")
-
-    // Testing Navigation
-    androidTestImplementation("androidx.navigation:navigation-testing:$nav_version")
-
-    // Jetpack Compose Integration
-    implementation("androidx.navigation:navigation-compose:$nav_version")
-
-    // ============ room data ================
-
-//    val roomVersion = "2.4.1"
-//
-//    implementation("androidx.room:room-runtime:$roomVersion")
-//    annotationProcessor("androidx.room:room-compiler:$roomVersion")
-//
-//    // To use Kotlin annotation processing tool (kapt)
-//    kapt("androidx.room:room-compiler:$roomVersion")
-//    // To use Kotlin Symbolic Processing (KSP)
-//    ksp("androidx.room:room-compiler:$roomVersion")
-//
-//    // optional - Kotlin Extensions and Coroutines support for Room
-//    implementation("androidx.room:room-ktx:$roomVersion")
-//
-//    // optional - RxJava2 support for Room
-//    implementation("androidx.room:room-rxjava2:$roomVersion")
-//
-//    // optional - RxJava3 support for Room
-//    implementation("androidx.room:room-rxjava3:$roomVersion")
-//
-//    // optional - Guava support for Room, including Optional and ListenableFuture
-//    implementation("androidx.room:room-guava:$roomVersion")
-//
-//    // optional - Test helpers
-//    testImplementation("androidx.room:room-testing:$roomVersion")
-//
-//    // optional - Paging 3 Integration
-//    implementation("androidx.room:room-paging:2.4.1")
+    // Navigation
+    implementation("androidx.navigation:navigation-compose:2.7.6")
 }
