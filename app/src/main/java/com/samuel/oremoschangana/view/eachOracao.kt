@@ -1,6 +1,5 @@
 package com.samuel.oremoschangana.view
 
-import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,7 +15,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowBack
-import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -32,23 +30,22 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat.startActivity
 import androidx.navigation.NavController
 import com.samuel.oremoschangana.components.BottomAppBarPrincipal
 import com.samuel.oremoschangana.components.InputPesquisa
 import com.samuel.oremoschangana.functionsKotlin.ShareIconButton
-import com.samuel.oremoschangana.functionsKotlin.shareText
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EachCantico(navController: NavController, numero: String, titulo:String, corpo: String){
-//    Text(text = numero)
+fun EachOracao(navController: NavController, titulo:String, corpo: String){
+
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text="Cântico: $numero", color = MaterialTheme.colorScheme.tertiary) },
+                title = { Text(text="Oração", color = MaterialTheme.colorScheme.primary) },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color.Transparent
                 ),
@@ -59,38 +56,30 @@ fun EachCantico(navController: NavController, numero: String, titulo:String, cor
                 },
                 actions = {
                     val context = LocalContext.current
-                    ShareIconButton(context,  text = "$numero - $titulo \n $corpo")
+                    ShareIconButton(context,  text = "$titulo \n $corpo")
                 }
             )
         },
 
-    ){paddingValues ->
-
+        ){paddingValues ->
         val scrollState = rememberScrollState()
 
-        Box(modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(scrollState)) {
+        Box(modifier = Modifier.fillMaxSize().verticalScroll(scrollState)) {
             Column(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .fillMaxWidth()
-                    .padding(paddingValues),
+                modifier = Modifier.fillMaxSize().padding(paddingValues),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-
                 Spacer(modifier = Modifier.height(12.dp))
-                Text(text = (titulo).uppercase(), fontWeight = FontWeight.Bold)
+                Text(text = titulo.uppercase(), fontWeight = FontWeight.Bold)
                 Spacer(modifier = Modifier.height(12.dp))
-
-//            Text(text = subTitulo, fontStyle = FontStyle.Italic)
                 Spacer(modifier = Modifier.height(12.dp))
-
-                Text(text = corpo)
-
+                Text(
+                    text = corpo,
+                    modifier = Modifier.fillMaxWidth().padding(14.dp, 0.dp, 14.dp, 0.dp),
+                    textAlign = TextAlign.Justify
+                )
             }
         }
-
     }
 
 }

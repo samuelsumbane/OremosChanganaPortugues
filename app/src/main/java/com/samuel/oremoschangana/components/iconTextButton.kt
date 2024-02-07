@@ -18,6 +18,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
@@ -47,24 +49,25 @@ fun IconTextButton(
                 Icon(
                     imageVector = Icons.Filled.Home,
                     contentDescription = "",
-                    modifier = Modifier.size(25.dp)
+                    modifier = Modifier.size(25.dp),
+                    tint = Black
                 )
             }
             "Oracao" -> {
                 Image(
-                   imageVector = ImageVector.vectorResource(id = R.drawable.ic_pray), contentDescription = null, modifier = Modifier.size(26.dp)
+                   imageVector = ImageVector.vectorResource(id = R.drawable.ic_pray), contentDescription = null, modifier = Modifier.size(22.dp)
                 )
             }
             "Cantico" -> {
                 Image(
-                    imageVector = ImageVector.vectorResource(id = R.drawable.ic_music), contentDescription = null, modifier = Modifier.size(25.dp)
+                    imageVector = ImageVector.vectorResource(id = R.drawable.ic_music), contentDescription = null, modifier = Modifier.size(21.dp),
                 )
             }
             "Favoritos" -> {
                 Icon(
                     imageVector = Icons.Outlined.Star,
                     contentDescription = "",
-                    modifier = Modifier.size(25.dp)
+                    modifier = Modifier.size(25.dp), tint = Black
                 )
             }
         }
@@ -72,7 +75,7 @@ fun IconTextButton(
         Text(
             text = text,
             modifier = Modifier.padding(4.dp),
-            color = White
+            color = Black
         )
     }
 }

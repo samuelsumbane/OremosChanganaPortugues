@@ -1,6 +1,7 @@
 package com.samuel.oremoschangana.view
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -22,6 +23,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -34,6 +36,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -41,6 +44,7 @@ import com.samuel.oremoschangana.apresentacaoOracao.CancaoState
 import com.samuel.oremoschangana.components.BottomAppBarPrincipal
 import com.samuel.oremoschangana.components.InputPesquisa
 import com.samuel.oremoschangana.dataOracao.Cancao
+import com.samuel.oremoschangana.functionsKotlin.isNumber
 import com.samuel.oremoschangana.ui.theme.Orange
 import com.samuel.oremoschangana.ui.theme.White
 import kotlinx.coroutines.flow.Flow
@@ -61,7 +65,7 @@ fun CanticosPage(state: CancaoState, navController: NavController, value: String
     Scaffold(
         topBar = {
             TopAppBar(
-                title = {Text(text="Canticos", color = MaterialTheme.colorScheme.primary)},
+                title = {Text(text="Canticos", color = MaterialTheme.colorScheme.tertiary)},
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color.Transparent
                 ),
@@ -77,9 +81,9 @@ fun CanticosPage(state: CancaoState, navController: NavController, value: String
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(50.dp, 0.dp, 20.dp, 10.dp)
-                            .height(52.dp),
-                        label = "Pesquisar cantico",
-                        maxLines = 1
+                            .height(58.dp),
+                        label = "Pesquisar cântico",
+                        maxLines = 1,
                     )
                 }
             )
@@ -102,70 +106,98 @@ fun CanticosPage(state: CancaoState, navController: NavController, value: String
             ){
                 items(
                     if (pesquisaTexto.isNotBlank()) {
-                        dados.filter {
-                            it.titulo.contains(pesquisaTexto, ignoreCase = true)
+//
+                        val numOrNot = isNumber(pesquisaTexto)
+                        if (numOrNot){
+                            dados.filter { it.numero == pesquisaTexto }
+                        }else{
+                            dados.filter{ it.titulo.contains(pesquisaTexto, ignoreCase = true) }
                         }
+
                     } else {
                         dados
                     }
                 ) { cancao ->
-                    CancaoItem(cancao = cancao)
+                    val n = cancao.numero
+                    val t = cancao.titulo
+//                    val sT = cancao.subTitulo ?: ""
+                    val g = cancao.corpo
+                    Row(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .height(60.dp)
+                            .clip(RoundedCornerShape(14.dp))
+                            .background(MaterialTheme.colorScheme.tertiary)
+                            .padding(8.dp, 0.dp, 0.dp, 0.dp)
+                            .clickable {
+                                navController.navigate("eachCantico/${n}/${t}/${g} ")
+                            }
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .weight(0.9f)
+                                .fillMaxHeight()
+                        ){
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .weight(0.1f)
+                                    .height(60.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center
+                            ){
+                                Text(
+                                    text = cancao.numero,
+                                    fontSize = 16.sp,
+                                    color = White,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+
+                            Column(
+                                modifier = Modifier.weight(1f),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center
+                            ) {
+                                Text(
+                                    text = cancao.titulo,
+                                    fontSize = 18.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = White,
+                                    textAlign = TextAlign.Center
+                                )
+
+                                Text(
+                                    text = cancao.subTitulo,
+                                    fontSize = 12.sp,
+                                    color = White,
+                                    textAlign = TextAlign.Center
+
+                                )
+                            }
+                        }
+
+                        Row(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .weight(0.1f)
+                                .height(60.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
+                        ){
+                            if (cancao.favorito){
+                                Icon(imageVector = Icons.Default.Star, contentDescription = "É favorito", tint = Orange)
+                            }else{
+                                Icon(imageVector = Icons.Outlined.Star, contentDescription = "Não é favorito", tint = White)
+                            }
+                        }
+
+                    }
+
                 }
 
             }
         }
-    }
-}
-
-
-@Composable
-fun CancaoItem( cancao: Cancao) {
-    Row(
-        modifier = Modifier
-            .fillMaxSize()
-            .height(60.dp)
-            .clip(RoundedCornerShape(14.dp))
-            .background(MaterialTheme.colorScheme.primaryContainer)
-            .padding(8.dp, 0.dp, 0.dp, 0.dp)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxSize().weight(0.9f)
-                .fillMaxHeight()
-        ){
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
-                Text(
-                    text = cancao.titulo,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onSecondaryContainer
-                )
-
-//            Spacer(modifier = Modifier.height(2.dp))
-
-                Text(
-                    text = cancao.subTitulo,
-                    fontSize = 16.sp,
-                    color = MaterialTheme.colorScheme.onSecondaryContainer
-                )
-            }
-        }
-
-        Row(
-            modifier = Modifier
-                .fillMaxSize().weight(0.1f)
-                .height(60.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
-        ){
-            if (cancao.favorito){
-                Icon(imageVector = Icons.Default.Star, contentDescription = "É favorito", tint = Orange)
-            }else{
-                Icon(imageVector = Icons.Outlined.Star, contentDescription = "Não é favorito", tint = White)
-            }
-        }
-
     }
 }

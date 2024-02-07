@@ -8,8 +8,10 @@ import androidx.compose.material3.BottomAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import IconTextButton
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -18,19 +20,19 @@ import com.samuel.oremoschangana.ui.theme.HomeColor
 fun BottomAppBarPrincipal(navController: NavController){
     BottomAppBar(
         containerColor = Color.Transparent,
-        modifier = Modifier.padding(0.dp, 0.dp, 5.dp, 0.dp)
+        modifier = Modifier.padding(0.dp, 0.dp, 0.dp, 5.dp)
         ){
 
         Row(
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxSize()
                 .padding(2.dp, 0.dp, 2.dp, 4.dp )
                 .background( HomeColor, shape = RoundedCornerShape(15.dp) ),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             IconTextButton("Home", "Ínicio") { navController.navigate("home") }
             IconTextButton("Oracao", "Orações") { navController.navigate("oracoespage") }
-            IconTextButton("Cantico", "Cantico") { navController.navigate("canticospage") }
+            IconTextButton("Cantico", "Cânticos") { navController.navigate("canticosAgrupados") }
             IconTextButton("Favoritos", "Favoritos") { navController.navigate("favoritospage") }
         }
     }

@@ -10,6 +10,7 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
@@ -17,16 +18,15 @@ import androidx.core.view.WindowCompat
 
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = thirdColorDark,
+    primary = Color(0xFFCF3567),
+    secondary = Color(0xFFA09C9D),
+    tertiary = Color(0xFF7707A0),
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = thirdColorLight,
-
+    primary = Color(0xFFF85489),
+    secondary = Color(0xFFA09C9D),
+    tertiary = Color(0xFFA907E4),
 
     /* Other default colors to override
     background = Color(0xFFFFFBFE),

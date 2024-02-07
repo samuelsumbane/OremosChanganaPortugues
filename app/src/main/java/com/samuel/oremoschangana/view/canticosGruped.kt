@@ -64,7 +64,7 @@ fun CanticosAgrupados( state: CancaoState, navController: NavController){
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text="Cânticos Agrupados", color = MaterialTheme.colorScheme.primary, fontStyle = FontStyle.Italic) },
+                title = { Text(text="Cânticos Agrupados", color = MaterialTheme.colorScheme.secondary, fontStyle = FontStyle.Italic) },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color.Transparent
                 ),
@@ -98,7 +98,7 @@ fun CanticosAgrupados( state: CancaoState, navController: NavController){
                             .height(65.dp)
                             .padding(5.dp)
                             .background(
-                                Color.Blue,
+                                MaterialTheme.colorScheme.secondary,
                                 shape = RoundedCornerShape(14.dp)
                             )
                             .clickable {
@@ -121,48 +121,3 @@ fun CanticosAgrupados( state: CancaoState, navController: NavController){
     }
 }
 
-
-//
-//@Preview
-//@Composable
-//fun GruposItem( ){
-//    Column(
-//        modifier = Modifier
-//            .fillMaxSize()
-//    ) {
-//        LazyColumn(
-//            modifier = Modifier
-//                .fillMaxSize()
-//                .padding(8.dp),
-//            verticalArrangement = Arrangement.spacedBy(16.dp)
-//        ) {
-//            items(1){
-//                grupos.forEachIndexed { index, g ->
-//                    Row(
-//                        modifier = Modifier
-//                            .fillMaxWidth()
-//                            .height(60.dp)
-//                            .padding(5.dp)
-//                            .background(
-//                                Color.Blue,
-//                                shape = RoundedCornerShape(14.dp)
-//                            )
-//                            .clickable {
-//                               if (gruposvalores[index] == "todas"){
-//
-//                               }else if(gruposvalores[index] == "indice"){
-//
-//                               }else{
-//
-//                               }
-//                            },
-//                        verticalAlignment = Alignment.CenterVertically,
-//                        horizontalArrangement = Arrangement.Center
-//                    ){
-//                        Text(text = (g).uppercase(), textAlign = TextAlign.Center, fontWeight = FontWeight.SemiBold)
-//                    }
-//                }
-//            }
-//        }
-//    }
-//}

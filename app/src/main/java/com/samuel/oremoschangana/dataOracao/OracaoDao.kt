@@ -24,6 +24,6 @@ interface CancaoDao {
     @Query("SELECT * FROM cancao WHERE id = :id")
     suspend fun getCancaoById(id: Int): Cancao?
 
-    @Query("SELECT * FROM cancao ORDER BY numero")
+    @Query("SELECT * FROM cancao ORDER BY id") //acho que terei que chamar por id.
     fun getCancaoOrderByNumero(): Flow<List<Cancao>>
 }

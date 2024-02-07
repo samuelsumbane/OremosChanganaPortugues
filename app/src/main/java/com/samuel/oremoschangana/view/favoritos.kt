@@ -1,14 +1,24 @@
 package com.samuel.oremoschangana.view
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Face
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.ArrowBack
+import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -38,30 +48,52 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.sp
+import com.samuel.oremoschangana.apresentacaoOracao.CancaoState
+import com.samuel.oremoschangana.apresentacaoOracao.OracaoState
 import com.samuel.oremoschangana.components.BottomAppBarPrincipal
+import com.samuel.oremoschangana.components.InputPesquisa
+import com.samuel.oremoschangana.functionsKotlin.isNumber
+import com.samuel.oremoschangana.ui.theme.Orange
 import com.samuel.oremoschangana.ui.theme.Shapes
 import com.samuel.oremoschangana.components.InputPesquisa as InputPesquisa1
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FavoritosPage(navController: NavController){
+fun FavoritosPage(state: OracaoState, cstate: CancaoState, navController: NavController){
+    var pesquisaTexto by remember { mutableStateOf("") }
+
+    val fCancoes = cstate.cancoes.filter{ it.favorito == true}
+    val fOracoes = state.oracoes.filter{ it.favorito == true}
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = {Text(text="Favoritos", color = MaterialTheme.colorScheme.primary)},
+                title = {Text(text="Canticos", color = MaterialTheme.colorScheme.tertiary)},
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color.Transparent
                 ),
                 navigationIcon = {
-                    IconButton(onClick={
-                        navController.popBackStack()
-                    }
-                    ){
+                    IconButton(onClick={ navController.popBackStack() } ){
                         Icon(imageVector = Icons.Outlined.ArrowBack, contentDescription = null)
                     }
+                },
+                actions = {
+                    InputPesquisa(
+                        value = pesquisaTexto,
+                        onValueChange = { pesquisaTexto = it },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(50.dp, 0.dp, 20.dp, 10.dp)
+                            .height(58.dp),
+                        label = "Pesquisar favoritos",
+                        maxLines = 1,
+                    )
                 }
-
             )
         },
         bottomBar = {
@@ -69,44 +101,126 @@ fun FavoritosPage(navController: NavController){
         }
     ){paddingVales ->
 
-        var pesquisaTexto by remember {
-            mutableStateOf("")
-        }
-
         Column(modifier = Modifier
             .fillMaxSize()
             .padding(paddingVales),
         ){
-            InputPesquisa1(
-                value = pesquisaTexto,
-                onValueChange = { pesquisaTexto = it },
-                modifier = Modifier.fillMaxWidth().padding(20.dp, 0.dp, 20.dp, 10.dp),
-                label = "Pesquisar oracao",
-                maxLines = 1
-            )
+            if (fCancoes.size == 0){
+                Column(
+                    modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally
+                ){
+                    Text(text = "Nenhuma oração ou cântico encontrado.", textAlign = TextAlign.Center, fontWeight = FontWeight.Bold)
+                }
+            }else if (fCancoes.size > 0) {
 
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize(),
-//                    .padding(paddingVales),
-                contentPadding = PaddingValues(10.dp)
-            ){
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    items(
+                        if (pesquisaTexto.isNotBlank()) {
+                            //
+                            val numOrNot = isNumber(pesquisaTexto)
+                            if (numOrNot) {
+                                fCancoes.filter { it.numero == pesquisaTexto }
+                            } else {
+                                fCancoes.filter {
+                                    it.titulo.contains(
+                                        pesquisaTexto,
+                                        ignoreCase = true
+                                    )
+                                }
+                            }
 
-                items(20){
-                    ListItem(
-                        modifier = Modifier.padding(2.dp, 0.dp, 2.dp, 7.dp),
-                        headlineContent = { Text(text = "Item $it")},
-                        leadingContent = {
-                            Icon(imageVector = Icons.Default.Face, contentDescription = null)
-                        },
-                        shadowElevation = 6.dp,
-                        colors = ListItemDefaults.colors(containerColor = Purple40),
-                    )
+                        } else {
+                            fCancoes
+                        }
+                    ) { cancao ->
+                        val n = cancao.numero
+                        val t = cancao.titulo
+                        //                    val sT = cancao.subTitulo ?: ""
+                        val g = cancao.corpo
+                        Row(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .height(60.dp)
+                                .clip(RoundedCornerShape(14.dp))
+                                .background(MaterialTheme.colorScheme.tertiary)
+                                .padding(8.dp, 0.dp, 0.dp, 0.dp)
+                                .clickable {
+                                    navController.navigate("eachCantico/${n}/${t}/${g} ")
+                                }
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .weight(0.9f)
+                                    .fillMaxHeight()
+                            ) {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .weight(0.1f)
+                                        .height(60.dp),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.Center
+                                ) {
+                                    Text(
+                                        text = cancao.numero,
+                                        fontSize = 16.sp,
+                                        color = White,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
+
+                                Column(
+                                    modifier = Modifier.weight(1f),
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.Center
+                                ) {
+                                    Text(
+                                        text = cancao.titulo,
+                                        fontSize = 18.sp,
+                                        fontWeight = FontWeight.SemiBold,
+                                        color = White,
+                                        textAlign = TextAlign.Center
+                                    )
+
+                                    Text(
+                                        text = cancao.subTitulo,
+                                        fontSize = 12.sp,
+                                        color = White,
+                                        textAlign = TextAlign.Center
+
+                                    )
+                                }
+                            }
+
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .weight(0.1f)
+                                    .height(60.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Star,
+                                    contentDescription = "É favorito",
+                                    tint = Orange
+                                )
+                            }
+                        }
+                    }
                 }
             }
+
+
+
         }
-
-
     }
+
 }
 

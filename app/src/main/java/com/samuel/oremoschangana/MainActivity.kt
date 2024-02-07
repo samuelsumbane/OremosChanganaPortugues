@@ -29,6 +29,8 @@ import com.samuel.oremoschangana.dataOracao.CancoesDatabase
 import com.samuel.oremoschangana.ui.theme.OremosChanganaTheme
 import com.samuel.oremoschangana.view.CanticosAgrupados
 import com.samuel.oremoschangana.view.CanticosPage
+import com.samuel.oremoschangana.view.EachCantico
+import com.samuel.oremoschangana.view.EachOracao
 import com.samuel.oremoschangana.view.FavoritosPage
 import com.samuel.oremoschangana.view.Home
 import com.samuel.oremoschangana.view.OracoesPage
@@ -86,7 +88,7 @@ class MainActivity : ComponentActivity() {
                     val state by viewModel.state.collectAsState()
                     val cstate by cviewModel.cstate.collectAsState()
                     val navController = rememberNavController()
-                    NavHost(navController = navController, startDestination="canticosAgrupados"){
+                    NavHost(navController = navController, startDestination="home"){
                         // define rotas
                         composable(route = "home"){ Home(navController) }
                         composable(route = "oracoespage"){ OracoesPage( state, navController) }
@@ -94,9 +96,21 @@ class MainActivity : ComponentActivity() {
                             val value = backStackEntry.arguments?.getString("value") ?: ""
                             CanticosPage( cstate, navController, value)
                         }
-
+                        composable(route = "eachCantico/{numero}/{titulo}/{corpo}"){ aC ->
+                            val numero = aC.arguments?.getString("numero") ?: ""
+                            val titulo = aC.arguments?.getString("titulo") ?: ""
+//                            val subTitulo = aC.arguments?.getString("subTitulo") ?: ""
+                            val corpo = aC.arguments?.getString("corpo") ?: ""
+                            EachCantico(navController, numero, titulo, corpo)
+                        }
+                        composable(route = "eachOracao/{titulo}/{corpo}"){ eO ->
+                            val titulo = eO.arguments?.getString("titulo") ?: ""
+//                            val subTitulo = aC.arguments?.getString("subTitulo") ?: ""
+                            val corpo = eO.arguments?.getString("corpo") ?: ""
+                            EachOracao(navController, titulo, corpo)
+                        }
                         composable(route = "canticosAgrupados"){ CanticosAgrupados( cstate, navController) }
-                        composable(route = "favoritospage"){ FavoritosPage(navController) }
+                        composable(route = "favoritospage"){ FavoritosPage(state, cstate, navController) }
                     }
                 }
             }
