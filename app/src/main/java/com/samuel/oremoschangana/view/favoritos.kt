@@ -40,8 +40,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.samuel.oremoschangana.ui.theme.Purple40
-import com.samuel.oremoschangana.ui.theme.PurpleGrey40
 import com.samuel.oremoschangana.ui.theme.White
 import androidx.compose.material3.Text
 import androidx.compose.runtime.getValue
@@ -53,8 +51,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
+import com.samuel.oremoschangana.apresentacaoOracao.CancaoEvent
 import com.samuel.oremoschangana.apresentacaoOracao.CancaoState
 import com.samuel.oremoschangana.apresentacaoOracao.OracaoState
+import com.samuel.oremoschangana.apresentacaoOracao.OracoesEvent
 import com.samuel.oremoschangana.components.BottomAppBarPrincipal
 import com.samuel.oremoschangana.components.InputPesquisa
 import com.samuel.oremoschangana.functionsKotlin.isNumber
@@ -64,7 +64,7 @@ import com.samuel.oremoschangana.components.InputPesquisa as InputPesquisa1
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FavoritosPage(state: OracaoState, cstate: CancaoState, navController: NavController){
+fun FavoritosPage(state: OracaoState, cstate: CancaoState, navController: NavController, onEvent: (CancaoEvent) -> Unit, onEventO: (OracoesEvent) -> Unit){
     var pesquisaTexto by remember { mutableStateOf("") }
 
     val fCancoes = cstate.cancoes.filter{ it.favorito == true}
@@ -105,17 +105,17 @@ fun FavoritosPage(state: OracaoState, cstate: CancaoState, navController: NavCon
             .fillMaxSize()
             .padding(paddingVales),
         ){
-            if (fCancoes.size == 0){
+            if (fCancoes.size == 0 && fOracoes.size == 0){
                 Column(
                     modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally
                 ){
                     Text(text = "Nenhuma oração ou cântico encontrado.", textAlign = TextAlign.Center, fontWeight = FontWeight.Bold)
                 }
-            }else if (fCancoes.size > 0) {
+            }else if (fCancoes.isNotEmpty()) {
 
                 LazyColumn(
                     modifier = Modifier
-                        .fillMaxSize()
+                        .fillMaxWidth()
                         .padding(8.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
@@ -133,7 +133,6 @@ fun FavoritosPage(state: OracaoState, cstate: CancaoState, navController: NavCon
                                     )
                                 }
                             }
-
                         } else {
                             fCancoes
                         }
@@ -147,7 +146,7 @@ fun FavoritosPage(state: OracaoState, cstate: CancaoState, navController: NavCon
                                 .fillMaxSize()
                                 .height(60.dp)
                                 .clip(RoundedCornerShape(14.dp))
-                                .background(MaterialTheme.colorScheme.tertiary)
+                                .background(MaterialTheme.colorScheme.primary)
                                 .padding(8.dp, 0.dp, 0.dp, 0.dp)
                                 .clickable {
                                     navController.navigate("eachCantico/${n}/${t}/${g} ")
@@ -170,7 +169,7 @@ fun FavoritosPage(state: OracaoState, cstate: CancaoState, navController: NavCon
                                     Text(
                                         text = cancao.numero,
                                         fontSize = 16.sp,
-                                        color = White,
+                                        color = MaterialTheme.colorScheme.onPrimary,
                                         fontWeight = FontWeight.Bold
                                     )
                                 }
@@ -183,17 +182,15 @@ fun FavoritosPage(state: OracaoState, cstate: CancaoState, navController: NavCon
                                     Text(
                                         text = cancao.titulo,
                                         fontSize = 18.sp,
-                                        fontWeight = FontWeight.SemiBold,
-                                        color = White,
+                                        color = MaterialTheme.colorScheme.onPrimary,
                                         textAlign = TextAlign.Center
                                     )
 
                                     Text(
                                         text = cancao.subTitulo,
                                         fontSize = 12.sp,
-                                        color = White,
+                                        color = MaterialTheme.colorScheme.onPrimary,
                                         textAlign = TextAlign.Center
-
                                     )
                                 }
                             }
@@ -203,20 +200,31 @@ fun FavoritosPage(state: OracaoState, cstate: CancaoState, navController: NavCon
                                     .fillMaxSize()
                                     .weight(0.1f)
                                     .height(60.dp),
+
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.Center
                             ) {
-                                Icon(
-                                    imageVector = Icons.Default.Star,
-                                    contentDescription = "É favorito",
-                                    tint = Orange
-                                )
+                                IconButton(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .weight(0.1f)
+                                        .height(60.dp),
+                                    onClick = {
+                                        val status = if (cancao.favorito){
+                                            false
+                                        }else{
+                                            true
+                                        }
+                                        onEvent(CancaoEvent.UpdateFavorito(cancaoId = cancao.id, novoFavorito = status))
+                                    }
+                                ){
+                                    Icon(imageVector = Icons.Default.Star, contentDescription = "É favorito", tint = Orange)
+                                }
                             }
                         }
                     }
                 }
             }
-
 
 
         }

@@ -4,17 +4,23 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.material3.*
+import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalDrawerSheet
+import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.key.Key.Companion.Home
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.compose.NavHost
@@ -88,30 +94,36 @@ class MainActivity : ComponentActivity() {
                     val state by viewModel.state.collectAsState()
                     val cstate by cviewModel.cstate.collectAsState()
                     val navController = rememberNavController()
-                    NavHost(navController = navController, startDestination="home"){
-                        // define rotas
-                        composable(route = "home"){ Home(navController) }
-                        composable(route = "oracoespage"){ OracoesPage( state, navController) }
-                        composable(route = "canticospage/{value}"){ backStackEntry ->
-                            val value = backStackEntry.arguments?.getString("value") ?: ""
-                            CanticosPage( cstate, navController, value)
-                        }
-                        composable(route = "eachCantico/{numero}/{titulo}/{corpo}"){ aC ->
-                            val numero = aC.arguments?.getString("numero") ?: ""
-                            val titulo = aC.arguments?.getString("titulo") ?: ""
+
+                        NavHost(navController = navController, startDestination="home"){
+                            // define rotas
+                            composable(route = "home"){ Home(navController) }
+                            composable(route = "oracoespage"){ OracoesPage( state, navController, onEvent = viewModel::onEvent) }
+                            composable(route = "canticospage/{value}"){ backStackEntry ->
+                                val value = backStackEntry.arguments?.getString("value") ?: ""
+                                CanticosPage( cstate, navController, value, onEvent = cviewModel::onEvent)
+                            }
+
+                            composable(route = "eachCantico/{numero}/{titulo}/{corpo}"){ aC ->
+                                val numero = aC.arguments?.getString("numero") ?: ""
+                                val titulo = aC.arguments?.getString("titulo") ?: ""
 //                            val subTitulo = aC.arguments?.getString("subTitulo") ?: ""
-                            val corpo = aC.arguments?.getString("corpo") ?: ""
-                            EachCantico(navController, numero, titulo, corpo)
-                        }
-                        composable(route = "eachOracao/{titulo}/{corpo}"){ eO ->
-                            val titulo = eO.arguments?.getString("titulo") ?: ""
+                                val corpo = aC.arguments?.getString("corpo") ?: ""
+                                EachCantico(navController, numero, titulo, corpo)
+                            }
+
+                            composable(route = "eachOracao/{titulo}/{corpo}"){ eO ->
+                                val titulo = eO.arguments?.getString("titulo") ?: ""
 //                            val subTitulo = aC.arguments?.getString("subTitulo") ?: ""
-                            val corpo = eO.arguments?.getString("corpo") ?: ""
-                            EachOracao(navController, titulo, corpo)
+                                val corpo = eO.arguments?.getString("corpo") ?: ""
+                                EachOracao(navController, titulo, corpo)
+                            }
+
+                            composable(route = "canticosAgrupados"){ CanticosAgrupados( cstate, navController) }
+                            composable(route = "favoritospage"){ FavoritosPage(state, cstate, navController, onEvent = cviewModel::onEvent, onEventO = viewModel::onEvent) }
                         }
-                        composable(route = "canticosAgrupados"){ CanticosAgrupados( cstate, navController) }
-                        composable(route = "favoritospage"){ FavoritosPage(state, cstate, navController) }
-                    }
+
+
                 }
             }
         }
@@ -119,3 +131,26 @@ class MainActivity : ComponentActivity() {
     }
 
 }
+
+
+//@Composable
+//fun NavDrawer(){
+//    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+//
+//    ModalNavigationDrawer(
+//        drawerState = drawerState,
+//        gesturesEnabled = true,
+//        drawerContent = {
+//            ModalDrawerSheet {
+//                Box(modifier = Modifier
+//                    .fillMaxWidth()
+//                    .height(150.dp)
+//                ){
+//                    Text(text = "")
+//                }
+//            }
+//        }
+//    ) {
+//
+//    }
+//}

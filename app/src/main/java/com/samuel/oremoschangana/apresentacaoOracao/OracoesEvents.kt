@@ -12,6 +12,11 @@ sealed interface OracoesEvent {
         val corpo: String,
         val favorito: Boolean
     ): OracoesEvent
+
+    data class UpdateFavorito(
+        val oracaoId: Int,
+        val novoFavorito: Boolean
+    ) : OracoesEvent
 }
 
 sealed interface CancaoEvent{
@@ -22,7 +27,13 @@ sealed interface CancaoEvent{
         val subTitulo: String,
         val corpo: String,
         val favorito: Boolean
-    )
+    ): CancaoEvent
+
+    data class UpdateFavorito(
+        val cancaoId: Int,
+        val novoFavorito: Boolean
+    ) : CancaoEvent
+
 }
 
 data class CancaoState(

@@ -45,7 +45,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
+import com.samuel.oremoschangana.apresentacaoOracao.CancaoEvent
 import com.samuel.oremoschangana.apresentacaoOracao.OracaoState
+import com.samuel.oremoschangana.apresentacaoOracao.OracoesEvent
 import com.samuel.oremoschangana.dataOracao.Oracao
 import com.samuel.oremoschangana.ui.theme.Orange
 import com.samuel.oremoschangana.ui.theme.White
@@ -53,7 +55,7 @@ import com.samuel.oremoschangana.ui.theme.White
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun OracoesPage(state: OracaoState, navController: NavController){
+fun OracoesPage(state: OracaoState, navController: NavController, onEvent: (OracoesEvent) -> Unit){
     var pesquisaTexto by remember { mutableStateOf("") }
 
     Scaffold(
@@ -130,8 +132,7 @@ fun OracoesPage(state: OracaoState, navController: NavController){
                                 Text(
                                     text = oracao.titulo,
                                     fontSize = 18.sp,
-                                    fontWeight = FontWeight.SemiBold,
-                                    color = White,
+                                    color = MaterialTheme.colorScheme.onPrimary,
                                     textAlign = TextAlign.Center
                                 )
 
@@ -140,18 +141,25 @@ fun OracoesPage(state: OracaoState, navController: NavController){
                                 Text(
                                     text = oracao.subTitulo,
                                     fontSize = 16.sp,
-                                    color = MaterialTheme.colorScheme.onSecondaryContainer,
+                                    color = MaterialTheme.colorScheme.onPrimary,
                                     textAlign = TextAlign.Center
                                 )
                             }
                         }
 
-                        Row(
+                        IconButton(
                             modifier = Modifier
-                                .fillMaxSize().weight(0.1f)
+                                .fillMaxSize()
+                                .weight(0.1f)
                                 .height(60.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center
+                            onClick = {
+                                val status = if (oracao.favorito){
+                                    false
+                                }else{
+                                    true
+                                }
+                                onEvent(OracoesEvent.UpdateFavorito(oracaoId = oracao.id, novoFavorito = status))
+                            }
                         ){
                             if (oracao.favorito){
                                 Icon(imageVector = Icons.Default.Star, contentDescription = "É favorito", tint = Orange)
@@ -166,57 +174,3 @@ fun OracoesPage(state: OracaoState, navController: NavController){
         }
     }
 }
-
-
-//@Composable
-//fun OracaoItem( oracao: Oracao ) {
-//    Row(
-//        modifier = Modifier
-//            .fillMaxSize()
-//            .height(60.dp)
-//            .clip(RoundedCornerShape(14.dp))
-//            .background(MaterialTheme.colorScheme.primaryContainer)
-//            .padding(8.dp, 0.dp, 0.dp, 0.dp)
-//    ) {
-//        Row(
-//            modifier = Modifier
-//                .fillMaxSize().weight(0.9f)
-//               .fillMaxHeight()
-//        ){
-//        Column(
-//            modifier = Modifier.weight(1f)
-//        ) {
-//            Text(
-//                text = oracao.titulo,
-//                fontSize = 18.sp,
-//                fontWeight = FontWeight.SemiBold,
-//                color = MaterialTheme.colorScheme.onSecondaryContainer
-//            )
-//
-////            Spacer(modifier = Modifier.height(2.dp))
-//
-//            Text(
-//                text = oracao.subTitulo,
-//                fontSize = 16.sp,
-//                color = MaterialTheme.colorScheme.onSecondaryContainer
-//            )
-//        }
-//        }
-//
-//        Row(
-//            modifier = Modifier
-//                .fillMaxSize().weight(0.1f)
-//                .height(60.dp),
-//            verticalAlignment = Alignment.CenterVertically,
-//            horizontalArrangement = Arrangement.Center
-//        ){
-//            if (oracao.favorito){
-//                Icon(imageVector = Icons.Default.Star, contentDescription = "É favorito", tint = Orange)
-//            }else{
-//                Icon(imageVector = Icons.Outlined.Star, contentDescription = "Não é favorito", tint = White)
-//            }
-//        }
-//
-//    }
-//}
-

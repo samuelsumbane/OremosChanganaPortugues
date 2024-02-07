@@ -153,18 +153,18 @@ class OracoesViewModel( private val dao: OracaoDao): ViewModel() {
                     corpo = state.value.corpo.value,
                     favorito = state.value.favorito.value
                 )
+                viewModelScope.launch { dao.upsertOracao(oracao) }
+            }
 
+            is OracoesEvent.UpdateFavorito -> {
                 viewModelScope.launch {
-                    dao.upsertOracao(oracao)
-                }
-
-                _state.update{
-                    it.copy(
-                        titulo = mutableStateOf(""),
-                        subTitulo = mutableStateOf(""),
-                        corpo = mutableStateOf(""),
-                        favorito = mutableStateOf(false)
-                    )
+                    // Obtém a Cancao pelo ID
+                    val cancao = dao.getOracaoById(event.oracaoId)
+                    // Verifica se a Cancao não é nula e atualiza o valor de favorito
+                    cancao?.let {
+                        val novaCancao = it.copy(favorito = event.novoFavorito)
+                        dao.upsertOracao(novaCancao)
+                    }
                 }
             }
         }

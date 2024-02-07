@@ -1,10 +1,12 @@
 package com.samuel.oremoschangana.apresentacaoOracao
 
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.samuel.oremoschangana.apresentacaoOracao.CancaoState
 import com.samuel.oremoschangana.dataOracao.Cancao
 import com.samuel.oremoschangana.dataOracao.CancaoDao
+import com.samuel.oremoschangana.dataOracao.Oracao
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -12,6 +14,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 
@@ -1104,5 +1107,39 @@ class CancoesViewModel( private val cdao: CancaoDao): ViewModel() {
             cancoesParaInserir.forEach { cdao.upsertCancao(it) }
         }
     }
+
+        fun onEvent(event: CancaoEvent){
+                when(event){
+                        is CancaoEvent.SaveCancao -> {
+                                val cancao = Cancao(
+                                        numero = cstate.value.numero.value,
+                                        grupo = cstate.value.grupo.value,
+                                        titulo = cstate.value.titulo.value,
+                                        subTitulo = cstate.value.subTitulo.value,
+                                        corpo = cstate.value.corpo.value,
+                                        favorito = cstate.value.favorito.value
+                                )
+
+                                viewModelScope.launch {
+                                        cdao.upsertCancao(cancao)
+                                }
+
+                        }
+
+                        is CancaoEvent.UpdateFavorito -> {
+                                viewModelScope.launch {
+                                        // Obtém a Cancao pelo ID
+                                        val cancao = cdao.getCancaoById(event.cancaoId)
+                                        // Verifica se a Cancao não é nula e atualiza o valor de favorito
+                                        cancao?.let {
+                                                val novaCancao = it.copy(favorito = event.novoFavorito)
+                                                cdao.upsertCancao(novaCancao)
+                                        }
+                                }
+                        }
+
+                }
+
+        }
 
 }

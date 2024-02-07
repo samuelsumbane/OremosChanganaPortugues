@@ -27,7 +27,7 @@ fun BottomAppBarPrincipal(navController: NavController){
             modifier = Modifier
                 .fillMaxSize()
                 .padding(2.dp, 0.dp, 2.dp, 4.dp )
-                .background( HomeColor, shape = RoundedCornerShape(15.dp) ),
+                .background( MaterialTheme.colorScheme.onSecondary, shape = RoundedCornerShape(15.dp) ),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             IconTextButton("Home", "Ínicio") { navController.navigate("home") }

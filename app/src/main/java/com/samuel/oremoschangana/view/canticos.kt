@@ -40,6 +40,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.samuel.oremoschangana.apresentacaoOracao.CancaoEvent
 import com.samuel.oremoschangana.apresentacaoOracao.CancaoState
 import com.samuel.oremoschangana.components.BottomAppBarPrincipal
 import com.samuel.oremoschangana.components.InputPesquisa
@@ -51,10 +52,9 @@ import kotlinx.coroutines.flow.Flow
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CanticosPage(state: CancaoState, navController: NavController, value: String){
+fun CanticosPage(state: CancaoState, navController: NavController, value: String, onEvent: (CancaoEvent) -> Unit){
 
     var pesquisaTexto by remember { mutableStateOf("") }
-
 
     val dados = if(value == "todos"){
         state.cancoes
@@ -65,7 +65,7 @@ fun CanticosPage(state: CancaoState, navController: NavController, value: String
     Scaffold(
         topBar = {
             TopAppBar(
-                title = {Text(text="Canticos", color = MaterialTheme.colorScheme.tertiary)},
+                title = {Text(text="Canticos", color = MaterialTheme.colorScheme.onPrimary)},
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color.Transparent
                 ),
@@ -127,10 +127,10 @@ fun CanticosPage(state: CancaoState, navController: NavController, value: String
                             .fillMaxSize()
                             .height(60.dp)
                             .clip(RoundedCornerShape(14.dp))
-                            .background(MaterialTheme.colorScheme.tertiary)
+                            .background(MaterialTheme.colorScheme.primary)
                             .padding(8.dp, 0.dp, 0.dp, 0.dp)
                             .clickable {
-                                navController.navigate("eachCantico/${n}/${t}/${g} ")
+                                navController.navigate("eachCantico/${n}/${t}/${g}")
                             }
                     ) {
                         Row(
@@ -163,28 +163,32 @@ fun CanticosPage(state: CancaoState, navController: NavController, value: String
                                 Text(
                                     text = cancao.titulo,
                                     fontSize = 18.sp,
-                                    fontWeight = FontWeight.SemiBold,
-                                    color = White,
+                                    color = MaterialTheme.colorScheme.onPrimary,
                                     textAlign = TextAlign.Center
                                 )
 
                                 Text(
                                     text = cancao.subTitulo,
                                     fontSize = 12.sp,
-                                    color = White,
+                                    color = MaterialTheme.colorScheme.onPrimary,
                                     textAlign = TextAlign.Center
-
                                 )
                             }
                         }
 
-                        Row(
+                        IconButton(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .weight(0.1f)
                                 .height(60.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center
+                            onClick = {
+                                val status = if (cancao.favorito){
+                                    false
+                                }else{
+                                    true
+                                }
+                                onEvent(CancaoEvent.UpdateFavorito(cancaoId = cancao.id, novoFavorito = status))
+                            }
                         ){
                             if (cancao.favorito){
                                 Icon(imageVector = Icons.Default.Star, contentDescription = "É favorito", tint = Orange)
@@ -192,11 +196,8 @@ fun CanticosPage(state: CancaoState, navController: NavController, value: String
                                 Icon(imageVector = Icons.Outlined.Star, contentDescription = "Não é favorito", tint = White)
                             }
                         }
-
                     }
-
                 }
-
             }
         }
     }

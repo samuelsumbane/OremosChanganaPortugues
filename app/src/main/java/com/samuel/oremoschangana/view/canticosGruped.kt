@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import com.samuel.oremoschangana.apresentacaoOracao.CancaoEvent
 import com.samuel.oremoschangana.apresentacaoOracao.CancaoState
 import com.samuel.oremoschangana.apresentacaoOracao.OracaoState
 import com.samuel.oremoschangana.components.BottomAppBarPrincipal
@@ -59,12 +60,12 @@ var gruposvalores = listOf("todos", "Entrada", "ActoPenitencial", "Gloria", "Acl
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CanticosAgrupados( state: CancaoState, navController: NavController){
+fun CanticosAgrupados( state: CancaoState, navController: NavController ){
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text="Cânticos Agrupados", color = MaterialTheme.colorScheme.secondary, fontStyle = FontStyle.Italic) },
+                title = { Text(text="Cânticos Agrupados", color = MaterialTheme.colorScheme.secondary, fontStyle = FontStyle.Italic, fontWeight = FontWeight.Bold) },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color.Transparent
                 ),
@@ -75,6 +76,9 @@ fun CanticosAgrupados( state: CancaoState, navController: NavController){
                 },
             )
         },
+        bottomBar = {
+            BottomAppBarPrincipal(navController)
+        }
 
         ) { paddingVales ->
 
@@ -102,17 +106,17 @@ fun CanticosAgrupados( state: CancaoState, navController: NavController){
                                 shape = RoundedCornerShape(14.dp)
                             )
                             .clickable {
-                               if (gruposvalores[index] != "indice"){
-                                   navController.navigate("canticospage/${gruposvalores[index]}")
-                               }else{
-                                   navController.navigate("conticospage/outro")
-                               }
+                                if (gruposvalores[index] != "indice") {
+                                    navController.navigate("canticospage/${gruposvalores[index]}")
+                                } else {
+                                    navController.navigate("conticospage/outro")
+                                }
 
                             },
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center
                     ){
-                        Text(text = (g).uppercase(), textAlign = TextAlign.Center, fontWeight = FontWeight.SemiBold)
+                        Text(text = (g).uppercase(), textAlign = TextAlign.Center)
                     }
                 }
             }
