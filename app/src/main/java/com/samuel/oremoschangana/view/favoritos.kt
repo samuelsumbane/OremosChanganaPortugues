@@ -83,7 +83,7 @@ fun FavoritosPage(state: OracaoState, cstate: CancaoState, navController: NavCon
             )
         },
         bottomBar = {
-            BottomAppBarPrincipal(navController)
+            BottomAppBarPrincipal(navController, "favoritospage")
         }
     ){paddingVales ->
 

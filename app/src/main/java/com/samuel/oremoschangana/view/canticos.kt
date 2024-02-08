@@ -23,7 +23,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -44,11 +43,9 @@ import com.samuel.oremoschangana.apresentacaoOracao.CancaoEvent
 import com.samuel.oremoschangana.apresentacaoOracao.CancaoState
 import com.samuel.oremoschangana.components.BottomAppBarPrincipal
 import com.samuel.oremoschangana.components.InputPesquisa
-import com.samuel.oremoschangana.dataOracao.Cancao
 import com.samuel.oremoschangana.functionsKotlin.isNumber
 import com.samuel.oremoschangana.ui.theme.Orange
 import com.samuel.oremoschangana.ui.theme.White
-import kotlinx.coroutines.flow.Flow
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -89,7 +86,7 @@ fun CanticosPage(state: CancaoState, navController: NavController, value: String
             )
         },
         bottomBar = {
-            BottomAppBarPrincipal(navController)
+            BottomAppBarPrincipal(navController, "canticosAgrupados")
         }
     ){paddingVales ->
 

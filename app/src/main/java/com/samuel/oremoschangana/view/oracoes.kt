@@ -74,7 +74,7 @@ fun OracoesPage(state: OracaoState, navController: NavController, onEvent: (Orac
             )
         },
         bottomBar = {
-            BottomAppBarPrincipal(navController)
+            BottomAppBarPrincipal(navController, "oracoespage")
         }
     ){paddingVales ->
 

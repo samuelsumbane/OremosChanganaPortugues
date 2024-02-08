@@ -4,23 +4,12 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.material3.*
-import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalDrawerSheet
-import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.rememberDrawerState
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.compose.NavHost
@@ -29,9 +18,8 @@ import androidx.navigation.compose.rememberNavController
 import androidx.room.Room
 import com.samuel.oremoschangana.apresentacaoOracao.CancoesViewModel
 import com.samuel.oremoschangana.apresentacaoOracao.OracoesViewModel
-import com.samuel.oremoschangana.dataOracao.Oracao
-import com.samuel.oremoschangana.dataOracao.OracoesDatabase
 import com.samuel.oremoschangana.dataOracao.CancoesDatabase
+import com.samuel.oremoschangana.dataOracao.OracoesDatabase
 import com.samuel.oremoschangana.ui.theme.OremosChanganaTheme
 import com.samuel.oremoschangana.view.CanticosAgrupados
 import com.samuel.oremoschangana.view.CanticosPage
@@ -40,6 +28,7 @@ import com.samuel.oremoschangana.view.EachOracao
 import com.samuel.oremoschangana.view.FavoritosPage
 import com.samuel.oremoschangana.view.Home
 import com.samuel.oremoschangana.view.OracoesPage
+import com.samuel.oremoschangana.view.SplashWindow
 
 
 class MainActivity : ComponentActivity() {
@@ -95,7 +84,10 @@ class MainActivity : ComponentActivity() {
                     val cstate by cviewModel.cstate.collectAsState()
                     val navController = rememberNavController()
 
-                        NavHost(navController = navController, startDestination="home"){
+                        NavHost(navController = navController, startDestination="splash"){
+                            composable("splash") {
+                                SplashWindow(navController)
+                            }
                             // define rotas
                             composable(route = "home"){ Home(navController) }
                             composable(route = "oracoespage"){ OracoesPage( state, navController, onEvent = viewModel::onEvent) }

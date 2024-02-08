@@ -69,39 +69,48 @@ fun Home(navController: NavController) {
                             Text(
                                 text = "Oremos Changana - Português",
                                 fontWeight = FontWeight.SemiBold,
-                                fontSize = (16.sp * scale), lineHeight = (24.sp * scale)
+                                fontSize = (16.sp * scale), lineHeight = (24.sp * scale),
+                                color = Color.Black
                             )
                             Spacer(modifier = Modifier.height(30.dp))
 
                             Text(
                                 text = "Programador",
                                 fontWeight = FontWeight.Bold,
-                                fontSize = (16.sp * scale), lineHeight = (24.sp * scale)
+                                fontSize = (16.sp * scale), lineHeight = (24.sp * scale),
+                                color = Color.Black
                             )
-                            Text(text = "Samuel Eugénio Sumbane", fontSize = (16.sp * scale), lineHeight = (24.sp * scale))
-                            Text(text = "Programador Full-Stack", fontSize = (16.sp * scale), lineHeight = (24.sp * scale))
+                            Text(text = "Samuel Eugénio Sumbane", fontSize = (16.sp * scale), lineHeight = (24.sp * scale),
+                                color = Color.Black)
+                            Text(text = "Programador Full-Stack", fontSize = (16.sp * scale), lineHeight = (24.sp * scale),
+                                color = Color.Black)
                             Spacer(modifier = Modifier.height(30.dp))
 
                             Text(
                                 text = "Contacto",
                                 fontWeight = FontWeight.Bold,
-                                fontSize = (16.sp * scale), lineHeight = (24.sp * scale)
+                                fontSize = (16.sp * scale), lineHeight = (24.sp * scale),
+                                color = Color.Black
                             )
 
-                            Text(text = "+258 865230661 / +258 833597867", fontSize = (16.sp * scale), lineHeight = (24.sp * scale))
-                            Text(text = "samuelsumbane143@gmail.com", fontSize = (16.sp * scale), lineHeight = (24.sp * scale))
+                            Text(text = "+258 865230661 / +258 833597867", fontSize = (16.sp * scale), lineHeight = (24.sp * scale),
+                                color = Color.Black)
+                            Text(text = "samuelsumbane143@gmail.com", fontSize = (16.sp * scale), lineHeight = (24.sp * scale),
+                                color = Color.Black)
                             Spacer(modifier = Modifier.height(30.dp))
 
                             Text(
                                 text = "Apoio",
                                 fontWeight = FontWeight.Bold,
-                                fontSize = (16.sp * scale), lineHeight = (24.sp * scale)
+                                fontSize = (16.sp * scale), lineHeight = (24.sp * scale),
+                                color = Color.Black
                             )
                             Text(
                                 text = "A produção deste aplicativo carreceu de alguns custos da parte do programador, neste sentido pretende-se produzir mais aplicativos desta natureza e para tal contamos com seu apoio financeiro que pode ser efectuado através do numero 865230661.",
                                 textAlign = TextAlign.Justify,
                                 modifier = Modifier.padding(7.dp, 0.dp, 7.dp, 0.dp),
-                                fontSize = (16.sp * scale), lineHeight = (24.sp * scale)
+                                fontSize = (16.sp * scale), lineHeight = (24.sp * scale),
+                                color = Color.Black
                             )
                             Spacer(modifier = Modifier.height(30.dp))
                             Text(text = "Versão: 2.1", color = Color.Gray, fontSize = (16.sp * scale), lineHeight = (24.sp * scale))
@@ -110,7 +119,7 @@ fun Home(navController: NavController) {
             }
         }
     ) {
-        Scaffold( bottomBar = { BottomAppBarPrincipal(navController) }) {
+        Scaffold( bottomBar = { BottomAppBarPrincipal(navController, "home") }) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
