@@ -39,7 +39,6 @@ import com.samuel.oremoschangana.functionsKotlin.ShareIconButton
 fun EachCantico(navController: NavController, numero: String, titulo:String, corpo: String){
     var scale by remember { mutableStateOf(1f) }
 
-
     Scaffold(
         topBar = {
             TopAppBar(
@@ -67,7 +66,8 @@ fun EachCantico(navController: NavController, numero: String, titulo:String, cor
             .fillMaxSize()
             .pointerInput(Unit) {
                 detectTransformGestures { _, pan, zoom, _ ->
-                    scale *= zoom
+                    val newScale = scale * zoom
+                    scale = newScale.coerceIn(1.0f, 3.0f) // intervalo do zoom.
                 }
             }
         ) {
@@ -90,9 +90,7 @@ fun EachCantico(navController: NavController, numero: String, titulo:String, cor
 
             }
 
-
         }
 
     }
-
 }

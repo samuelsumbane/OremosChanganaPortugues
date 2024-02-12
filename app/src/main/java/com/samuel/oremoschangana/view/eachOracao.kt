@@ -65,7 +65,8 @@ fun EachOracao(navController: NavController, titulo:String, corpo: String){
 
         Box(modifier = Modifier.fillMaxSize().pointerInput(Unit) {
             detectTransformGestures { _, pan, zoom, _ ->
-                scale *= zoom
+                val newScale = scale * zoom
+                scale = newScale.coerceIn(1.0f, 3.0f) // intervalo do zoom.
             }
         }) {
             Column(
