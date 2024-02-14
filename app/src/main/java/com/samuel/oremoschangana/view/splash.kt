@@ -33,7 +33,7 @@ fun SplashWindow(navController: NavController) {
 
     LaunchedEffect(key1 = true) {
         coroutineScope.launch {
-            delay(3000)
+            delay(1000)
             navController.navigate("home")
         }
     }

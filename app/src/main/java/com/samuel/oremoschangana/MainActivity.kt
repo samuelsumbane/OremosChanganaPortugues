@@ -84,65 +84,40 @@ class MainActivity : ComponentActivity() {
                     val cstate by cviewModel.cstate.collectAsState()
                     val navController = rememberNavController()
 
-                        NavHost(navController = navController, startDestination="splash"){
-                            composable("splash") {
-                                SplashWindow(navController)
-                            }
-                            // define rotas
-                            composable(route = "home"){ Home(navController) }
-                            composable(route = "oracoespage"){ OracoesPage( state, navController, onEvent = viewModel::onEvent) }
-                            composable(route = "canticospage/{value}"){ backStackEntry ->
-                                val value = backStackEntry.arguments?.getString("value") ?: ""
-                                CanticosPage( cstate, navController, value, onEvent = cviewModel::onEvent)
-                            }
-
-                            composable(route = "eachCantico/{numero}/{titulo}/{corpo}"){ aC ->
-                                val numero = aC.arguments?.getString("numero") ?: ""
-                                val titulo = aC.arguments?.getString("titulo") ?: ""
-//                            val subTitulo = aC.arguments?.getString("subTitulo") ?: ""
-                                val corpo = aC.arguments?.getString("corpo") ?: ""
-                                EachCantico(navController, numero, titulo, corpo)
-                            }
-
-                            composable(route = "eachOracao/{titulo}/{corpo}"){ eO ->
-                                val titulo = eO.arguments?.getString("titulo") ?: ""
-//                            val subTitulo = aC.arguments?.getString("subTitulo") ?: ""
-                                val corpo = eO.arguments?.getString("corpo") ?: ""
-                                EachOracao(navController, titulo, corpo)
-                            }
-
-                            composable(route = "canticosAgrupados"){ CanticosAgrupados( cstate, navController) }
-                            composable(route = "favoritospage"){ FavoritosPage(state, cstate, navController, onEvent = cviewModel::onEvent, onEventO = viewModel::onEvent) }
+                    NavHost(navController = navController, startDestination="splash"){
+                        composable("splash") {
+                            SplashWindow(navController)
+                        }
+                        // define rotas
+                        composable(route = "home"){ Home(navController) }
+                        composable(route = "oracoespage"){ OracoesPage( state, navController, onEvent = viewModel::onEvent) }
+                        composable(route = "canticospage/{value}"){ backStackEntry ->
+                            val value = backStackEntry.arguments?.getString("value") ?: ""
+                            CanticosPage( cstate, navController, value, onEvent = cviewModel::onEvent)
                         }
 
+                        composable(route = "eachCantico/{numero}/{titulo}/{corpo}"){ aC ->
+                            val numero = aC.arguments?.getString("numero") ?: ""
+                            val titulo = aC.arguments?.getString("titulo") ?: ""
+//                            val subTitulo = aC.arguments?.getString("subTitulo") ?: ""
+                            val corpo = aC.arguments?.getString("corpo") ?: ""
+                            EachCantico(navController, numero, titulo, corpo)
+                        }
+
+                        composable(route = "eachOracao/{titulo}/{corpo}"){ eO ->
+                            val titulo = eO.arguments?.getString("titulo") ?: ""
+//                            val subTitulo = aC.arguments?.getString("subTitulo") ?: ""
+                            val corpo = eO.arguments?.getString("corpo") ?: ""
+                            EachOracao(navController, titulo, corpo)
+                        }
+
+                        composable(route = "canticosAgrupados"){ CanticosAgrupados( cstate, navController) }
+                        composable(route = "favoritospage"){ FavoritosPage(state, cstate, navController, onEvent = cviewModel::onEvent, onEventO = viewModel::onEvent) }
+                    }
 
                 }
             }
         }
 
     }
-
 }
-
-
-//@Composable
-//fun NavDrawer(){
-//    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-//
-//    ModalNavigationDrawer(
-//        drawerState = drawerState,
-//        gesturesEnabled = true,
-//        drawerContent = {
-//            ModalDrawerSheet {
-//                Box(modifier = Modifier
-//                    .fillMaxWidth()
-//                    .height(150.dp)
-//                ){
-//                    Text(text = "")
-//                }
-//            }
-//        }
-//    ) {
-//
-//    }
-//}

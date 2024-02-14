@@ -99,7 +99,7 @@ fun Home(navController: NavController) {
                                 color = Color.Black
                             )
                             Spacer(modifier = Modifier.height(30.dp))
-                            Text(text = "Versão: 2.1", color = Color.Gray, fontSize = (16.sp ), lineHeight = (24.sp ))
+                            Text(text = "Versão: 2.3", color = Color.Gray, fontSize = (16.sp ), lineHeight = (24.sp ))
                         }
                     }
             }
