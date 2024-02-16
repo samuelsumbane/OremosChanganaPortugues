@@ -33,9 +33,9 @@ import androidx.navigation.NavController
 import com.samuel.oremoschangana.apresentacaoOracao.CancaoState
 import com.samuel.oremoschangana.components.BottomAppBarPrincipal
 
-var grupos = listOf("todos", "entrada / a ku sungula a ntirho", "acto penitencial", "glória", "aclamação ao envagelho / a ku twalisa envagelho", "ofertório / ta minyikelo", "elevação", "pai-nosso / ta bava wa hina", "saudacao da paz / ta ku losava hi ku rula", "cordeiro de deus / xinhempfana", "comunhão / ta xilalelo", "acção de graças / ta ku tlangela", "natal / ta ku pswaliwa ka ", "quaresma / ta nkari wa mahlomulo", "páscoa / ta nkarhi wa paskwa", "ascensão e pentecconstes / ta ku xika ka moya wa ku kwetsima", "nossa senhora / ta maria wa ku phat", "baptismo - profissão de fé/ ta ntsakamiso", "catecumenado, vocação, apostolado", "matrimónio", "adoração, bênção, acção de grança", "funerais / ta makhombo", "uso vário / tinsimu tinwani", "índice" )
+var grupos = listOf("todos", "entrada / a ku sungula a ntirho", "acto penitencial", "glória", "aclamação ao envagelho / a ku twalisa envagelho", "ofertório / ta minyikelo", "elevação", "pai-nosso / ta bava wa hina", "saudacao da paz / ta ku losava hi ku rula", "cordeiro de deus / xinhempfana", "comunhão / ta xilalelo", "acção de graças / ta ku tlangela", "natal / ta ku pswaliwa ka ", "quaresma / ta nkari wa mahlomulo", "páscoa / ta nkarhi wa paskwa", "ascensão e pentecconstes / ta ku xika ka moya wa ku kwetsima", "nossa senhora / ta maria wa ku phat", "baptismo - profissão de fé/ ta ntsakamiso", "catecumenado, vocação, apostolado", "matrimónio", "adoração, bênção, acção de grança", "funerais / ta makhombo", "uso vário / tinsimu tinwani" )
 
-var gruposvalores = listOf("todos", "Entrada", "ActoPenitencial", "Gloria", "Aclamacao", "Ofertorio", "Elevacao", "PaiNosso", "SaudacaoPaz", "CordeiroDeus", "Comunhao", "Gracas", "Natal", "Quaresma", "Pascoa", "Ascensao", "NossaSenhora", "Baptismo", "Catecumenado", "Matrimonio", "Adoracao", "Funerais", "UsoVario", "Gracas", "índice")
+var gruposvalores = listOf("todos", "Entrada", "ActoPenitencial", "Gloria", "Aclamacao", "Ofertorio", "Elevacao", "PaiNosso", "SaudacaoPaz", "CordeiroDeus", "Comunhao", "Gracas", "Natal", "Quaresma", "Pascoa", "Ascensao", "NossaSenhora", "Baptismo", "Catecumenado", "Matrimonio", "Adoracao", "Funerais", "UsoVario", "Gracas")
 
 
 
