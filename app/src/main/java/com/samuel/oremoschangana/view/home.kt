@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.samuel.oremoschangana.R
+//import com.samuel.oremoschangana.
 import com.samuel.oremoschangana.components.BottomAppBarPrincipal
 import com.samuel.oremoschangana.ui.theme.HomeColor
 import kotlinx.coroutines.launch
@@ -99,7 +100,7 @@ fun Home(navController: NavController) {
                                 color = Color.Black
                             )
                             Spacer(modifier = Modifier.height(30.dp))
-                            Text(text = "Versão: 2.3", color = Color.Gray, fontSize = (16.sp ), lineHeight = (24.sp ))
+                            Text(text = "Versão: 2.4", color = Color.Gray, fontSize = (16.sp ), lineHeight = (24.sp ))
                         }
                     }
             }
