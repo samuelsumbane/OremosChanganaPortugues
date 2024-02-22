@@ -22,32 +22,35 @@ android {
             storePassword = keystoreProperties["storePassword"] as String
         }
     }
-    namespace = "com.samuel.oremoschangana"
+    namespace = "com.samuel.oremoschanganapt"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.samuel.oremoschangana"
+        applicationId = "com.samuel.oremoschanganapt"
         minSdk = 21
         targetSdk = 34
-        versionCode = 2
-        versionName = "2.4"
+        versionCode = 1
+        versionName = "1.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
         }
         signingConfig = signingConfigs.getByName("release")
+        resourceConfigurations.addAll(listOf("pt", "en"))
     }
 
     buildTypes {
-        release {
-            isMinifyEnabled = false
+        getByName("release") {
+            isShrinkResources = true
+            isMinifyEnabled = true
             proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
+                getDefaultProguardFile("proguard-android.txt"),
                 "proguard-rules.pro"
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
