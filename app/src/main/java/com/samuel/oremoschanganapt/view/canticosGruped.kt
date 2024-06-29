@@ -51,7 +51,8 @@ fun CanticosAgrupados( state: CancaoState, navController: NavController ){
                     containerColor = Color.Transparent
                 ),
                 navigationIcon = {
-                    IconButton(onClick={ /* navController.popBackStack() */ } ){
+                    IconButton(onClick={navController.popBackStack()}
+                    ){
                         Icon(imageVector = Icons.Outlined.ArrowBack, contentDescription = null)
                     }
                 },

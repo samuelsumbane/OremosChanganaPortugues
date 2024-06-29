@@ -89,7 +89,10 @@ class MainActivity : ComponentActivity() {
                             SplashWindow(navController)
                         }
                         // define rotas
-                        composable(route = "home"){ Home(navController) }
+                        composable(route = "home"){
+                            Home(state, cstate, navController, onEvent = cviewModel::onEvent, onEventO = viewModel::onEvent)
+                        }
+
                         composable(route = "oracoespage"){ OracoesPage( state, navController, onEvent = viewModel::onEvent) }
                         composable(route = "canticospage/{value}"){ backStackEntry ->
                             val value = backStackEntry.arguments?.getString("value") ?: ""

@@ -3,37 +3,57 @@ package com.samuel.oremoschanganapt.view
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.samuel.oremoschanganapt.R
+import com.samuel.oremoschanganapt.apresentacaoOracao.CancaoEvent
+import com.samuel.oremoschanganapt.apresentacaoOracao.CancaoState
+import com.samuel.oremoschanganapt.apresentacaoOracao.OracaoState
+import com.samuel.oremoschanganapt.apresentacaoOracao.OracoesEvent
 //import com.samuel.oremoschangana.
 import com.samuel.oremoschanganapt.components.BottomAppBarPrincipal
+import com.samuel.oremoschanganapt.components.InputPesquisa
+import com.samuel.oremoschanganapt.functionsKotlin.isNumber
 import com.samuel.oremoschanganapt.ui.theme.HomeColor
+import com.samuel.oremoschanganapt.ui.theme.Orange
 import kotlinx.coroutines.launch
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun Home(navController: NavController) {
+fun Home(state: OracaoState, cstate: CancaoState, navController: NavController, onEvent: (CancaoEvent) -> Unit, onEventO: (OracoesEvent) -> Unit) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     val scrollState = rememberScrollState()
+    var textInputValue by remember { mutableStateOf("") }
+
+    val oracoes = state.oracoes
+    val canticos = cstate.cancoes
+    var emptyList: MutableList<String> = mutableListOf()
+    val emptyListState by remember { mutableStateOf(emptyList) }
+    var showModal by remember { mutableStateOf(false) }
     
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -129,30 +149,255 @@ fun Home(navController: NavController) {
                         .fillMaxWidth()
                         .fillMaxHeight(.3f)
                         .background(
+//                            color = Color.Red,
                             color = Color.Transparent,
                             shape = RoundedCornerShape(0.dp, 0.dp, 0.dp, 40.dp),
                         ),
-                    verticalArrangement = Arrangement.Center,
+                    verticalArrangement = Arrangement.SpaceAround,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
 
-                    Text(
-                        text = "Oremos",
-                        fontWeight = FontWeight.Bold,
-                        textAlign = TextAlign.Center,
-                        color = Color.White,
-                        fontSize = 45.sp
+                    InputPesquisa(
+                        value = textInputValue,
+                        onValueChange = {
+                            textInputValue = it
+                            showModal = if(textInputValue != "") canticos.isNotEmpty() else false
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth(0.85f)
+                            .padding(top = 25.dp)
+//                            .padding(0.dp, 0.dp, 0.dp, 10.dp)
+                            .height(58.dp),
+                        label = "Pesquise Cântico / Oração",
+                        maxLines = 1,
                     )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = "A HI KHONGELENI",
-                        fontWeight = FontWeight.Bold,
-                        textAlign = TextAlign.Center,
-                        color = Color.White,
-                        fontSize = 30.sp
-                    )
+
+                    Column(
+
+                    ){
+                        Text(
+                            text = "Oremos",
+                            fontWeight = FontWeight.Bold,
+                            textAlign = TextAlign.Center,
+                            color = Color.White,
+                            fontSize = 45.sp
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = "A HI KHONGELENI",
+                            fontWeight = FontWeight.Bold,
+                            textAlign = TextAlign.Center,
+                            color = Color.White,
+                            fontSize = 30.sp
+                        )
+                    }
                 }
+
+                if (showModal){
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth(0.90f)
+//                            .height(100.dp)
+                            .heightIn(min = 90.dp, max = 500.dp)
+                            .background(Color.Black.copy(alpha = 0.9f),
+                                RoundedCornerShape(15.dp, 0.dp, 0.dp, 15.dp)
+                            )
+                            .align(Alignment.CenterEnd),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+
+                    ){
+//                    Text("This is text", fontSize = 19.sp, color = Color.White)
+                        LazyColumn(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp),
+                            verticalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
+                            items(
+                                if (textInputValue.isNotBlank()) {
+                                    oracoes.filter {
+                                        it.titulo.contains(
+                                            textInputValue,
+                                            ignoreCase = true
+                                        )
+                                    }
+                                } else {
+                                    oracoes.filter { it.titulo == "0000" } // invalid number, in order to clean the list
+                                }
+                            ){  oracao ->
+                                val prayTitle = oracao.titulo
+                                val prayBody = oracao.corpo
+
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .height(45.dp)
+                                        .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(10.dp))
+                                        .padding(8.dp, 0.dp, 0.dp, 0.dp)
+                                        .clickable {
+                                            navController.navigate("eachOracao/${prayTitle}/${prayBody}")
+                                        }
+                                ) {
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .weight(0.9f)
+                                            .fillMaxHeight()
+                                    ) {
+
+                                        Column(
+                                            modifier = Modifier.weight(1f),
+                                            horizontalAlignment = Alignment.CenterHorizontally,
+                                            verticalArrangement = Arrangement.Center
+                                        ) {
+                                            Text(
+                                                text = prayTitle,
+                                                fontSize = 18.sp,
+                                                color = MaterialTheme.colorScheme.onPrimary,
+                                                textAlign = TextAlign.Center
+                                            )
+
+                                            Text(
+                                                text = "Oração",
+                                                fontSize = 13.sp,
+                                                color = MaterialTheme.colorScheme.onPrimary,
+                                                textAlign = TextAlign.Center
+                                            )
+                                        }
+                                    }
+
+                                }
+                            }
+//                            }
+
+                            items(
+                                if (textInputValue.isNotBlank()) {
+                                    val numOrNot = isNumber(textInputValue)
+                                    if (numOrNot) {
+                                        canticos.filter { it.numero == textInputValue }
+                                    } else {
+                                        canticos.filter {
+                                            it.titulo.contains(
+                                                textInputValue,
+                                                ignoreCase = true
+                                            )
+                                        }
+                                    }
+
+                                } else {
+                                    canticos.filter { it.numero == "0000" } // invalid number, in order to clean the list
+                                }
+
+                            ) { cantico ->
+                                val songTitle = cantico.titulo
+                                val songBody = cantico.corpo
+                                val songNumber = cantico.numero
+
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .height(45.dp)
+                                        .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(10.dp))
+                                        .padding(8.dp, 0.dp, 0.dp, 0.dp)
+                                        .clickable {
+                                            navController.navigate("eachCantico/${songNumber}/${songTitle}/${songBody} ")
+                                        }
+                                ) {
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .weight(0.9f)
+                                            .fillMaxHeight()
+                                    ) {
+
+                                        Column(
+                                            modifier = Modifier.weight(1f),
+                                            horizontalAlignment = Alignment.CenterHorizontally,
+                                            verticalArrangement = Arrangement.Center
+                                        ) {
+                                            Text(
+                                                text = songTitle,
+                                                fontSize = 18.sp,
+                                                color = MaterialTheme.colorScheme.onPrimary,
+                                                textAlign = TextAlign.Center
+                                            )
+                                            Text(
+                                                text = "Cântico: $songNumber",
+                                                fontSize = 13.sp,
+                                                color = MaterialTheme.colorScheme.onPrimary,
+                                                textAlign = TextAlign.Center
+                                            )
+                                        }
+                                    }
+
+
+                                }
+                            }
+                        }
+                    }
+                }
+
             }
+        }
+    }
+}
+
+
+//@Preview
+@Composable
+fun SeeItem(){
+    Row(
+        modifier = Modifier
+            .fillMaxSize()
+            .height(60.dp)
+            .clip(RoundedCornerShape(14.dp))
+            .background(MaterialTheme.colorScheme.primary)
+            .padding(8.dp, 0.dp, 0.dp, 0.dp)
+            .clickable {
+                println("on")
+//                                        navController.navigate("eachCantico/${n}/${t}/${g} ")
+            }
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .weight(0.9f)
+                .fillMaxHeight()
+        ) {
+
+
+            Column(
+                modifier = Modifier.weight(1f),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = "qualquer titulo",
+                    fontSize = 18.sp,
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    textAlign = TextAlign.Center
+                )
+
+                Text(
+                    text = "Cantico",
+                    fontSize = 12.sp,
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    textAlign = TextAlign.Center
+                )
+            }
+        }
+
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .weight(0.1f)
+                .height(60.dp),
+
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+
         }
     }
 }
