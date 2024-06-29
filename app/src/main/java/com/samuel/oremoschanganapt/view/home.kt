@@ -32,7 +32,6 @@ import com.samuel.oremoschanganapt.apresentacaoOracao.CancaoEvent
 import com.samuel.oremoschanganapt.apresentacaoOracao.CancaoState
 import com.samuel.oremoschanganapt.apresentacaoOracao.OracaoState
 import com.samuel.oremoschanganapt.apresentacaoOracao.OracoesEvent
-//import com.samuel.oremoschangana.
 import com.samuel.oremoschanganapt.components.BottomAppBarPrincipal
 import com.samuel.oremoschanganapt.components.InputPesquisa
 import com.samuel.oremoschanganapt.functionsKotlin.isNumber
@@ -51,8 +50,6 @@ fun Home(state: OracaoState, cstate: CancaoState, navController: NavController, 
 
     val oracoes = state.oracoes
     val canticos = cstate.cancoes
-    var emptyList: MutableList<String> = mutableListOf()
-    val emptyListState by remember { mutableStateOf(emptyList) }
     var showModal by remember { mutableStateOf(false) }
     
     ModalNavigationDrawer(
@@ -120,7 +117,7 @@ fun Home(state: OracaoState, cstate: CancaoState, navController: NavController, 
                                 color = Color.Black
                             )
                             Spacer(modifier = Modifier.height(30.dp))
-                            Text(text = "Versão: 1.1", color = Color.Gray, fontSize = (16.sp ), lineHeight = (24.sp ))
+                            Text(text = "Versão: 3.0", color = Color.Black, fontSize = (16.sp ), lineHeight = (24.sp ))
                         }
                     }
             }
@@ -168,7 +165,7 @@ fun Home(state: OracaoState, cstate: CancaoState, navController: NavController, 
                             .padding(top = 25.dp)
 //                            .padding(0.dp, 0.dp, 0.dp, 10.dp)
                             .height(58.dp),
-                        label = "Pesquise Cântico / Oração",
+                        label = "Pesquisar Cântico / Oração",
                         maxLines = 1,
                     )
 
@@ -331,7 +328,6 @@ fun Home(state: OracaoState, cstate: CancaoState, navController: NavController, 
                                         }
                                     }
 
-
                                 }
                             }
                         }
@@ -339,65 +335,6 @@ fun Home(state: OracaoState, cstate: CancaoState, navController: NavController, 
                 }
 
             }
-        }
-    }
-}
-
-
-//@Preview
-@Composable
-fun SeeItem(){
-    Row(
-        modifier = Modifier
-            .fillMaxSize()
-            .height(60.dp)
-            .clip(RoundedCornerShape(14.dp))
-            .background(MaterialTheme.colorScheme.primary)
-            .padding(8.dp, 0.dp, 0.dp, 0.dp)
-            .clickable {
-                println("on")
-//                                        navController.navigate("eachCantico/${n}/${t}/${g} ")
-            }
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxSize()
-                .weight(0.9f)
-                .fillMaxHeight()
-        ) {
-
-
-            Column(
-                modifier = Modifier.weight(1f),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                Text(
-                    text = "qualquer titulo",
-                    fontSize = 18.sp,
-                    color = MaterialTheme.colorScheme.onPrimary,
-                    textAlign = TextAlign.Center
-                )
-
-                Text(
-                    text = "Cantico",
-                    fontSize = 12.sp,
-                    color = MaterialTheme.colorScheme.onPrimary,
-                    textAlign = TextAlign.Center
-                )
-            }
-        }
-
-        Row(
-            modifier = Modifier
-                .fillMaxSize()
-                .weight(0.1f)
-                .height(60.dp),
-
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
-        ) {
-
         }
     }
 }

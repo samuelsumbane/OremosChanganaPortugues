@@ -91,13 +91,13 @@ fun FavoritosPage(state: OracaoState, cstate: CancaoState, navController: NavCon
             .fillMaxSize()
             .padding(paddingVales),
         ){
-            if (fCancoes.size == 0 && fOracoes.size == 0){
+            if (fCancoes.isEmpty() && fOracoes.isEmpty()){
                 Column(
                     modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally
                 ){
-                    Text(text = "Nenhumo cântico encontrado.", textAlign = TextAlign.Center, fontWeight = FontWeight.Bold)
+                    Text(text = "Nenhuma oração ou cântico encontrado.", textAlign = TextAlign.Center, fontWeight = FontWeight.Bold)
                 }
-            }else if (fCancoes.isNotEmpty()) {
+            }else if (fCancoes.isNotEmpty() || fOracoes.isNotEmpty()) {
 
                 LazyColumn(
                     modifier = Modifier
@@ -105,6 +105,90 @@ fun FavoritosPage(state: OracaoState, cstate: CancaoState, navController: NavCon
                         .padding(8.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
+
+                    items(
+                        if (pesquisaTexto.isNotBlank()) {
+                            fOracoes.filter {
+                                it.titulo.contains(
+                                    pesquisaTexto,
+                                    ignoreCase = true
+                                )
+                            }
+                        } else {
+                            fOracoes
+                        }
+                    ) { oracao ->
+                        val prayTitle = oracao.titulo
+                        val prayBody = oracao.corpo
+                        Row(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .height(60.dp)
+                                .clip(RoundedCornerShape(14.dp))
+                                .background(MaterialTheme.colorScheme.primary)
+                                .padding(8.dp, 0.dp, 0.dp, 0.dp)
+                                .clickable {
+                                    navController.navigate("eachOracao/${prayTitle}/${prayBody} ")
+                                }
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .weight(0.9f)
+                                    .fillMaxHeight()
+                            ) {
+
+                                Column(
+                                    modifier = Modifier.weight(1f),
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.Center
+                                ) {
+                                    Text(
+                                        text = oracao.titulo,
+                                        fontSize = 18.sp,
+                                        color = MaterialTheme.colorScheme.onPrimary,
+                                        textAlign = TextAlign.Center
+                                    )
+
+                                    Text(
+                                        text = oracao.subTitulo,
+                                        fontSize = 12.sp,
+                                        color = MaterialTheme.colorScheme.onPrimary,
+                                        textAlign = TextAlign.Center
+                                    )
+                                }
+                            }
+
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .weight(0.1f)
+                                    .height(60.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                IconButton(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .weight(0.1f)
+                                        .height(60.dp),
+                                    onClick = {
+                                        val status = if (oracao.favorito){
+                                            false
+                                        }else{
+                                            true
+                                        }
+//                                        onEvent(CancaoEvent.UpdateFavorito(cancaoId = oracao.id, novoFavorito = status))
+                                        onEventO(OracoesEvent.UpdateFavorito(oracaoId = oracao.id, novoFavorito = status))
+                                    }
+                                ){
+                                    Icon(imageVector = Icons.Default.Star, contentDescription = "É favorito", tint = Orange)
+                                }
+                            }
+                        }
+                    }
+
+
                     items(
                         if (pesquisaTexto.isNotBlank()) {
                             //

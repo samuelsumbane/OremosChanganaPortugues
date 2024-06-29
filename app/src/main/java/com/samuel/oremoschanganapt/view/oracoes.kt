@@ -14,7 +14,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.ArrowBack
+import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -40,6 +42,8 @@ import com.samuel.oremoschanganapt.apresentacaoOracao.OracaoState
 import com.samuel.oremoschanganapt.apresentacaoOracao.OracoesEvent
 import com.samuel.oremoschanganapt.components.BottomAppBarPrincipal
 import com.samuel.oremoschanganapt.components.InputPesquisa
+import com.samuel.oremoschanganapt.ui.theme.Orange
+import com.samuel.oremoschanganapt.ui.theme.White
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -138,26 +142,26 @@ fun OracoesPage(state: OracaoState, navController: NavController, onEvent: (Orac
 
                         // por falta de tempo nao sera mostrado as oracoes favoritas.
 
-//                        IconButton(
-//                            modifier = Modifier
-//                                .fillMaxSize()
-//                                .weight(0.1f)
-//                                .height(60.dp),
-//                            onClick = {
-//                                val status = if (oracao.favorito){
-//                                    false
-//                                }else{
-//                                    true
-//                                }
-//                                onEvent(OracoesEvent.UpdateFavorito(oracaoId = oracao.id, novoFavorito = status))
-//                            }
-//                        ){
-//                            if (oracao.favorito){
-//                                Icon(imageVector = Icons.Default.Star, contentDescription = "É favorito", tint = Orange)
-//                            }else{
-//                                Icon(imageVector = Icons.Outlined.Star, contentDescription = "Não é favorito", tint = White)
-//                            }
-//                        }
+                        IconButton(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .weight(0.1f)
+                                .height(60.dp),
+                            onClick = {
+                                val status = if (oracao.favorito){
+                                    false
+                                }else{
+                                    true
+                                }
+                                onEvent(OracoesEvent.UpdateFavorito(oracaoId = oracao.id, novoFavorito = status))
+                            }
+                        ){
+                            if (oracao.favorito){
+                                Icon(imageVector = Icons.Default.Star, contentDescription = "É favorito", tint = Orange)
+                            }else{
+                                Icon(imageVector = Icons.Outlined.Star, contentDescription = "Não é favorito", tint = White)
+                            }
+                        }
 
                     }
                 }
