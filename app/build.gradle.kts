@@ -9,19 +9,20 @@ plugins {
     id("kotlin-kapt")
 }
 
-//val keystorePropertiesFile = rootProject.file("local.properties")
-//val keystoreProperties = Properties()
-//keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+val keystorePropertiesFile = rootProject.file("local.properties")
+val keystoreProperties = Properties()
+keystoreProperties.load(FileInputStream(keystorePropertiesFile))
 
 android {
-//    signingConfigs {
-//        create("release") {
-//            keyAlias = keystoreProperties["keyAlias"] as String
-//            keyPassword = keystoreProperties["keyPassword"] as String
-//            storeFile = file(keystoreProperties["storeFile"] as String)
-//            storePassword = keystoreProperties["storePassword"] as String
-//        }
-//    }
+
+        signingConfigs {
+        create("release") {
+            keyAlias = keystoreProperties["keyAlias"] as String
+            keyPassword = keystoreProperties["keyPassword"] as String
+            storeFile = file(keystoreProperties["storeFile"] as String)
+            storePassword = keystoreProperties["storePassword"] as String
+        }
+    }
     namespace = "com.samuel.oremoschanganapt"
     compileSdk = 34
 
@@ -38,6 +39,7 @@ android {
         }
 //        signingConfig = signingConfigs.getByName("release")
         resourceConfigurations.addAll(listOf("pt", "en"))
+        signingConfig = signingConfigs.getByName("release")
     }
 
     buildTypes {
