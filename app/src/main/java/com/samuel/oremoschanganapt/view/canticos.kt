@@ -74,7 +74,6 @@ fun CanticosPage(state: CancaoState, navController: NavController, value: String
         pesquisaTextoAvancada = ""
     }
 
-
     Scaffold(
         topBar = {
             TopAppBar(
@@ -83,7 +82,7 @@ fun CanticosPage(state: CancaoState, navController: NavController, value: String
                     containerColor = Color.Transparent
                 ),
                 navigationIcon = {
-                    IconButton(onClick = { }) {
+                    IconButton(onClick = { navController.popBackStack() }) {
                         Icon(imageVector = Icons.Outlined.ArrowBack, contentDescription = null)
                     }
                 },

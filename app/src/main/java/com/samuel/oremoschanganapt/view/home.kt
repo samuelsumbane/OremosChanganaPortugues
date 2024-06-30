@@ -3,6 +3,7 @@ package com.samuel.oremoschanganapt.view
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -35,8 +36,9 @@ import com.samuel.oremoschanganapt.apresentacaoOracao.OracoesEvent
 import com.samuel.oremoschanganapt.components.BottomAppBarPrincipal
 import com.samuel.oremoschanganapt.components.InputPesquisa
 import com.samuel.oremoschanganapt.functionsKotlin.isNumber
+import com.samuel.oremoschanganapt.ui.theme.Dodgerblue
 import com.samuel.oremoschanganapt.ui.theme.HomeColor
-import com.samuel.oremoschanganapt.ui.theme.Orange
+import com.samuel.oremoschanganapt.ui.theme.Lightgray
 import kotlinx.coroutines.launch
 
 
@@ -146,7 +148,6 @@ fun Home(state: OracaoState, cstate: CancaoState, navController: NavController, 
                         .fillMaxWidth()
                         .fillMaxHeight(.3f)
                         .background(
-//                            color = Color.Red,
                             color = Color.Transparent,
                             shape = RoundedCornerShape(0.dp, 0.dp, 0.dp, 40.dp),
                         ),
@@ -163,15 +164,12 @@ fun Home(state: OracaoState, cstate: CancaoState, navController: NavController, 
                         modifier = Modifier
                             .fillMaxWidth(0.85f)
                             .padding(top = 25.dp)
-//                            .padding(0.dp, 0.dp, 0.dp, 10.dp)
                             .height(58.dp),
                         label = "Pesquisar Cântico / Oração",
                         maxLines = 1,
                     )
 
-                    Column(
-
-                    ){
+                    Column{
                         Text(
                             text = "Oremos",
                             fontWeight = FontWeight.Bold,
@@ -194,17 +192,14 @@ fun Home(state: OracaoState, cstate: CancaoState, navController: NavController, 
                     Column(
                         modifier = Modifier
                             .fillMaxWidth(0.90f)
-//                            .height(100.dp)
                             .heightIn(min = 90.dp, max = 500.dp)
-                            .background(Color.Black.copy(alpha = 0.9f),
-                                RoundedCornerShape(15.dp, 0.dp, 0.dp, 15.dp)
-                            )
+                            .background(Color.Black.copy(alpha = 0.8f), RoundedCornerShape(15.dp))
+                            .border(0.7.dp, Dodgerblue, RoundedCornerShape(15.dp))
                             .align(Alignment.CenterEnd),
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
 
                     ){
-//                    Text("This is text", fontSize = 19.sp, color = Color.White)
                         LazyColumn(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -220,6 +215,7 @@ fun Home(state: OracaoState, cstate: CancaoState, navController: NavController, 
                                         )
                                     }
                                 } else {
+                                    showModal = false
                                     oracoes.filter { it.titulo == "0000" } // invalid number, in order to clean the list
                                 }
                             ){  oracao ->
@@ -254,7 +250,6 @@ fun Home(state: OracaoState, cstate: CancaoState, navController: NavController, 
                                                 color = MaterialTheme.colorScheme.onPrimary,
                                                 textAlign = TextAlign.Center
                                             )
-
                                             Text(
                                                 text = "Oração",
                                                 fontSize = 13.sp,
@@ -263,10 +258,8 @@ fun Home(state: OracaoState, cstate: CancaoState, navController: NavController, 
                                             )
                                         }
                                     }
-
                                 }
                             }
-//                            }
 
                             items(
                                 if (textInputValue.isNotBlank()) {
@@ -281,8 +274,8 @@ fun Home(state: OracaoState, cstate: CancaoState, navController: NavController, 
                                             )
                                         }
                                     }
-
                                 } else {
+                                    showModal = false
                                     canticos.filter { it.numero == "0000" } // invalid number, in order to clean the list
                                 }
 
@@ -332,6 +325,7 @@ fun Home(state: OracaoState, cstate: CancaoState, navController: NavController, 
                             }
                         }
                     }
+
                 }
 
             }
