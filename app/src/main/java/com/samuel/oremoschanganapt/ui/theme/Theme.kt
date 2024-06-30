@@ -1,4 +1,4 @@
-package com.samuel.oremoschanganapt.ui.theme
+  package com.samuel.oremoschanganapt.ui.theme
 
 import android.app.Activity
 import android.os.Build

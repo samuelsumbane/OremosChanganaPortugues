@@ -27,6 +27,8 @@ fun InputPesquisa(
         colors = TextFieldDefaults.colors(
             focusedContainerColor = Color.Transparent,
             unfocusedContainerColor = Color.Transparent,
+            focusedIndicatorColor = Color.Gray,
+            unfocusedIndicatorColor = Color.White
         ),
         textStyle = TextStyle(color = Color.White)
     )

@@ -13,32 +13,23 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.compose.ui.unit.*
 import androidx.navigation.NavController
 import com.samuel.oremoschanganapt.R
-import com.samuel.oremoschanganapt.apresentacaoOracao.CancaoEvent
-import com.samuel.oremoschanganapt.apresentacaoOracao.CancaoState
-import com.samuel.oremoschanganapt.apresentacaoOracao.OracaoState
-import com.samuel.oremoschanganapt.apresentacaoOracao.OracoesEvent
-import com.samuel.oremoschanganapt.components.BottomAppBarPrincipal
-import com.samuel.oremoschanganapt.components.InputPesquisa
+import com.samuel.oremoschanganapt.apresentacaoOracao.*
+import com.samuel.oremoschanganapt.components.*
 import com.samuel.oremoschanganapt.functionsKotlin.isNumber
 import com.samuel.oremoschanganapt.ui.theme.Dodgerblue
 import com.samuel.oremoschanganapt.ui.theme.HomeColor
-import com.samuel.oremoschanganapt.ui.theme.Lightgray
 import kotlinx.coroutines.launch
 
 
@@ -53,6 +44,7 @@ fun Home(state: OracaoState, cstate: CancaoState, navController: NavController, 
     val oracoes = state.oracoes
     val canticos = cstate.cancoes
     var showModal by remember { mutableStateOf(false) }
+
     
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -159,11 +151,12 @@ fun Home(state: OracaoState, cstate: CancaoState, navController: NavController, 
                         value = textInputValue,
                         onValueChange = {
                             textInputValue = it
-                            showModal = if(textInputValue != "") canticos.isNotEmpty() else false
+                            showModal = if (textInputValue != "") true else false
                         },
                         modifier = Modifier
                             .fillMaxWidth(0.85f)
-                            .padding(top = 25.dp)
+                            .padding(top = 27.dp)
+//                            .border(1.dp, Color.White, RoundedCornerShape(17.dp))
                             .height(58.dp),
                         label = "Pesquisar Cântico / Oração",
                         maxLines = 1,
@@ -215,7 +208,6 @@ fun Home(state: OracaoState, cstate: CancaoState, navController: NavController, 
                                         )
                                     }
                                 } else {
-                                    showModal = false
                                     oracoes.filter { it.titulo == "0000" } // invalid number, in order to clean the list
                                 }
                             ){  oracao ->
@@ -226,7 +218,10 @@ fun Home(state: OracaoState, cstate: CancaoState, navController: NavController, 
                                     modifier = Modifier
                                         .fillMaxSize()
                                         .height(45.dp)
-                                        .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(10.dp))
+                                        .background(
+                                            MaterialTheme.colorScheme.primary,
+                                            RoundedCornerShape(10.dp)
+                                        )
                                         .padding(8.dp, 0.dp, 0.dp, 0.dp)
                                         .clickable {
                                             navController.navigate("eachOracao/${prayTitle}/${prayBody}")
@@ -275,7 +270,6 @@ fun Home(state: OracaoState, cstate: CancaoState, navController: NavController, 
                                         }
                                     }
                                 } else {
-                                    showModal = false
                                     canticos.filter { it.numero == "0000" } // invalid number, in order to clean the list
                                 }
 
@@ -288,7 +282,10 @@ fun Home(state: OracaoState, cstate: CancaoState, navController: NavController, 
                                     modifier = Modifier
                                         .fillMaxSize()
                                         .height(45.dp)
-                                        .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(10.dp))
+                                        .background(
+                                            MaterialTheme.colorScheme.primary,
+                                            RoundedCornerShape(10.dp)
+                                        )
                                         .padding(8.dp, 0.dp, 0.dp, 0.dp)
                                         .clickable {
                                             navController.navigate("eachCantico/${songNumber}/${songTitle}/${songBody} ")

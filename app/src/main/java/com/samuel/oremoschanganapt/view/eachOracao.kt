@@ -44,7 +44,7 @@ fun EachOracao(navController: NavController, titulo:String, corpo: String){
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text="Oração", color = MaterialTheme.colorScheme.primary) },
+                title = { Text(text="Oração") },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.background
                 ),
