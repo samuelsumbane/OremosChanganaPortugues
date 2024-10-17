@@ -107,7 +107,7 @@ fun OracoesPage(state: OracaoState, navController: NavController, onEvent: (Orac
                             .fillMaxSize()
                             .height(60.dp)
                             .clip(RoundedCornerShape(14.dp))
-                            .background(MaterialTheme.colorScheme.primary)
+                            .background(MaterialTheme.colorScheme.secondary)
                             .padding(8.dp, 0.dp, 0.dp, 0.dp)
                             .clickable{
                                 navController.navigate("eachOracao/${oracao.titulo}/${oracao.corpo}")
@@ -167,5 +167,8 @@ fun OracoesPage(state: OracaoState, navController: NavController, onEvent: (Orac
                 }
             }
         }
+
+        ShortcutsButton(navController)
+
     }
 }

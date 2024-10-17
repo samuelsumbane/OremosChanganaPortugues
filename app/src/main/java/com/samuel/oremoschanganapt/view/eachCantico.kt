@@ -91,6 +91,6 @@ fun EachCantico(navController: NavController, numero: String, titulo:String, cor
             }
 
         }
-
+        ShortcutsButton(navController)
     }
 }

@@ -30,6 +30,8 @@ import com.samuel.oremoschanganapt.components.*
 import com.samuel.oremoschanganapt.functionsKotlin.isNumber
 import com.samuel.oremoschanganapt.ui.theme.Dodgerblue
 import com.samuel.oremoschanganapt.ui.theme.HomeColor
+import com.samuel.oremoschanganapt.ui.theme.grayHomeColor
+import com.samuel.oremoschanganapt.view.sideBar.About
 import kotlinx.coroutines.launch
 
 
@@ -51,70 +53,10 @@ fun Home(state: OracaoState, cstate: CancaoState, navController: NavController, 
         gesturesEnabled = true,
         drawerContent = {
             ModalDrawerSheet {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(MaterialTheme.colorScheme.primary)
-                    ){
-                        Column(
-                            modifier = Modifier
-                                .verticalScroll(scrollState)
-                                .fillMaxSize(),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
 
-                            Spacer(modifier = Modifier.height(30.dp))
-                            Text(
-                                text = "Oremos Changana - Português",
-                                fontWeight = FontWeight.SemiBold,
-                                fontSize = 16.sp,
-                                color = Color.Black
-                            )
-                            Spacer(modifier = Modifier.height(30.dp))
-
-                            Text(
-                                text = "Programador",
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 16.sp,
-                                color = Color.Black
-                            )
-                            Text(text = "Samuel Eugénio Sumbane", fontSize = 16.sp,
-                                color = Color.Black)
-                            Text(text = "Programador Full-Stack", fontSize = 16.sp, 
-                                color = Color.Black)
-                            Spacer(modifier = Modifier.height(30.dp))
-
-                            Text(
-                                text = "Contacto",
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 16.sp , 
-                                color = Color.Black
-                            )
-
-                            Text(text = "+258 865230661 / +258 833597867", fontSize = (16.sp ), lineHeight = (24.sp ),
-                                color = Color.Black)
-                            Text(text = "samuelsumbane143@gmail.com", fontSize = (16.sp ), lineHeight = (24.sp ),
-                                color = Color.Black)
-                            Spacer(modifier = Modifier.height(30.dp))
-
-                            Text(
-                                text = "Apoio",
-                                fontWeight = FontWeight.Bold,
-                                fontSize = (16.sp ), lineHeight = (24.sp ),
-                                color = Color.Black
-                            )
-                            Text(
-                                text = "A produção deste aplicativo carreceu de alguns custos da parte do programador, neste sentido pretende-se produzir mais aplicativos desta natureza e para tal contamos com seu apoio financeiro que pode ser efectuado através do numero 865230661.",
-                                textAlign = TextAlign.Justify,
-                                modifier = Modifier.padding(7.dp, 0.dp, 7.dp, 0.dp),
-                                fontSize = (16.sp ), lineHeight = (24.sp ),
-                                color = Color.Black
-                            )
-                            Spacer(modifier = Modifier.height(30.dp))
-                            Text(text = "Versão: 3.0", color = Color.Black, fontSize = (16.sp ), lineHeight = (24.sp ))
-                        }
-                    }
+                About()
             }
+
         }
     ) {
         Scaffold( bottomBar = { BottomAppBarPrincipal(navController, "home") }) {
@@ -140,7 +82,7 @@ fun Home(state: OracaoState, cstate: CancaoState, navController: NavController, 
                         .fillMaxWidth()
                         .fillMaxHeight(.3f)
                         .background(
-                            color = Color.Transparent,
+                            color = grayHomeColor,
                             shape = RoundedCornerShape(0.dp, 0.dp, 0.dp, 40.dp),
                         ),
                     verticalArrangement = Arrangement.SpaceAround,
@@ -191,7 +133,6 @@ fun Home(state: OracaoState, cstate: CancaoState, navController: NavController, 
                             .align(Alignment.CenterEnd),
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
-
                     ){
                         LazyColumn(
                             modifier = Modifier

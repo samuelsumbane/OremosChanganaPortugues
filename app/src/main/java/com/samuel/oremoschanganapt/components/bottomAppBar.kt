@@ -20,7 +20,6 @@ fun BottomAppBarPrincipal(navController: NavController, activePage: String){
         containerColor = Color.Transparent,
         modifier = Modifier.padding(0.dp, 0.dp, 0.dp, 5.dp)
         ){
-
         Row(
             modifier = Modifier
                 .fillMaxSize()
@@ -31,7 +30,8 @@ fun BottomAppBarPrincipal(navController: NavController, activePage: String){
             IconTextButton("Home", "Ínicio", activePage == "home") { navController.navigate("home") }
             IconTextButton("Oracao", "Orações", activePage == "oracoespage") { navController.navigate("oracoespage") }
             IconTextButton("Cantico", "Cânticos", activePage == "canticosAgrupados") { navController.navigate("canticosAgrupados") }
-            IconTextButton("Favoritos", "Favoritos", activePage == "favoritospage") { navController.navigate("favoritospage") }
+            IconTextButton("MorePages", "Mais", activePage == "morepages") { navController.navigate("morepages") }
+//            IconTextButton("Favoritos", "Favoritos", activePage == "favoritospage") { navController.navigate("favoritospage") }
         }
     }
 }

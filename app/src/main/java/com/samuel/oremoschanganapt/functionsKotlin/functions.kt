@@ -43,9 +43,7 @@ fun shareText(context: Context, text: String) {
 @Composable
 fun ShareIconButton(context: Context, text: String) {
     IconButton(
-        onClick = {
-            shareText(context, text)
-        },
+        onClick = { shareText(context, text) },
         modifier = Modifier.padding(8.dp)
     ) {
         Icon(

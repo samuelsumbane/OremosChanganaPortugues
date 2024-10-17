@@ -1,5 +1,6 @@
 package com.samuel.oremoschanganapt.view
 
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,9 +22,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -71,7 +74,8 @@ fun EachOracao(navController: NavController, titulo:String, corpo: String){
         }) {
             Column(
                 modifier = Modifier.fillMaxSize().padding(paddingValues)
-                    .verticalScroll(scrollState),
+                    .verticalScroll(scrollState)
+                ,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Spacer(modifier = Modifier.height(12.dp))
@@ -86,6 +90,7 @@ fun EachOracao(navController: NavController, titulo:String, corpo: String){
                 )
             }
         }
-    }
 
+        ShortcutsButton(navController)
+    }
 }

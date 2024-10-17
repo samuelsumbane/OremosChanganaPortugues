@@ -1,5 +1,6 @@
 package com.samuel.oremoschanganapt.view
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -60,11 +61,14 @@ fun CanticosPage(state: CancaoState, navController: NavController, value: String
     var pesquisaTexto by remember { mutableStateOf("") }
     var pesquisaTextoAvancada by remember { mutableStateOf("") }
 
-    val dados = if(value == "todos"){
-        state.cancoes
-    } else {
-        state.cancoes.filter{ it.grupo == value }
+
+    val dados = when(value){
+        "todos" -> state.cancoes
+        "new" -> state.cancoes.filter{ it.numero.startsWith("0") }
+        else -> state.cancoes.filter{ it.grupo == value }
     }
+
+//    Log.d("values", "${state.cancoes.size} / ${dados.size}")
 
 //    var activeInput = 0 //normal
     var activeInput by remember { mutableStateOf(0) }
@@ -77,7 +81,7 @@ fun CanticosPage(state: CancaoState, navController: NavController, value: String
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = "Canticos", color = MaterialTheme.colorScheme.onPrimary) },
+                title = { Text(text = "Canticos", color = MaterialTheme.colorScheme.tertiary) },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color.Transparent
                 ),
@@ -97,7 +101,7 @@ fun CanticosPage(state: CancaoState, navController: NavController, value: String
                                 .fillMaxWidth().weight(0.8f)
                         ) {
                             val labelText =
-                                if (activeInput == 0) "Pesquisar por título / número" else "Pesquisar no corpo do cântico"
+                                if (activeInput == 0) "Pesquisar título ou número (${dados.size} / ${state.cancoes.size})" else "Pesquisar no corpo (${dados.size} / ${state.cancoes.size})"
                             val inputValue =
                                 if (activeInput == 0) pesquisaTexto else pesquisaTextoAvancada
 
@@ -114,11 +118,12 @@ fun CanticosPage(state: CancaoState, navController: NavController, value: String
                                 label = labelText,
                                 maxLines = 1,
                             )
+
                         }
 
                         Row(
                             modifier = Modifier
-                                .width(50.dp)
+                                 .width(50.dp)
                                 .padding(0.dp, 7.dp, 0.dp, 0.dp)
                         ) {
                             IconButton(
@@ -172,9 +177,7 @@ fun CanticosPage(state: CancaoState, navController: NavController, value: String
                                         it.corpo.contains(pesquisaTextoAvancada, ignoreCase = true)
                                 }
                             }
-                    } else {
-                        dados
-                    }
+                    } else { dados }
 
                 ) { cancao ->
                     val n = cancao.numero
@@ -186,7 +189,7 @@ fun CanticosPage(state: CancaoState, navController: NavController, value: String
                             .fillMaxSize()
                             .height(60.dp)
                             .clip(RoundedCornerShape(14.dp))
-                            .background(MaterialTheme.colorScheme.primary)
+                            .background(MaterialTheme.colorScheme.secondary)
                             .padding(8.dp, 0.dp, 0.dp, 0.dp)
                             .clickable {
                                 navController.navigate("eachCantico/${n}/${t}/${g}")
@@ -209,7 +212,7 @@ fun CanticosPage(state: CancaoState, navController: NavController, value: String
                                 Text(
                                     text = cancao.numero,
                                     fontSize = 16.sp,
-                                    color = White,
+                                    color = MaterialTheme.colorScheme.onPrimary,
                                     fontWeight = FontWeight.Bold
                                 )
                             }
@@ -259,6 +262,8 @@ fun CanticosPage(state: CancaoState, navController: NavController, value: String
                 }
             }
         }
+
+        ShortcutsButton(navController)
     }
 }
 

@@ -21,17 +21,22 @@ import com.samuel.oremoschanganapt.apresentacaoOracao.OracoesViewModel
 import com.samuel.oremoschanganapt.dataOracao.CancoesDatabase
 import com.samuel.oremoschanganapt.dataOracao.OracoesDatabase
 import com.samuel.oremoschanganapt.ui.theme.OremosChanganaTheme
+import com.samuel.oremoschanganapt.view.Apendice
 import com.samuel.oremoschanganapt.view.CanticosAgrupados
 import com.samuel.oremoschanganapt.view.CanticosPage
 import com.samuel.oremoschanganapt.view.EachCantico
 import com.samuel.oremoschanganapt.view.EachOracao
 import com.samuel.oremoschanganapt.view.FavoritosPage
+import com.samuel.oremoschanganapt.view.FestasMoveis
 import com.samuel.oremoschanganapt.view.Home
+import com.samuel.oremoschanganapt.view.Licionario
+import com.samuel.oremoschanganapt.view.MorePages
 import com.samuel.oremoschanganapt.view.OracoesPage
+import com.samuel.oremoschanganapt.view.ShortcutsButton
 import com.samuel.oremoschanganapt.view.SplashWindow
 
 
-class MainActivity : ComponentActivity() {
+class  MainActivity : ComponentActivity() {
 
     private val database by lazy{
         Room.databaseBuilder(
@@ -84,22 +89,45 @@ class MainActivity : ComponentActivity() {
                     val cstate by cviewModel.cstate.collectAsState()
                     val navController = rememberNavController()
 
-                    NavHost(navController = navController, startDestination="splash"){
-                        composable("splash") {
-                            SplashWindow(navController)
-                        }
+
+//                    ShortcutsButton()
+
+
+                    NavHost(navController = navController, startDestination = "canticosAgrupados") {
                         // define rotas
-                        composable(route = "home"){
-                            Home(state, cstate, navController, onEvent = cviewModel::onEvent, onEventO = viewModel::onEvent)
+
+//                        composable("splash") {
+//                            SplashWindow(navController)
+//                        }
+
+                        composable(route = "home") {
+                            Home(
+                                state,
+                                cstate,
+                                navController,
+                                onEvent = cviewModel::onEvent,
+                                onEventO = viewModel::onEvent
+                            )
                         }
 
-                        composable(route = "oracoespage"){ OracoesPage( state, navController, onEvent = viewModel::onEvent) }
-                        composable(route = "canticospage/{value}"){ backStackEntry ->
+                        composable(route = "oracoespage") {
+                            OracoesPage(
+                                state,
+                                navController,
+                                onEvent = viewModel::onEvent
+                            )
+                        }
+                        composable(route = "canticospage/{value}") { backStackEntry ->
                             val value = backStackEntry.arguments?.getString("value") ?: ""
-                            CanticosPage( cstate, navController, value, onEvent = cviewModel::onEvent)
+                            CanticosPage(
+                                cstate,
+                                navController,
+                                value,
+                                onEvent = cviewModel::onEvent
+                            )
                         }
-
-                        composable(route = "eachCantico/{numero}/{titulo}/{corpo}"){ aC ->
+//
+                        composable(route = "eachCantico/{numero}/{titulo}/{corpo}") { aC ->
                             val numero = aC.arguments?.getString("numero") ?: ""
                             val titulo = aC.arguments?.getString("titulo") ?: ""
 //                            val subTitulo = aC.arguments?.getString("subTitulo") ?: ""
@@ -107,17 +135,46 @@ class MainActivity : ComponentActivity() {
                             EachCantico(navController, numero, titulo, corpo)
                         }
 
-                        composable(route = "eachOracao/{titulo}/{corpo}"){ eO ->
+                        composable(route = "eachOracao/{titulo}/{corpo}") { eO ->
                             val titulo = eO.arguments?.getString("titulo") ?: ""
 //                            val subTitulo = aC.arguments?.getString("subTitulo") ?: ""
                             val corpo = eO.arguments?.getString("corpo") ?: ""
                             EachOracao(navController, titulo, corpo)
                         }
+//
+                        composable(route = "canticosAgrupados") {
+                            CanticosAgrupados(
+                                cstate,
+                                navController
+                            )
+                        }
 
-                        composable(route = "canticosAgrupados"){ CanticosAgrupados( cstate, navController) }
-                        composable(route = "favoritospage"){ FavoritosPage(state, cstate, navController, onEvent = cviewModel::onEvent, onEventO = viewModel::onEvent) }
+                        composable(route = "favoritospage") {
+                            FavoritosPage(
+                                state,
+                                cstate,
+                                navController,
+                                onEvent = cviewModel::onEvent,
+                                onEventO = viewModel::onEvent
+                            )
+                        }
+
+                        composable(route = "apendice") {
+                            Apendice(navController)
+                        }
+
+                        composable(route = "festasmoveis") {
+                            FestasMoveis(navController)
+                        }
+
+                        composable(route = "licionario") {
+                            Licionario(navController)
+                        }
+
+                        composable(route = "morepages") {
+                            MorePages(navController)
+                        }
                     }
-
                 }
             }
         }

@@ -59,7 +59,7 @@ fun FavoritosPage(state: OracaoState, cstate: CancaoState, navController: NavCon
     Scaffold(
         topBar = {
             TopAppBar(
-                title = {Text(text="Canticos", color = MaterialTheme.colorScheme.tertiary)},
+                title = {Text(text="Cânticos", color = MaterialTheme.colorScheme.tertiary)},
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color.Transparent
                 ),
@@ -82,9 +82,9 @@ fun FavoritosPage(state: OracaoState, cstate: CancaoState, navController: NavCon
                 }
             )
         },
-        bottomBar = {
-            BottomAppBarPrincipal(navController, "favoritospage")
-        }
+//        bottomBar = {
+//            BottomAppBarPrincipal(navController, "favoritospage")
+//        }
     ){paddingVales ->
 
         Column(modifier = Modifier
@@ -295,9 +295,10 @@ fun FavoritosPage(state: OracaoState, cstate: CancaoState, navController: NavCon
                     }
                 }
             }
-
-
         }
+
+        ShortcutsButton(navController)
+
     }
 
 }

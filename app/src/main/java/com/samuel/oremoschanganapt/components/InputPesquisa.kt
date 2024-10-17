@@ -1,5 +1,6 @@
 package com.samuel.oremoschanganapt.components
 
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -25,11 +26,11 @@ fun InputPesquisa(
         maxLines = maxLines,
         shape = ShapeEditText.medium,
         colors = TextFieldDefaults.colors(
-            focusedContainerColor = Color.Transparent,
-            unfocusedContainerColor = Color.Transparent,
-            focusedIndicatorColor = Color.Gray,
-            unfocusedIndicatorColor = Color.White
+            focusedContainerColor = MaterialTheme.colorScheme.primary,
+            unfocusedContainerColor = MaterialTheme.colorScheme.primary,
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent
         ),
-        textStyle = TextStyle(color = Color.White)
+        textStyle = TextStyle(color = MaterialTheme.colorScheme.onPrimary)
     )
 }

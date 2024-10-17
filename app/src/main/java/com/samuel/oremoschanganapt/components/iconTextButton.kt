@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -73,6 +74,15 @@ fun IconTextButton(
                         modifier = Modifier.size(21.dp),
                     )
                 }
+                "MorePages" -> {
+                    Icon(
+                        imageVector = Icons.Outlined.Add,
+                        contentDescription = "",
+                        modifier = Modifier.size(25.dp),
+                        tint = Color.Black
+                    )
+                }
+
                 "Favoritos" -> {
                     Icon(
                         imageVector = Icons.Outlined.Star,
