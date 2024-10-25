@@ -26,6 +26,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,22 +40,31 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.samuel.oremoschanganapt.apresentacaoOracao.CancaoEvent
-import com.samuel.oremoschanganapt.apresentacaoOracao.CancaoState
-import com.samuel.oremoschanganapt.apresentacaoOracao.OracaoState
-import com.samuel.oremoschanganapt.apresentacaoOracao.OracoesEvent
+//import com.samuel.oremoschanganapt.apresentacaoOracao.CancaoEvent
+//import com.samuel.oremoschanganapt.apresentacaoOracao.CancaoState
+//import com.samuel.oremoschanganapt.apresentacaoOracao.OracoesEvent
 import com.samuel.oremoschanganapt.components.BottomAppBarPrincipal
 import com.samuel.oremoschanganapt.components.InputPesquisa
 import com.samuel.oremoschanganapt.functionsKotlin.isNumber
 import com.samuel.oremoschanganapt.ui.theme.Orange
+import com.samuelsumbane.oremoschanganapt.db.PrayViewModel
+import com.samuelsumbane.oremoschanganapt.db.SongViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FavoritosPage(state: OracaoState, cstate: CancaoState, navController: NavController, onEvent: (CancaoEvent) -> Unit, onEventO: (OracoesEvent) -> Unit){
+fun FavoritosPage(
+    navController: NavController,
+    prayViewModel: PrayViewModel,
+    songViewModel: SongViewModel
+){
     var pesquisaTexto by remember { mutableStateOf("") }
 
-    val fCancoes = cstate.cancoes.filter{ it.favorito == true}
-    val fOracoes = state.oracoes.filter{ it.favorito == true}
+    val songs by songViewModel.songs.collectAsState()
+    val lSongs = songs.filter { it.loved }
+
+    val prays by prayViewModel.prays.collectAsState()
+    val lPrays = prays.filter { it.loved }
+    
 
     Scaffold(
         topBar = {
@@ -76,14 +86,14 @@ fun FavoritosPage(state: OracaoState, cstate: CancaoState, navController: NavCon
                             .fillMaxWidth()
                             .padding(50.dp, 0.dp, 20.dp, 10.dp)
                             .height(58.dp),
-                        label = "Pesquisar favoritos",
+                        label = "Pesquisar loveds",
                         maxLines = 1,
                     )
                 }
             )
         },
 //        bottomBar = {
-//            BottomAppBarPrincipal(navController, "favoritospage")
+//            BottomAppBarPrincipal(navController, "lovedspage")
 //        }
     ){paddingVales ->
 
@@ -91,13 +101,13 @@ fun FavoritosPage(state: OracaoState, cstate: CancaoState, navController: NavCon
             .fillMaxSize()
             .padding(paddingVales),
         ){
-            if (fCancoes.isEmpty() && fOracoes.isEmpty()){
+            if (lSongs.isEmpty() && lPrays.isEmpty()){
                 Column(
                     modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally
                 ){
                     Text(text = "Nenhuma oração ou cântico encontrado.", textAlign = TextAlign.Center, fontWeight = FontWeight.Bold)
                 }
-            }else if (fCancoes.isNotEmpty() || fOracoes.isNotEmpty()) {
+            }else if (lSongs.isNotEmpty() || lPrays.isNotEmpty()) {
 
                 LazyColumn(
                     modifier = Modifier
@@ -108,18 +118,18 @@ fun FavoritosPage(state: OracaoState, cstate: CancaoState, navController: NavCon
 
                     items(
                         if (pesquisaTexto.isNotBlank()) {
-                            fOracoes.filter {
-                                it.titulo.contains(
+                            lPrays.filter {
+                                it.title.contains(
                                     pesquisaTexto,
                                     ignoreCase = true
                                 )
                             }
                         } else {
-                            fOracoes
+                            lPrays
                         }
                     ) { oracao ->
-                        val prayTitle = oracao.titulo
-                        val prayBody = oracao.corpo
+                        val prayTitle = oracao.title
+                        val prayBody = oracao.body
                         Row(
                             modifier = Modifier
                                 .fillMaxSize()
@@ -144,14 +154,14 @@ fun FavoritosPage(state: OracaoState, cstate: CancaoState, navController: NavCon
                                     verticalArrangement = Arrangement.Center
                                 ) {
                                     Text(
-                                        text = oracao.titulo,
+                                        text = oracao.title,
                                         fontSize = 18.sp,
                                         color = MaterialTheme.colorScheme.onPrimary,
                                         textAlign = TextAlign.Center
                                     )
 
                                     Text(
-                                        text = oracao.subTitulo,
+                                        text = oracao.subTitle,
                                         fontSize = 12.sp,
                                         color = MaterialTheme.colorScheme.onPrimary,
                                         textAlign = TextAlign.Center
@@ -173,16 +183,15 @@ fun FavoritosPage(state: OracaoState, cstate: CancaoState, navController: NavCon
                                         .weight(0.1f)
                                         .height(60.dp),
                                     onClick = {
-                                        val status = if (oracao.favorito){
+                                        val status = if (oracao.loved){
                                             false
                                         }else{
                                             true
                                         }
-//                                        onEvent(CancaoEvent.UpdateFavorito(cancaoId = oracao.id, novoFavorito = status))
-                                        onEventO(OracoesEvent.UpdateFavorito(oracaoId = oracao.id, novoFavorito = status))
+                                        prayViewModel.updatePray(oracao.prayId, status)
                                     }
                                 ){
-                                    Icon(imageVector = Icons.Default.Star, contentDescription = "É favorito", tint = Orange)
+                                    Icon(imageVector = Icons.Default.Star, contentDescription = "É loved", tint = Orange)
                                 }
                             }
                         }
@@ -194,23 +203,23 @@ fun FavoritosPage(state: OracaoState, cstate: CancaoState, navController: NavCon
                             //
                             val numOrNot = isNumber(pesquisaTexto)
                             if (numOrNot) {
-                                fCancoes.filter { it.numero == pesquisaTexto }
+                                lSongs.filter { it.number == pesquisaTexto }
                             } else {
-                                fCancoes.filter {
-                                    it.titulo.contains(
+                                lSongs.filter {
+                                    it.title.contains(
                                         pesquisaTexto,
                                         ignoreCase = true
                                     )
                                 }
                             }
                         } else {
-                            fCancoes
+                            lSongs
                         }
                     ) { cancao ->
-                        val n = cancao.numero
-                        val t = cancao.titulo
-                        //                    val sT = cancao.subTitulo ?: ""
-                        val g = cancao.corpo
+                        val n = cancao.number
+                        val t = cancao.title
+                        //                    val sT = cancao.subTitle ?: ""
+                        val g = cancao.body
                         Row(
                             modifier = Modifier
                                 .fillMaxSize()
@@ -237,7 +246,7 @@ fun FavoritosPage(state: OracaoState, cstate: CancaoState, navController: NavCon
                                     horizontalArrangement = Arrangement.Center
                                 ) {
                                     Text(
-                                        text = cancao.numero,
+                                        text = cancao.number,
                                         fontSize = 16.sp,
                                         color = MaterialTheme.colorScheme.onPrimary,
                                         fontWeight = FontWeight.Bold
@@ -250,14 +259,14 @@ fun FavoritosPage(state: OracaoState, cstate: CancaoState, navController: NavCon
                                     verticalArrangement = Arrangement.Center
                                 ) {
                                     Text(
-                                        text = cancao.titulo,
+                                        text = cancao.title,
                                         fontSize = 18.sp,
                                         color = MaterialTheme.colorScheme.onPrimary,
                                         textAlign = TextAlign.Center
                                     )
 
                                     Text(
-                                        text = cancao.subTitulo,
+                                        text = cancao.subTitle,
                                         fontSize = 12.sp,
                                         color = MaterialTheme.colorScheme.onPrimary,
                                         textAlign = TextAlign.Center
@@ -280,15 +289,15 @@ fun FavoritosPage(state: OracaoState, cstate: CancaoState, navController: NavCon
                                         .weight(0.1f)
                                         .height(60.dp),
                                     onClick = {
-                                        val status = if (cancao.favorito){
+                                        val status = if (cancao.loved){
                                             false
                                         }else{
                                             true
                                         }
-                                        onEvent(CancaoEvent.UpdateFavorito(cancaoId = cancao.id, novoFavorito = status))
+                                        songViewModel.updateSong(cancao.songId, status)
                                     }
                                 ){
-                                    Icon(imageVector = Icons.Default.Star, contentDescription = "É favorito", tint = Orange)
+                                    Icon(imageVector = Icons.Default.Star, contentDescription = "É loved", tint = Orange)
                                 }
                             }
                         }

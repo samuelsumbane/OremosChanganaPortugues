@@ -310,7 +310,7 @@ fun ListWidget(
                 .clickable {  }.padding(10.dp),
             Arrangement.SpaceBetween
         ){
-            Text("$title")
+            Text("$title", color = textColor)
             Icon(Icons.Default.KeyboardArrowDown, contentDescription = "Open or Close")
         }
 

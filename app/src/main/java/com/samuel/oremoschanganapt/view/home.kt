@@ -25,38 +25,39 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.*
 import androidx.navigation.NavController
 import com.samuel.oremoschanganapt.R
-import com.samuel.oremoschanganapt.apresentacaoOracao.*
-import com.samuel.oremoschanganapt.components.*
+//import com.samuel.oremoschanganapt.apresentacaoOracao.*
+import com.samuel.oremoschanganapt.components.* 
 import com.samuel.oremoschanganapt.functionsKotlin.isNumber
 import com.samuel.oremoschanganapt.ui.theme.Dodgerblue
 import com.samuel.oremoschanganapt.ui.theme.HomeColor
 import com.samuel.oremoschanganapt.ui.theme.grayHomeColor
 import com.samuel.oremoschanganapt.view.sideBar.About
+import com.samuelsumbane.oremoschanganapt.db.PrayViewModel
+import com.samuelsumbane.oremoschanganapt.db.SongViewModel
 import kotlinx.coroutines.launch
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun Home(state: OracaoState, cstate: CancaoState, navController: NavController, onEvent: (CancaoEvent) -> Unit, onEventO: (OracoesEvent) -> Unit) {
+fun Home( navController: NavController, songViewModel: SongViewModel, prayViewModel: PrayViewModel) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     val scrollState = rememberScrollState()
     var textInputValue by remember { mutableStateOf("") }
 
-    val oracoes = state.oracoes
-    val canticos = cstate.cancoes
+
+    val allSongs by songViewModel.songs.collectAsState()
+    val allPrays by prayViewModel.prays.collectAsState()
+
     var showModal by remember { mutableStateOf(false) }
 
-    
     ModalNavigationDrawer(
         drawerState = drawerState,
         gesturesEnabled = true,
         drawerContent = {
             ModalDrawerSheet {
-
                 About()
             }
-
         }
     ) {
         Scaffold( bottomBar = { BottomAppBarPrincipal(navController, "home") }) {
@@ -71,11 +72,7 @@ fun Home(state: OracaoState, cstate: CancaoState, navController: NavController, 
                     modifier = Modifier.fillMaxSize(),
                     contentScale = ContentScale.Crop
                 )
-                Row{
-                    IconButton(onClick = { scope.launch { drawerState.open() } }) {
-                        Icon(imageVector = Icons.Default.Menu, contentDescription = "Menu", tint = Color.White)
-                    }
-                }
+
 
                 Column(
                     modifier = Modifier
@@ -88,17 +85,24 @@ fun Home(state: OracaoState, cstate: CancaoState, navController: NavController, 
                     verticalArrangement = Arrangement.SpaceAround,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+                    Row(
+                        Modifier.fillMaxWidth()
+//                            .background(Color.Red)
+                    ){
+                        IconButton(onClick = { scope.launch { drawerState.open() } }) {
+                            Icon(imageVector = Icons.Default.Menu, contentDescription = "Menu",
+                                tint = Color.White, modifier = Modifier.size(30.dp))
+                        }
+                    }
 
                     InputPesquisa(
                         value = textInputValue,
                         onValueChange = {
                             textInputValue = it
-                            showModal = if (textInputValue != "") true else false
+                            showModal = textInputValue != ""
                         },
                         modifier = Modifier
                             .fillMaxWidth(0.85f)
-                            .padding(top = 27.dp)
-//                            .border(1.dp, Color.White, RoundedCornerShape(17.dp))
                             .height(58.dp),
                         label = "Pesquisar Cântico / Oração",
                         maxLines = 1,
@@ -142,18 +146,18 @@ fun Home(state: OracaoState, cstate: CancaoState, navController: NavController, 
                         ) {
                             items(
                                 if (textInputValue.isNotBlank()) {
-                                    oracoes.filter {
-                                        it.titulo.contains(
+                                    allPrays.filter {
+                                        it.title.contains(
                                             textInputValue,
                                             ignoreCase = true
                                         )
                                     }
                                 } else {
-                                    oracoes.filter { it.titulo == "0000" } // invalid number, in order to clean the list
+                                    allPrays.filter { it.title == "0000" } // invalid number, in order to clean the list
                                 }
                             ){  oracao ->
-                                val prayTitle = oracao.titulo
-                                val prayBody = oracao.corpo
+                                val prayTitle = oracao.title
+                                val prayBody = oracao.body
 
                                 Row(
                                     modifier = Modifier
@@ -201,23 +205,23 @@ fun Home(state: OracaoState, cstate: CancaoState, navController: NavController, 
                                 if (textInputValue.isNotBlank()) {
                                     val numOrNot = isNumber(textInputValue)
                                     if (numOrNot) {
-                                        canticos.filter { it.numero == textInputValue }
+                                        allSongs.filter { it.number == textInputValue }
                                     } else {
-                                        canticos.filter {
-                                            it.titulo.contains(
+                                        allSongs.filter {
+                                            it.title.contains(
                                                 textInputValue,
                                                 ignoreCase = true
                                             )
                                         }
                                     }
                                 } else {
-                                    canticos.filter { it.numero == "0000" } // invalid number, in order to clean the list
+                                    allSongs.filter { it.number == "0000" } // invalid number, in order to clean the list
                                 }
 
                             ) { cantico ->
-                                val songTitle = cantico.titulo
-                                val songBody = cantico.corpo
-                                val songNumber = cantico.numero
+                                val songTitle = cantico.title
+                                val songBody = cantico.body
+                                val songNumber = cantico.number
 
                                 Row(
                                     modifier = Modifier

@@ -1,8 +1,13 @@
 
 // new features
 * remember the scrollstate - pedding (
-* shortcut button
-*
+* shortcut button - done
+
+* Temas personalizados
+* notificacoes personalizadas
+* conteudo exclusivo
+* sincronizacao.
+
 
 
 * AP�NDICE
@@ -11,6 +16,8 @@
 
 
 // Definicoes
+* font-size -
+
 
 
 

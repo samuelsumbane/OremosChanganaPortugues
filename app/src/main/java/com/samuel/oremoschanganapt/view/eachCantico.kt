@@ -20,6 +20,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,11 +34,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.samuel.oremoschanganapt.functionsKotlin.ShareIconButton
+import com.samuelsumbane.oremoschanganapt.db.DefViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EachCantico(navController: NavController, numero: String, titulo:String, corpo: String){
-    var scale by remember { mutableStateOf(1f) }
+fun EachCantico(navController: NavController, numero: String, titulo:String, corpo: String,
+                defViewModel: DefViewModel){
+
+    val allDef by defViewModel.defs.collectAsState()
 
     Scaffold(
         topBar = {
@@ -62,35 +66,52 @@ fun EachCantico(navController: NavController, numero: String, titulo:String, cor
 
         val scrollState = rememberScrollState()
 
-        Box(modifier = Modifier
-            .fillMaxSize()
-            .pointerInput(Unit) {
-                detectTransformGestures { _, pan, zoom, _ ->
-                    val newScale = scale * zoom
-                    scale = newScale.coerceIn(1.0f, 3.0f) // intervalo do zoom.
+        if(allDef.isNotEmpty()) {
+
+            val def = allDef.first()
+            val dbScale by remember { mutableStateOf(def.textScale) }
+            var scale by remember { mutableStateOf(dbScale.toFloat()) }
+
+
+            Box(modifier = Modifier
+                .fillMaxSize()
+                .pointerInput(Unit) {
+                    detectTransformGestures { _, pan, zoom, _ ->
+                        val newScale = scale * zoom
+                        scale = newScale.coerceIn(1.0f, 2.0f) // intervalo do zoom.
+                        defViewModel.updateDef(scale.toDouble())
+                    }
                 }
-            }
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-                    .verticalScroll(scrollState),
-                horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues)
+                        .verticalScroll(scrollState),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
 
-                Spacer(modifier = Modifier.height(12.dp))
-                Text(text = (titulo).uppercase(), fontWeight = FontWeight.Bold, fontSize = 17.sp * scale, lineHeight = (24.sp * scale))
-                Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Text(
+                        text = (titulo).uppercase(),
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 17.sp * scale,
+                        lineHeight = (24.sp * scale)
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
 
-//            Text(text = subTitulo, fontStyle = FontStyle.Italic)
-                Spacer(modifier = Modifier.height(12.dp))
+                    //            Text(text = subTitulo, fontStyle = FontStyle.Italic)
+                    Spacer(modifier = Modifier.height(12.dp))
 
-                Text(text = corpo, fontSize = 19.sp * scale, lineHeight = (24.sp * scale))
+                    Text(text = corpo, fontSize = 19.sp * scale, lineHeight = (24.sp * scale))
+
+                }
 
             }
+            ShortcutsButton(navController)
 
+        } else {
+            Text("Carregando...")
         }
-        ShortcutsButton(navController)
     }
 }

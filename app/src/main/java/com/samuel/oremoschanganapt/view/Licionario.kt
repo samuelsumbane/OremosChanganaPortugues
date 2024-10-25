@@ -51,7 +51,7 @@ fun Licionario(navController: NavController){
                     containerColor = MaterialTheme.colorScheme.background
                 ),
                 navigationIcon = {
-                    IconButton(onClick = {   } ){
+                    IconButton(onClick = { navController.popBackStack() } ){
                         Icon(imageVector = Icons.Outlined.ArrowBack, contentDescription = "go back")
                     }
                 }

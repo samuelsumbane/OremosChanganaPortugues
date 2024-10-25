@@ -26,6 +26,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,18 +39,29 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.samuel.oremoschanganapt.apresentacaoOracao.OracaoState
-import com.samuel.oremoschanganapt.apresentacaoOracao.OracoesEvent
+//import com.samuel.oremoschanganapt.apresentacaoOracao.OracoesEvent
 import com.samuel.oremoschanganapt.components.BottomAppBarPrincipal
 import com.samuel.oremoschanganapt.components.InputPesquisa
+import com.samuel.oremoschanganapt.components.SearchContainer
 import com.samuel.oremoschanganapt.ui.theme.Orange
 import com.samuel.oremoschanganapt.ui.theme.White
+import com.samuelsumbane.oremoschanganapt.db.DefViewModel
+import com.samuelsumbane.oremoschanganapt.db.PrayViewModel
+import com.samuelsumbane.oremoschanganapt.db.data.prayData
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun OracoesPage(state: OracaoState, navController: NavController, onEvent: (OracoesEvent) -> Unit){
+fun OracoesPage( navController: NavController,
+                 prayViewModel: PrayViewModel
+){
+
     var pesquisaTexto by remember { mutableStateOf("") }
+//    var prays = prayViewModel.prays
+//    println(prays.)
+//    val allPrays by settingViewModel.settings.collectAsState()
+    val allPrays by prayViewModel.prays.collectAsState()
+
 
     Scaffold(
         topBar = {
@@ -64,16 +76,7 @@ fun OracoesPage(state: OracaoState, navController: NavController, onEvent: (Orac
                     }
                 },
                 actions = {
-                    InputPesquisa(
-                        value = pesquisaTexto,
-                        onValueChange = { pesquisaTexto = it },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(50.dp, 0.dp, 20.dp, 10.dp)
-                            .height(58.dp),
-                        label = "Pesquisar oração",
-                        maxLines = 1
-                    )
+                    pesquisaTexto = SearchContainer(pesquisatexto = pesquisaTexto)
                 }
             )
         },
@@ -86,7 +89,6 @@ fun OracoesPage(state: OracaoState, navController: NavController, onEvent: (Orac
             .fillMaxSize()
             .padding(paddingVales),
         ){
-
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
@@ -95,13 +97,13 @@ fun OracoesPage(state: OracaoState, navController: NavController, onEvent: (Orac
             ){
                 items(
                     if (pesquisaTexto.isNotBlank()) {
-                        state.oracoes.filter {
-                            it.titulo.contains(pesquisaTexto, ignoreCase = true)
+                        allPrays.filter {
+                            it.title.contains(pesquisaTexto, ignoreCase = true)
                         }
                     } else {
-                        state.oracoes
+                        allPrays
                     }
-                ) { oracao ->
+                ) { pray ->
                     Row(
                         modifier = Modifier
                             .fillMaxSize()
@@ -110,7 +112,7 @@ fun OracoesPage(state: OracaoState, navController: NavController, onEvent: (Orac
                             .background(MaterialTheme.colorScheme.secondary)
                             .padding(8.dp, 0.dp, 0.dp, 0.dp)
                             .clickable{
-                                navController.navigate("eachOracao/${oracao.titulo}/${oracao.corpo}")
+                                navController.navigate("eachOracao/${pray.title}/${pray.body}")
                             }
                     ) {
                         Row(
@@ -123,7 +125,7 @@ fun OracoesPage(state: OracaoState, navController: NavController, onEvent: (Orac
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
                                 Text(
-                                    text = oracao.titulo,
+                                    text = pray.title,
                                     fontSize = 18.sp,
                                     color = MaterialTheme.colorScheme.onPrimary,
                                     textAlign = TextAlign.Center
@@ -132,7 +134,7 @@ fun OracoesPage(state: OracaoState, navController: NavController, onEvent: (Orac
 //            Spacer(modifier = Modifier.height(2.dp))
 
                                 Text(
-                                    text = oracao.subTitulo,
+                                    text = pray.subTitle,
                                     fontSize = 16.sp,
                                     color = MaterialTheme.colorScheme.onPrimary,
                                     textAlign = TextAlign.Center
@@ -148,15 +150,16 @@ fun OracoesPage(state: OracaoState, navController: NavController, onEvent: (Orac
                                 .weight(0.1f)
                                 .height(60.dp),
                             onClick = {
-                                val status = if (oracao.favorito){
+                                val status = if (pray.loved){
                                     false
                                 }else{
                                     true
                                 }
-                                onEvent(OracoesEvent.UpdateFavorito(oracaoId = oracao.id, novoFavorito = status))
+                                prayViewModel.updatePray(pray.prayId, prayloved = status)
+//                                onEvent(OracoesEvent.UpdateFavorito(oracaoId = pray.id, novoFavorito = status))
                             }
                         ){
-                            if (oracao.favorito){
+                            if (pray.loved){
                                 Icon(imageVector = Icons.Default.Star, contentDescription = "É favorito", tint = Orange)
                             }else{
                                 Icon(imageVector = Icons.Outlined.Star, contentDescription = "Não é favorito", tint = White)

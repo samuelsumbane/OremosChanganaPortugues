@@ -22,6 +22,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -30,18 +32,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.samuel.oremoschanganapt.apresentacaoOracao.CancaoState
+//import com.samuel.oremoschanganapt.apresentacaoOracao.CancaoState
 import com.samuel.oremoschanganapt.components.BottomAppBarPrincipal
+import com.samuelsumbane.oremoschanganapt.db.SongViewModel
 
 var grupos = listOf("novos cânticos ", "todos cânticos", "entrada / a ku sungula a ntirho", "acto penitencial", "glória", "aclamação ao envagelho / a ku twalisa envagelho", "ofertório / ta minyikelo", "elevação", "pai-nosso / ta bava wa hina", "saudacao da paz / ta ku losava hi ku rula", "cordeiro de deus / xinhempfana", "comunhão / ta xilalelo", "acção de graças / ta ku tlangela", "natal / ta ku pswaliwa ka ", "quaresma / ta nkari wa mahlomulo", "páscoa / ta nkarhi wa paskwa", "ascensão e pentecconstes / ta ku xika ka moya wa ku kwetsima", "nossa senhora / ta maria wa ku phat", "baptismo - profissão de fé/ ta ntsakamiso", "catecumenado, vocação, apostolado", "matrimónio", "adoração, bênção, acção de grança", "funerais / ta makhombo", "uso vário / tinsimu tinwani" )
 
 var gruposvalores = listOf("new", "todos", "Entrada", "ActoPenitencial", "Gloria", "Aclamacao", "Ofertorio", "Elevacao", "PaiNosso", "SaudacaoPaz", "CordeiroDeus", "Comunhao", "Gracas", "Natal", "Quaresma", "Pascoa", "Ascensao", "NossaSenhora", "Baptismo", "Catecumenado", "Matrimonio", "Adoracao", "Funerais", "UsoVario", "Gracas")
 
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CanticosAgrupados( state: CancaoState, navController: NavController ){
+fun CanticosAgrupados( navController: NavController, songViewModel: SongViewModel ){
+
+    val allSongs by songViewModel.songs.collectAsState()
 
     Scaffold(
         topBar = {
@@ -70,38 +74,43 @@ fun CanticosAgrupados( state: CancaoState, navController: NavController ){
                 .padding(paddingVales),
         ) {
 
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(8.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                items(1){
-                grupos.forEachIndexed { index, g ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(65.dp)
-                            .padding(5.dp)
-                            .background(
-                                MaterialTheme.colorScheme.secondary,
-                                shape = RoundedCornerShape(14.dp)
-                            )
-                            .clickable {
-                                if (gruposvalores[index] != "indice") {
-                                    navController.navigate("canticospage/${gruposvalores[index]}")
-                                } else {
-                                    navController.navigate("conticospage/outro")
-                                }
+            if(allSongs.isNotEmpty()){
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    items(1){
+                        grupos.forEachIndexed { index, g ->
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(65.dp)
+                                    .padding(5.dp)
+                                    .background(
+                                        MaterialTheme.colorScheme.secondary,
+                                        shape = RoundedCornerShape(14.dp)
+                                    )
+                                    .clickable {
+                                        if (gruposvalores[index] != "indice") {
+                                            navController.navigate("canticospage/${gruposvalores[index]}")
+                                        } else {
+                                            navController.navigate("conticospage/outro")
+                                        }
 
-                            },
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center
-                    ){
-                        Text(text = (g).uppercase(), textAlign = TextAlign.Center, color = MaterialTheme.colorScheme.onPrimary)
+                                    },
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center
+                            ){
+                                Text(text = (g).uppercase(), textAlign = TextAlign.Center,
+                                    color = MaterialTheme.colorScheme.onPrimary, fontWeight = FontWeight.SemiBold)
+                            }
+                        }
                     }
                 }
-            }
+            } else {
+                Text("Carregando cancoes")
             }
         }
         ShortcutsButton(navController)

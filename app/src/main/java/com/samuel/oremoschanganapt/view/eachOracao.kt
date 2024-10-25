@@ -1,5 +1,6 @@
 package com.samuel.oremoschanganapt.view
 
+import android.util.Log
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.Box
@@ -38,11 +39,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.samuel.oremoschanganapt.functionsKotlin.ShareIconButton
+import com.samuelsumbane.oremoschanganapt.db.DefViewModel
+import androidx.compose.runtime.collectAsState
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EachOracao(navController: NavController, titulo:String, corpo: String){
-    var scale by remember { mutableStateOf(1f) }
+fun EachOracao(navController: NavController, titulo:String, corpo: String, defViewModel: DefViewModel){
+
+    val allDef by defViewModel.defs.collectAsState()
 
     Scaffold(
         topBar = {
@@ -66,31 +71,45 @@ fun EachOracao(navController: NavController, titulo:String, corpo: String){
         ){paddingValues ->
         val scrollState = rememberScrollState()
 
-        Box(modifier = Modifier.fillMaxSize().pointerInput(Unit) {
-            detectTransformGestures { _, pan, zoom, _ ->
-                val newScale = scale * zoom
-                scale = newScale.coerceIn(1.0f, 3.0f) // intervalo do zoom.
+        if(allDef.isNotEmpty()){
+
+            val def = allDef.first()
+            val dbScale by  remember { mutableStateOf(def.textScale) }
+            var scale by remember { mutableStateOf(dbScale.toFloat()) }
+
+            Box(modifier = Modifier.fillMaxSize().pointerInput(Unit) {
+                detectTransformGestures { _, pan, zoom, _ ->
+                    val newScale = scale * zoom
+                    scale = newScale.coerceIn(1.0f, 2.0f) // intervalo do zoom.
+                    defViewModel.updateDef(scale.toDouble())
+                }
+            }) {
+                Column(
+                    modifier = Modifier.fillMaxSize().padding(paddingValues)
+                        .verticalScroll(scrollState)
+                    ,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Text(text = titulo.uppercase(), fontWeight = FontWeight.Bold, fontSize = 17.sp * scale, lineHeight = (24.sp * scale))
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Text(
+                        text = corpo,
+                        modifier = Modifier.fillMaxWidth().padding(14.dp, 0.dp, 14.dp, 0.dp),
+                        textAlign = TextAlign.Justify,
+                        fontSize = 19.sp * scale, lineHeight = (24.sp * scale)
+                    )
+                }
             }
-        }) {
-            Column(
-                modifier = Modifier.fillMaxSize().padding(paddingValues)
-                    .verticalScroll(scrollState)
-                ,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Spacer(modifier = Modifier.height(12.dp))
-                Text(text = titulo.uppercase(), fontWeight = FontWeight.Bold, fontSize = 17.sp * scale, lineHeight = (24.sp * scale))
-                Spacer(modifier = Modifier.height(12.dp))
-                Spacer(modifier = Modifier.height(12.dp))
-                Text(
-                    text = corpo,
-                    modifier = Modifier.fillMaxWidth().padding(14.dp, 0.dp, 14.dp, 0.dp),
-                    textAlign = TextAlign.Justify,
-                    fontSize = 19.sp * scale, lineHeight = (24.sp * scale)
-                )
-            }
+
+            ShortcutsButton(navController)
+
+        } else if( allDef.isEmpty() ){
+            Text("def is empty")
+        } else {
+            Text("Carregando...")
         }
 
-        ShortcutsButton(navController)
     }
 }

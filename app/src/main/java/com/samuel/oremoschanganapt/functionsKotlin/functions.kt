@@ -1,6 +1,9 @@
 package com.samuel.oremoschanganapt.functionsKotlin
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Share
@@ -8,7 +11,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat.getSystemService
+import com.samuel.oremoschanganapt.R
 
 
 // verifica se é um numero ou nao
@@ -39,7 +46,6 @@ fun shareText(context: Context, text: String) {
     context.startActivity(Intent.createChooser(shareIntent, "Compartilhar via"))
 }
 
-
 @Composable
 fun ShareIconButton(context: Context, text: String) {
     IconButton(
@@ -52,3 +58,18 @@ fun ShareIconButton(context: Context, text: String) {
         )
     }
 }
+
+
+//@Composable
+//fun showNotification(
+//    textTitle: String,
+//    textContent: String
+//){
+//    val context = LocalContext.current
+//    var builder = NotificationCompat.Builder(context, "my_id")
+//        .setSmallIcon(R.drawable.ic_music)
+//        .setContentTitle(textTitle)
+//        .setContentText(textContent)
+//        .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+//}
+

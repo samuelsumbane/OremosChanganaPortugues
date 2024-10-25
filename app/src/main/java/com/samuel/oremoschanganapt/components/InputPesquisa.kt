@@ -22,9 +22,9 @@ fun InputPesquisa(
         value = value,
         onValueChange = onValueChange,
         modifier,
-        label = { Text(text = label, color = Color.White) },
+        label = { Text(text = label, color = MaterialTheme.colorScheme.onPrimary) },
         maxLines = maxLines,
-        shape = ShapeEditText.medium,
+        shape = ShapeEditText.small,
         colors = TextFieldDefaults.colors(
             focusedContainerColor = MaterialTheme.colorScheme.primary,
             unfocusedContainerColor = MaterialTheme.colorScheme.primary,

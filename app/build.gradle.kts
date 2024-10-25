@@ -6,7 +6,7 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
 
-    id("kotlin-kapt")
+    id("io.realm.kotlin")
 }
 
 val keystorePropertiesFile = rootProject.file("local.properties")
@@ -14,7 +14,6 @@ val keystoreProperties = Properties()
 keystoreProperties.load(FileInputStream(keystorePropertiesFile))
 
 android {
-
         signingConfigs {
         create("release") {
             keyAlias = keystoreProperties["keyAlias"] as String
@@ -95,9 +94,11 @@ dependencies {
     // Room
     val roomVersion = "2.6.1"
     implementation("androidx.room:room-ktx:$roomVersion")
-    kapt("androidx.room:room-compiler:$roomVersion")
 
     // Navigation
     implementation("androidx.navigation:navigation-compose:2.7.6")
+
+    // Realm
+    implementation("io.realm.kotlin:library-base:1.11.0")
 
 }
