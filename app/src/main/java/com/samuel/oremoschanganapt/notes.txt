@@ -3,10 +3,10 @@
 * remember the scrollstate - pedding (
 * shortcut button - done
 
-* Temas personalizados
-* notificacoes personalizadas
-* conteudo exclusivo
-* sincronizacao.
+* Temas personalizados - done
+* notificacoes personalizadas  - not yet
+* conteudo exclusivo - done
+* sincronizacao. - not yet
 
 
 
@@ -16,7 +16,8 @@
 
 
 // Definicoes
-* font-size -
+* font-size - done
+
 
 
 

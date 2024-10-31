@@ -1,8 +1,5 @@
 package com.samuel.oremoschanganapt.view
 
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
@@ -20,6 +17,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.samuel.oremoschanganapt.components.buttons.MorePagesBtn
+import com.samuel.oremoschanganapt.components.buttons.ShortcutsButton
+
 //import com.samuel.oremoschanganapt.functionsKotlin.showNotification
 
 //import kotlinx.coroutines.flow.internal.NoOpContinuation.context
@@ -93,7 +92,7 @@ fun MorePages(navController: NavController){
                         navController.navigate("favoritospage")
                     }
 
-                    MorePagesBtn("Licionario", RoundedCornerShape(0, cS, cS, cS)) {
+                    MorePagesBtn("Leccionário", RoundedCornerShape(0, cS, cS, cS)) {
                         navController.navigate("licionario")
                     }
                 }

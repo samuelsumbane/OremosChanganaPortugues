@@ -32,10 +32,11 @@ class DefViewModel : ViewModel() {
                             val def = Def().apply {
                                 defId = getNextId()
                                 textScale = 1.0
+                                themeColor = "Lightblue"
+                                appMode = "System"
                             }
                             copyToRealm(def, updatePolicy = UpdatePolicy.ALL)
                         }
-
                         Log.d("Salvo", "Dados salvos com sucess")
                     }
                 }
@@ -52,34 +53,27 @@ class DefViewModel : ViewModel() {
         return (lastDef?.defId ?: 0) + 1
     }
 
-//    fun addPray(
-//        praytitle: String,
-//        defsubTitle: String,
-//        praybody: String,
-//        prayloved: Boolean
-//    ) {
-//        viewModelScope.launch {
-//            realm.write {
-//                val pray = Pray().apply {
-//                    prayId = getNextId()
-//                    title = praytitle
-//                    subTitle = defsubTitle
-//                    body = praybody
-//                    loved = prayloved
-//                }
-//                copyToRealm(pray, updatePolicy = UpdatePolicy.ALL)
-//            }
-//        }
-//    }
-//
-    fun updateDef(
-        textScale: Double
+    fun <T> updateDef(
+        key: String,
+        value: T,
     ){
         viewModelScope.launch {
             realm.write {
                 val def = this.query<Def>("defId == $0", 1).find().first()
                 def.let {
-                    def.textScale = textScale
+                    when(key){
+                        "textScale" -> {
+                            def.textScale = value as Double
+                        }
+
+                        "themeColor" -> {
+                            def.themeColor = value as String
+                        }
+
+                        "appMode" -> {
+                            def.appMode = value as String
+                        }
+                    }
                 }
                 copyToRealm(def, updatePolicy = UpdatePolicy.ALL)
             }

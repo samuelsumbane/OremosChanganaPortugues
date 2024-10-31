@@ -12,26 +12,39 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.samuel.oremoschanganapt.R
-import com.samuel.oremoschanganapt.ui.theme.activeIconColor
+import com.samuel.oremoschanganapt.functionsKotlin.colorToString
+import com.samuel.oremoschanganapt.repository.colorObject
 
 @Composable
 fun IconTextButton(
     icon: String,
     text: String,
     isActive: Boolean,
+    iconColor: Color = Color.Black,
+    textColor: Color = MaterialTheme.colorScheme.onPrimary,
     onClick: () -> Unit
 ) {
+    val mainColor by remember { mutableStateOf(colorObject.mainColor) }
+    val activeIconColor = lerp(mainColor, Color.White, 0.35f)
+
     Box(
         modifier = Modifier
             .clickable { onClick() }
@@ -57,21 +70,23 @@ fun IconTextButton(
                         imageVector = Icons.Filled.Home,
                         contentDescription = "",
                         modifier = Modifier.size(25.dp),
-                        tint = Color.Black
+                        tint = iconColor
                     )
                 }
                 "Oracao" -> {
-                    Image(
+                    Icon(
                         imageVector = ImageVector.vectorResource(id = R.drawable.ic_pray),
-                        contentDescription = null,
-                        modifier = Modifier.size(22.dp),
+                        contentDescription = "",
+                        modifier = Modifier.size(25.dp),
+                        tint = iconColor
                     )
                 }
                 "Cantico" -> {
-                    Image(
+                    Icon(
                         imageVector = ImageVector.vectorResource(id = R.drawable.ic_music),
                         contentDescription = null,
                         modifier = Modifier.size(21.dp),
+                        tint = iconColor
                     )
                 }
                 "MorePages" -> {
@@ -79,24 +94,15 @@ fun IconTextButton(
                         imageVector = Icons.Outlined.Add,
                         contentDescription = "",
                         modifier = Modifier.size(25.dp),
-                        tint = Color.Black
-                    )
-                }
-
-                "Favoritos" -> {
-                    Icon(
-                        imageVector = Icons.Outlined.Star,
-                        contentDescription = "",
-                        modifier = Modifier.size(25.dp),
-                        tint = Color.Black
+                        tint = iconColor
                     )
                 }
             }
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(2.dp))
             Text(
                 text = text,
-                modifier = Modifier.padding(4.dp),
-                color = Color.Black
+                modifier = Modifier.padding(2.dp),
+                color = textColor, fontSize = 13.sp
             )
         }
     }

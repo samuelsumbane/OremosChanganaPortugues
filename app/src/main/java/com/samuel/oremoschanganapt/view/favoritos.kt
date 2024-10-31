@@ -40,12 +40,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-//import com.samuel.oremoschanganapt.apresentacaoOracao.CancaoEvent
-//import com.samuel.oremoschanganapt.apresentacaoOracao.CancaoState
-//import com.samuel.oremoschanganapt.apresentacaoOracao.OracoesEvent
-import com.samuel.oremoschanganapt.components.BottomAppBarPrincipal
 import com.samuel.oremoschanganapt.components.InputPesquisa
+import com.samuel.oremoschanganapt.components.SearchContainer
+import com.samuel.oremoschanganapt.components.buttons.ShortcutsButton
 import com.samuel.oremoschanganapt.functionsKotlin.isNumber
+import com.samuel.oremoschanganapt.repository.colorObject
 import com.samuel.oremoschanganapt.ui.theme.Orange
 import com.samuelsumbane.oremoschanganapt.db.PrayViewModel
 import com.samuelsumbane.oremoschanganapt.db.SongViewModel
@@ -69,7 +68,7 @@ fun FavoritosPage(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = {Text(text="Cânticos", color = MaterialTheme.colorScheme.tertiary)},
+                title = {Text(text="Favoritos", color = MaterialTheme.colorScheme.tertiary)},
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color.Transparent
                 ),
@@ -79,16 +78,19 @@ fun FavoritosPage(
                     }
                 },
                 actions = {
-                    InputPesquisa(
-                        value = pesquisaTexto,
-                        onValueChange = { pesquisaTexto = it },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(50.dp, 0.dp, 20.dp, 10.dp)
-                            .height(58.dp),
-                        label = "Pesquisar loveds",
-                        maxLines = 1,
-                    )
+//                    InputPesquisa(
+//                        value = pesquisaTexto,
+//                        onValueChange = { pesquisaTexto = it },
+//                        modifier = Modifier
+//                            .fillMaxWidth()
+//                            .padding(50.dp, 0.dp, 20.dp, 10.dp)
+//                            .height(58.dp),
+//                        label = "Pesquisar loveds",
+//                        maxLines = 1,
+//                    )
+
+                    pesquisaTexto = SearchContainer(pesquisaTexto, "Pesquisar favoritos")
+
                 }
             )
         },
@@ -96,6 +98,7 @@ fun FavoritosPage(
 //            BottomAppBarPrincipal(navController, "lovedspage")
 //        }
     ){paddingVales ->
+        val mainColor = colorObject.mainColor
 
         Column(modifier = Modifier
             .fillMaxSize()
@@ -110,40 +113,35 @@ fun FavoritosPage(
             }else if (lSongs.isNotEmpty() || lPrays.isNotEmpty()) {
 
                 LazyColumn(
-                    modifier = Modifier
-                        .fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth()
                         .padding(8.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-
                     items(
                         if (pesquisaTexto.isNotBlank()) {
                             lPrays.filter {
                                 it.title.contains(
-                                    pesquisaTexto,
-                                    ignoreCase = true
+                                    pesquisaTexto, ignoreCase = true
                                 )
                             }
-                        } else {
-                            lPrays
-                        }
+                        } else { lPrays }
                     ) { oracao ->
                         val prayTitle = oracao.title
                         val prayBody = oracao.body
+
                         Row(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .height(60.dp)
                                 .clip(RoundedCornerShape(14.dp))
-                                .background(MaterialTheme.colorScheme.primary)
+                                .background(mainColor)
                                 .padding(8.dp, 0.dp, 0.dp, 0.dp)
                                 .clickable {
-                                    navController.navigate("eachOracao/${prayTitle}/${prayBody} ")
+                                    navController.navigate("eachOracao/${oracao.prayId} ")
                                 }
                         ) {
                             Row(
-                                modifier = Modifier
-                                    .fillMaxSize()
+                                modifier = Modifier.fillMaxSize()
                                     .weight(0.9f)
                                     .fillMaxHeight()
                             ) {
@@ -207,28 +205,22 @@ fun FavoritosPage(
                             } else {
                                 lSongs.filter {
                                     it.title.contains(
-                                        pesquisaTexto,
-                                        ignoreCase = true
+                                        pesquisaTexto,ignoreCase = true
                                     )
                                 }
                             }
-                        } else {
-                            lSongs
-                        }
+                        } else { lSongs }
                     ) { cancao ->
-                        val n = cancao.number
-                        val t = cancao.title
-                        //                    val sT = cancao.subTitle ?: ""
-                        val g = cancao.body
+
                         Row(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .height(60.dp)
                                 .clip(RoundedCornerShape(14.dp))
-                                .background(MaterialTheme.colorScheme.primary)
+                                .background(mainColor)
                                 .padding(8.dp, 0.dp, 0.dp, 0.dp)
                                 .clickable {
-                                    navController.navigate("eachCantico/${n}/${t}/${g} ")
+                                    navController.navigate("eachCantico/${cancao.songId} ")
                                 }
                         ) {
                             Row(

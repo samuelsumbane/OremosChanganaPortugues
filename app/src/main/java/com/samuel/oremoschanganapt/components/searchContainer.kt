@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun SearchContainer(
     pesquisatexto: String,
+    searchInputLabel: String = "Pesquisar oração"
 ): String{
     var activeContainer by remember { mutableStateOf(false) }
     val configuration = LocalConfiguration.current
@@ -30,7 +31,7 @@ fun SearchContainer(
     val columnW = screenWidth - percentTwoDigits
 
     var pesquisaTexto by remember { mutableStateOf(pesquisatexto) }
-    val iconColor = MaterialTheme.colorScheme.onPrimary
+//    val iconColor = MaterialTheme.colorScheme.onPrimary
 
     Column(
         Modifier
@@ -44,7 +45,7 @@ fun SearchContainer(
                     value = pesquisaTexto,
                     onValueChange = { pesquisaTexto = it },
                     modifier = Modifier.fillMaxSize(0.9f),
-                    label = "Pesquisar oração",
+                    label = searchInputLabel,
                     maxLines = 1
                 )
 
@@ -54,8 +55,7 @@ fun SearchContainer(
                     IconButton( onClick = { activeContainer = !activeContainer },
                     ){
                         Icon(Icons.Default.KeyboardArrowRight, contentDescription="Close search input",
-                            modifier = Modifier.width(30.dp).fillMaxHeight(0.9f),
-                            tint = iconColor
+                            modifier = Modifier.width(30.dp).fillMaxHeight(0.9f)
                         )
                     }
                 }
@@ -68,7 +68,6 @@ fun SearchContainer(
                 Spacer(Modifier.height(10.dp))
                 Icon(Icons.Default.Search, contentDescription="Search",
                     modifier = Modifier.size(30.dp),
-                    tint = iconColor
                 )
             }
         }

@@ -34,6 +34,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 //import com.samuel.oremoschanganapt.apresentacaoOracao.CancaoState
 import com.samuel.oremoschanganapt.components.BottomAppBarPrincipal
+import com.samuel.oremoschanganapt.components.buttons.ShortcutsButton
+import com.samuel.oremoschanganapt.repository.colorObject
 import com.samuelsumbane.oremoschanganapt.db.SongViewModel
 
 var grupos = listOf("novos cânticos ", "todos cânticos", "entrada / a ku sungula a ntirho", "acto penitencial", "glória", "aclamação ao envagelho / a ku twalisa envagelho", "ofertório / ta minyikelo", "elevação", "pai-nosso / ta bava wa hina", "saudacao da paz / ta ku losava hi ku rula", "cordeiro de deus / xinhempfana", "comunhão / ta xilalelo", "acção de graças / ta ku tlangela", "natal / ta ku pswaliwa ka ", "quaresma / ta nkari wa mahlomulo", "páscoa / ta nkarhi wa paskwa", "ascensão e pentecconstes / ta ku xika ka moya wa ku kwetsima", "nossa senhora / ta maria wa ku phat", "baptismo - profissão de fé/ ta ntsakamiso", "catecumenado, vocação, apostolado", "matrimónio", "adoração, bênção, acção de grança", "funerais / ta makhombo", "uso vário / tinsimu tinwani" )
@@ -68,6 +70,8 @@ fun CanticosAgrupados( navController: NavController, songViewModel: SongViewMode
 
         ) { paddingVales ->
 
+        val mainColor = colorObject.mainColor
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -88,8 +92,7 @@ fun CanticosAgrupados( navController: NavController, songViewModel: SongViewMode
                                     .fillMaxWidth()
                                     .height(65.dp)
                                     .padding(5.dp)
-                                    .background(
-                                        MaterialTheme.colorScheme.secondary,
+                                    .background( mainColor,
                                         shape = RoundedCornerShape(14.dp)
                                     )
                                     .clickable {

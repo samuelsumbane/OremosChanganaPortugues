@@ -77,6 +77,11 @@ class PrayViewModel : ViewModel() {
         }
     }
 
+    fun getPrayById(prayId: Int): Pray? {
+        return realm.query<Pray>("prayId == $0", prayId).first().find()
+    }
+
+
 //    fun deleteNote(id: Int) {
 //        viewModelScope.launch {
 //            realm.write {

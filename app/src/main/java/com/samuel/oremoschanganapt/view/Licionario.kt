@@ -31,13 +31,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.samuel.oremoschanganapt.components.buttons.ShortcutsButton
+import com.samuel.oremoschanganapt.repository.colorObject
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -46,7 +45,7 @@ fun Licionario(navController: NavController){
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text="LECCIONÁRIO LITÚRGICO", color = MaterialTheme.colorScheme.onPrimary) },
+                title = { Text(text="Leccionário litúrgico", color = MaterialTheme.colorScheme.onPrimary) },
                  colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.background
                 ),
@@ -87,7 +86,7 @@ class BooksItem(val title: String, val books: String)
 fun BooksCard(
     dataList: List<BooksItem>
 ){
-    val cardColor = MaterialTheme.colorScheme.secondary
+    val cardColor = colorObject.mainColor
     val textColor = MaterialTheme.colorScheme.onPrimary
 
     dataList.forEach { item ->

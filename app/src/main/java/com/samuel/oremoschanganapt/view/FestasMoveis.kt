@@ -26,10 +26,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.samuel.oremoschanganapt.components.buttons.ShortcutsButton
+import com.samuel.oremoschanganapt.repository.colorObject
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -72,6 +74,8 @@ fun FestasMoveis(navController: NavController){
             )
         },
     ) { innerValues ->
+        val dbBgColor = colorObject.mainColor
+        val divBgColor = lerp(dbBgColor, Color.Black, 0.2f)
         Column(
             modifier = Modifier.fillMaxSize()
                 .padding(innerValues)
@@ -83,7 +87,7 @@ fun FestasMoveis(navController: NavController){
                 Column(
                     Modifier
                         .fillMaxWidth(0.9f)
-                        .background(MaterialTheme.colorScheme.secondary, RoundedCornerShape(10.dp))
+                        .background(divBgColor, RoundedCornerShape(10.dp))
                 ){
                     Column(
                         Modifier
@@ -112,9 +116,3 @@ fun FestasMoveis(navController: NavController){
         ShortcutsButton(navController)
     }
 }
-
-//@Preview(showBackground = true)
-//@Composable
-//fun preview(){
-//    FestasMoveis()
-//}

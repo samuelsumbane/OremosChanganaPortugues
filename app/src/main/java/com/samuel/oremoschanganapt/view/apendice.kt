@@ -28,18 +28,17 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.samuel.oremoschanganapt.functionsKotlin.ShareIconButton
+import com.samuel.oremoschanganapt.components.buttons.ShortcutsButton
+import com.samuel.oremoschanganapt.repository.colorObject
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -298,7 +297,8 @@ fun ListWidget(
     title: String,
     dataList: List<List<Item>>
 ){
-    val divBgColor = MaterialTheme.colorScheme.secondary
+    val dbBgColor = colorObject.mainColor
+    val divBgColor = lerp(dbBgColor, Color.Black, 0.2f)
     val textColor = MaterialTheme.colorScheme.onPrimary
 
     Column(

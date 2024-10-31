@@ -33,85 +33,102 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.samuel.oremoschanganapt.components.buttons.ShortcutsButton
+import com.samuel.oremoschanganapt.components.buttons.StarButton
 import com.samuel.oremoschanganapt.functionsKotlin.ShareIconButton
 import com.samuelsumbane.oremoschanganapt.db.DefViewModel
+import com.samuelsumbane.oremoschanganapt.db.SongViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EachCantico(navController: NavController, numero: String, titulo:String, corpo: String,
-                defViewModel: DefViewModel){
+fun EachCantico(navController: NavController, songId: Int, songViewModel: SongViewModel, defViewModel: DefViewModel){
 
     val allDef by defViewModel.defs.collectAsState()
+    val songData = songViewModel.getSongById(songId)
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(text="Cântico: $numero", color = MaterialTheme.colorScheme.onPrimary) },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background
-                ),
-                navigationIcon = {
-                    IconButton(onClick={  navController.popBackStack()  } ){
-                        Icon(imageVector = Icons.Outlined.ArrowBack, contentDescription = "Voltar")
+    if(songData != null) {
+        var lovedSong by remember { mutableStateOf(songData.loved) }
+
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = { Text(text="Cântico: ${songData.number}", color = MaterialTheme.colorScheme.onPrimary) },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.background
+                    ),
+                    navigationIcon = {
+                        IconButton(onClick={  navController.popBackStack()  } ){
+                            Icon(imageVector = Icons.Outlined.ArrowBack, contentDescription = "Voltar")
+                        }
+                    },
+                    actions = {
+                        val context = LocalContext.current
+
+                        lovedSong = StarButton(
+                            itemLoved = lovedSong,
+                            prayViewModel = null,
+                            songViewModel = songViewModel,
+                            id = songData.songId,
+                            view = "songViewModel"
+                        )
+
+                        ShareIconButton(context,  text = "${songData.number} - ${songData.title} \n ${songData.body}")
                     }
-                },
-                actions = {
-                    val context = LocalContext.current
-                    ShareIconButton(context,  text = "$numero - $titulo \n $corpo")
-                }
-            )
-        },
+                )
+            },
 
-    ){paddingValues ->
+            ){paddingValues ->
 
-        val scrollState = rememberScrollState()
+            val scrollState = rememberScrollState()
 
-        if(allDef.isNotEmpty()) {
+            if(allDef.isNotEmpty()) {
 
-            val def = allDef.first()
-            val dbScale by remember { mutableStateOf(def.textScale) }
-            var scale by remember { mutableStateOf(dbScale.toFloat()) }
+                val def = allDef.first()
+                val dbScale by remember { mutableStateOf(def.textScale) }
+                var scale by remember { mutableStateOf(dbScale.toFloat()) }
 
 
-            Box(modifier = Modifier
-                .fillMaxSize()
-                .pointerInput(Unit) {
-                    detectTransformGestures { _, pan, zoom, _ ->
-                        val newScale = scale * zoom
-                        scale = newScale.coerceIn(1.0f, 2.0f) // intervalo do zoom.
-                        defViewModel.updateDef(scale.toDouble())
+                Box(modifier = Modifier
+                    .fillMaxSize()
+                    .pointerInput(Unit) {
+                        detectTransformGestures { _, pan, zoom, _ ->
+                            val newScale = scale * zoom
+                            scale = newScale.coerceIn(1.0f, 2.0f) // intervalo do zoom.
+                            defViewModel.updateDef("textScale", scale.toDouble())
+                        }
                     }
-                }
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(paddingValues)
-                        .verticalScroll(scrollState),
-                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(paddingValues)
+                            .verticalScroll(scrollState),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
 
-                    Spacer(modifier = Modifier.height(12.dp))
-                    Text(
-                        text = (titulo).uppercase(),
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 17.sp * scale,
-                        lineHeight = (24.sp * scale)
-                    )
-                    Spacer(modifier = Modifier.height(12.dp))
+                        Spacer(modifier = Modifier.height(12.dp))
+                        Text(
+                            text = (songData.title).uppercase(),
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 17.sp * scale,
+                            lineHeight = (24.sp * scale)
+                        )
+                        Spacer(modifier = Modifier.height(12.dp))
 
-                    //            Text(text = subTitulo, fontStyle = FontStyle.Italic)
-                    Spacer(modifier = Modifier.height(12.dp))
+                        //            Text(text = subTitulo, fontStyle = FontStyle.Italic)
+                        Spacer(modifier = Modifier.height(12.dp))
 
-                    Text(text = corpo, fontSize = 19.sp * scale, lineHeight = (24.sp * scale))
+                        Text(text = songData.body, fontSize = 19.sp * scale, lineHeight = (24.sp * scale))
+
+                    }
 
                 }
+                ShortcutsButton(navController)
 
             }
-            ShortcutsButton(navController)
-
-        } else {
-            Text("Carregando...")
         }
+    } else {
+        Text("Carregando a cantico...")
     }
+
 }

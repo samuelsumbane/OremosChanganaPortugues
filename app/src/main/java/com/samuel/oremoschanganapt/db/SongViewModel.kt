@@ -1,6 +1,7 @@
 package com.samuelsumbane.oremoschanganapt.db
 
 import android.util.Log
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.samuel.oremoschanganapt.MyApp
@@ -40,11 +41,10 @@ class SongViewModel: ViewModel() {
         }
 
 
-    private fun getNextId(): Int {
+        private fun getNextId(): Int {
             val lastNote = realm.query<Song>().sort("songId", Sort.DESCENDING).first().find()
             return (lastNote?.songId ?: 0) + 1
         }
-
 
         fun addSong(
             songnumber: String,
@@ -85,4 +85,30 @@ class SongViewModel: ViewModel() {
                 }
             }
         }
+
+//        fun selectSong(songId: Int): Song{
+//            var song = Song()
+//
+//            viewModelScope.launch {
+//                song= realm.query<Song>("songId == $0", songId).find().first()
+//            }
+//            return song
+//        }
+
+        fun getSongById(songId: Int): Song? {
+            return realm.query<Song>("songId == $0", songId).first().find()
+        }
+
+
+//        fun selectSongs(
+//
+//        ){
+//            val songList = mutableStateOf<List<Song>>(emptyList())
+//
+//            viewModelScope.launch {
+//                val allSongs = realm.query<Song>().find()
+//                songList.value = allSongs
+//            }
+////            return songList
+//        }
 }
