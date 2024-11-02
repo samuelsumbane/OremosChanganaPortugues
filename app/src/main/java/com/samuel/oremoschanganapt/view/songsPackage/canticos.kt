@@ -1,4 +1,4 @@
-package com.samuel.oremoschanganapt.view
+package com.samuel.oremoschanganapt.view.songsPackage
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

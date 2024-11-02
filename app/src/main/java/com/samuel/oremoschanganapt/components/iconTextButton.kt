@@ -38,12 +38,13 @@ fun IconTextButton(
     icon: String,
     text: String,
     isActive: Boolean,
-    iconColor: Color = Color.Black,
+    iconColor: Color = Color.White,
     textColor: Color = MaterialTheme.colorScheme.onPrimary,
+    activeIconColor: Color = lerp(colorObject.mainColor, Color.White, 0.35f),
     onClick: () -> Unit
 ) {
     val mainColor by remember { mutableStateOf(colorObject.mainColor) }
-    val activeIconColor = lerp(mainColor, Color.White, 0.35f)
+//    val activeIconColor = lerp(mainColor, Color.White, 0.35f)
 
     Box(
         modifier = Modifier

@@ -1,6 +1,5 @@
-package com.samuel.oremoschanganapt.view
+package com.samuel.oremoschanganapt.view.praysPackage
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -39,10 +38,10 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 //import com.samuel.oremoschanganapt.apresentacaoOracao.OracoesEvent
 import com.samuel.oremoschanganapt.components.BottomAppBarPrincipal
+import com.samuel.oremoschanganapt.components.LoadingScreen
 import com.samuel.oremoschanganapt.components.SearchContainer
 import com.samuel.oremoschanganapt.components.buttons.ShortcutsButton
 import com.samuel.oremoschanganapt.components.buttons.StarButton
-import com.samuel.oremoschanganapt.db.ReminderViewModel
 import com.samuel.oremoschanganapt.repository.colorObject
 import com.samuelsumbane.oremoschanganapt.db.PrayViewModel
 
@@ -156,7 +155,7 @@ fun OracoesPage( navController: NavController,
             ShortcutsButton(navController)
         }
     } else {
-        Text("Carregando oracoes")
+        LoadingScreen("Orações")
     }
 
 }

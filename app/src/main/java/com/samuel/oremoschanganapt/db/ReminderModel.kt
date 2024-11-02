@@ -39,6 +39,7 @@ class ReminderViewModel : ViewModel() {
     @RequiresApi(Build.VERSION_CODES.O)
     fun addReminder(
         reminderdata: Int, remindertable: String,
+        reminderdate: Long? = null, remindertime: Long? = null,
         reminderrepeat: String
     ) {
         viewModelScope.launch {
@@ -47,8 +48,8 @@ class ReminderViewModel : ViewModel() {
                     reminderId = getNextId()
                     reminderData = reminderdata
                     reminderTable = remindertable
-                    reminderDate = americanFormat()
-                    reminderTime = localTime()
+                    reminderDate = reminderdate
+                    reminderTime = remindertime
                     reminderRepeat = reminderrepeat
                 }
                 copyToRealm(reminder, updatePolicy = UpdatePolicy.ALL)

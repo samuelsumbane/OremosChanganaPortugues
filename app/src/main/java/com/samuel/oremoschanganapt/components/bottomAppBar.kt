@@ -17,6 +17,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.samuel.oremoschanganapt.repository.colorObject
@@ -44,7 +45,7 @@ fun BottomAppBarPrincipal(navController: NavController, activePage: String){
 }
 
 @Composable
-fun BottomAppBarHome(navController: NavController, activePage: String){
+fun BottomAppBarHome(navController: NavController, activePage: String, activeIconColor: Color ){
     val menuColor = colorObject.menuContainerColor
     BottomAppBar(
         containerColor = Color.Transparent,
@@ -60,7 +61,7 @@ fun BottomAppBarHome(navController: NavController, activePage: String){
         ) {
             // onPrimary
             val textIconColor = Color.White
-            IconTextButton("Home", "Ínicio", activePage == "home", textColor = textIconColor) { navController.navigate("home") }
+            IconTextButton("Home", "Ínicio", activePage == "home", textColor = textIconColor, activeIconColor = activeIconColor) { navController.navigate("home") }
             IconTextButton("Oracao", "Orações", activePage == "oracoespage", textColor = textIconColor) { navController.navigate("oracoespage") }
             IconTextButton("Cantico", "Cânticos", activePage == "canticosAgrupados", textColor = textIconColor) { navController.navigate("canticosAgrupados") }
             IconTextButton("MorePages", "Mais", activePage == "morepages", textColor = textIconColor) { navController.navigate("morepages") }

@@ -1,4 +1,4 @@
-package com.samuel.oremoschanganapt.view
+package com.samuel.oremoschanganapt.view.praysPackage
 
 import android.os.Build
 import android.util.Log
@@ -108,11 +108,12 @@ fun EachOracao(navController: NavController, prayId: Int,
                             IconButton(
                                 // by now fun is add reminder ------>>
                                 onClick = {
-                                    reminderViewModel.addReminder(
-                                        reminderdata = prayId,
-                                        remindertable = "Pray",
-                                        reminderrepeat = "No repeat"
-                                    )
+//                                    reminderViewModel.addReminder(
+//                                        reminderdata = prayId,
+//                                        remindertable = "Pray",
+//                                        reminderrepeat = "No repeat"
+//                                    )
+                                    navController.navigate("configurereminder/$prayId/Pray")
                                 }
                             ) {
                                 Icon(Icons.Default.Call, contentDescription = "no reminder set")

@@ -2,7 +2,6 @@ package com.samuel.oremoschanganapt
 
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -17,16 +16,21 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.lerp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.samuel.oremoschanganapt.components.LoadingScreen
 import com.samuel.oremoschanganapt.db.ReminderViewModel
+import com.samuel.oremoschanganapt.functionsKotlin.stringToColor
+import com.samuel.oremoschanganapt.repository.colorObject
 import com.samuel.oremoschanganapt.ui.theme.OremosChanganaTheme
 import com.samuel.oremoschanganapt.view.Apendice
-import com.samuel.oremoschanganapt.view.CanticosAgrupados
-import com.samuel.oremoschanganapt.view.CanticosPage
-import com.samuel.oremoschanganapt.view.EachCantico
-import com.samuel.oremoschanganapt.view.EachOracao
+import com.samuel.oremoschanganapt.view.songsPackage.CanticosAgrupados
+import com.samuel.oremoschanganapt.view.songsPackage.CanticosPage
+import com.samuel.oremoschanganapt.view.songsPackage.EachCantico
+import com.samuel.oremoschanganapt.view.praysPackage.EachOracao
 //import com.samuel.oremoschanganapt.view.CanticosAgrupados
 //import com.samuel.oremoschanganapt.view.CanticosPage
 //import com.samuel.oremoschanganapt.view.EachCantico
@@ -36,12 +40,13 @@ import com.samuel.oremoschanganapt.view.FestasMoveis
 import com.samuel.oremoschanganapt.view.Home
 import com.samuel.oremoschanganapt.view.Licionario
 import com.samuel.oremoschanganapt.view.MorePages
-import com.samuel.oremoschanganapt.view.OracoesPage
+import com.samuel.oremoschanganapt.view.praysPackage.OracoesPage
+import com.samuel.oremoschanganapt.view.remindersPages.ConfigureReminder
+import com.samuel.oremoschanganapt.view.remindersPages.RemindersPage
 import com.samuelsumbane.oremoschanganapt.db.DefViewModel
 //import com.samuel.oremoschanganapt.view.OracoesPage
 import com.samuelsumbane.oremoschanganapt.db.PrayViewModel
 import com.samuelsumbane.oremoschanganapt.db.SongViewModel
-import java.util.Locale
 
 
 class  MainActivity : ComponentActivity() {
@@ -73,6 +78,12 @@ class  MainActivity : ComponentActivity() {
                 }
                 val mutableAppMode by remember { mutableStateOf(appMode) }
 
+                colorObject.mainColor = stringToColor(def.themeColor)
+                val rThemeColor = colorObject.mainColor
+                colorObject.menuContainerColor = lerp(rThemeColor, Color.Black, 0.3f)
+                colorObject.inputColor = rThemeColor.copy(alpha = 0.75f)
+
+
                 if(allPrays.isNotEmpty()) {
                     OremosChanganaTheme(darkTheme = mutableAppMode) {
                         // A surface container using the 'background' color from the theme
@@ -83,7 +94,7 @@ class  MainActivity : ComponentActivity() {
 
                             val navController = rememberNavController()
 
-                            NavHost(navController = navController, startDestination = "oracoespage") {
+                            NavHost(navController = navController, startDestination = "home") {
                                 // define rotas
 
                                 //                        composable("splash") {
@@ -149,12 +160,30 @@ class  MainActivity : ComponentActivity() {
                                 composable(route = "morepages") {
                                     MorePages(navController)
                                 }
+
+                                composable("reminderspage") {
+                                    RemindersPage(
+                                        navController,
+                                        songViewModel,
+                                        prayViewModel,
+                                        reminderViewModel
+                                    )
+                                }
+
+                                composable("configurereminder/{id}/{table}/{rdate}/{rtime}"){ cR ->
+                                    val stringId = cR.arguments?.getString("id") ?: ""
+                                    val id = stringId.toInt()
+                                    val table = cR.arguments?.getString("table") ?: ""
+                                    val rDate = cR.arguments?.getLong("rdate") ?: 0L
+                                    val rTime = cR.arguments?.getLong("rtime") ?: 0L
+                                    ConfigureReminder(navController, id, table, rDate, rTime, reminderViewModel)
+                                }
                             }
                         }
                     }
                 }
             } else {
-                Text("Carregando..")
+                LoadingScreen()
             }
         }
     }

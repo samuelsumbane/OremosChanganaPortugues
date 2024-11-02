@@ -6,6 +6,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import com.samuel.oremoschanganapt.repository.colorObject
@@ -17,9 +20,11 @@ fun InputPesquisa(
     onValueChange: (String) -> Unit,
     modifier: Modifier,
     label: String,
+    inputColor: Color = Color.White,
     maxLines: Int,
 ){
-    val inputColor = colorObject.inputColor
+//    val inputColor = colorObject.inputColor
+
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,

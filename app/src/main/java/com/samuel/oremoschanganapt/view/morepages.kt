@@ -14,6 +14,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.samuel.oremoschanganapt.components.buttons.MorePagesBtn
@@ -64,38 +65,51 @@ fun MorePages(navController: NavController){
 
 
             Column(
-                Modifier.fillMaxWidth(0.77f)
+                Modifier.fillMaxWidth(0.80f)
+//                    .background(Color.Green)
             ){
                 val cS = 20 // cornerShape
                 Row(
                     Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ){
-                    // two pages.
-                    MorePagesBtn("Apendice", RoundedCornerShape(cS,  cS,  0, cS)){
+                    MorePagesBtn("Apendice", Modifier.weight(1f)){
                         navController.navigate("apendice")
                     }
 
-                    MorePagesBtn("Festas Moveis", RoundedCornerShape(cS, cS, cS, 0)){
+                    Spacer(Modifier.width(35.dp))
+
+                    MorePagesBtn("Festas Moveis", Modifier.weight(1f)){
                         navController.navigate("festasmoveis")
                     }
                 }
-                Spacer(Modifier.height(20.dp))
 
-                Row(
-                    Modifier.fillMaxWidth(),
-//                .background(Color.Red),
-                    horizontalArrangement = Arrangement.SpaceBetween
+                Spacer(Modifier.height(35.dp))
 
-                ) {
-                    MorePagesBtn("Favoritos", RoundedCornerShape(cS, 0, cS, cS)) {
-                        navController.navigate("favoritospage")
-                    }
+                Row( Modifier.fillMaxWidth(), ) {
 
-                    MorePagesBtn("Leccionário", RoundedCornerShape(0, cS, cS, cS)) {
+                    MorePagesBtn("Leccionário", Modifier.weight(1f)) {
                         navController.navigate("licionario")
                     }
+                    Spacer(Modifier.width(35.dp))
+
+                    MorePagesBtn("Favoritos", Modifier.weight(1f)) {
+                        navController.navigate("favoritospage")
+                    }
                 }
+
+                Spacer(Modifier.height(35.dp))
+
+                Row(
+                    Modifier.fillMaxWidth().height(85.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    MorePagesBtn("Lembretes") {
+                        navController.navigate("reminderspage")
+                    }
+                }
+
+
             }
         }
 

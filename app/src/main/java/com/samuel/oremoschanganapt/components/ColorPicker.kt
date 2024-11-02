@@ -29,7 +29,7 @@ fun colorPickerDemo(lastColor: Color = Orangered, withIcon: Boolean = true): Str
     var selectedColor by remember { mutableStateOf(lastColor) }
 
     val colors = listOf(
-        Red, Green, Blue, Lightblue, Orange, Orangered, Purple, Lightgray
+        Lightgray, Lightblue, Blue, Green,  Pink, Tomato, Orangered, Red, Purple
     )
 
     Column(

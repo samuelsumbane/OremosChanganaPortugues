@@ -37,11 +37,12 @@ import com.samuel.oremoschanganapt.db.ReminderViewModel
 import com.samuel.oremoschanganapt.functionsKotlin.americanFormat
 import com.samuel.oremoschanganapt.functionsKotlin.isNumber
 import com.samuel.oremoschanganapt.functionsKotlin.localTime
+import com.samuel.oremoschanganapt.functionsKotlin.restartActivity
 import com.samuel.oremoschanganapt.functionsKotlin.stringToColor
 import com.samuel.oremoschanganapt.repository.colorObject
 import com.samuel.oremoschanganapt.ui.theme.Dodgerblue
 import com.samuel.oremoschanganapt.ui.theme.HomeColor
-import com.samuel.oremoschanganapt.ui.theme.grayHomeColor
+//import com.samuel.oremoschanganapt.ui.theme.grayHomeColor
 import com.samuel.oremoschanganapt.view.sideBar.About
 import com.samuel.oremoschanganapt.view.sideBar.AppearanceWidget
 import com.samuelsumbane.oremoschanganapt.db.DefViewModel
@@ -89,7 +90,15 @@ fun Home( navController: NavController, songViewModel: SongViewModel,
 
                     LaunchedEffect(themeColor) {
                         coroutineScope {
-                            defViewModel.updateDef("themeColor", themeColor)
+                            if (def.themeColor != themeColor){
+                                defViewModel.updateDef("themeColor", themeColor)
+                                var mainColor = colorObject.mainColor
+
+                                mainColor = stringToColor(themeColor)
+                                colorObject.menuContainerColor = lerp(mainColor, Color.Black, 0.3f)
+                                colorObject.inputColor = mainColor.copy(alpha = 0.75f)
+
+                            }
                         }
                     }
 
@@ -106,6 +115,13 @@ fun Home( navController: NavController, songViewModel: SongViewModel,
                     val (newMode, newThemeColor) = AppearanceWidget(mode, themeColor)
                     mode = newMode; themeColor = newThemeColor
 
+                    // reminders -------->>
+                    Button(
+                        onClick = { navController.navigate("reminderspage") }
+                    ) {
+                        Text("Lembretes")
+                    }
+
 //                    Log.d("newvalues", "$themeColor")
                 } else {
                     Text("Carregando dados")
@@ -117,21 +133,20 @@ fun Home( navController: NavController, songViewModel: SongViewModel,
 
 
         if (defs.isNotEmpty()){
-            val def = defs.first()
-            val themeColor by remember { mutableStateOf(def.themeColor)}
-            val rThemeColor = stringToColor(themeColor)  // Real theme color
+//            val def = defs.first()
+//            val themeColor by remember { mutableStateOf(def.themeColor)}
+//            val rThemeColor = stringToColor(themeColor)  // Real theme color
 
-            colorObject.mainColor = rThemeColor
-            colorObject.menuContainerColor = lerp(rThemeColor, Color.Black, 0.3f)
-            colorObject.inputColor = rThemeColor.copy(alpha = 0.42f)
+//            colorObject.mainColor = rThemeColor
 
             Scaffold(
-                bottomBar = { BottomAppBarHome(navController, "home") }
+                bottomBar = { BottomAppBarHome(navController, "home", lerp(colorObject.mainColor, Color.White, 0.35f)) }
             ) {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(color = HomeColor)
+//                        .background(color = HomeColor)
+                        .background(color = Color.Transparent)
                 ) {
                     Image(
                         painter = painterResource(id = R.drawable.homepic),
@@ -145,7 +160,8 @@ fun Home( navController: NavController, songViewModel: SongViewModel,
                             .fillMaxWidth()
                             .fillMaxHeight(.3f)
                             .background(
-                            color = grayHomeColor,
+//                            color = HomeColor,
+                            color = Color.Transparent,
                                 shape = RoundedCornerShape(0.dp, 0.dp, 0.dp, 40.dp),
                             ),
                         verticalArrangement = Arrangement.SpaceAround,
@@ -168,10 +184,11 @@ fun Home( navController: NavController, songViewModel: SongViewModel,
                                 showModal = textInputValue != ""
                             },
                             modifier = Modifier
-                                .fillMaxWidth(0.85f)
+                                .fillMaxWidth(0.75f)
                                 .height(58.dp),
                             label = "Pesquisar Cântico / Oração",
                             maxLines = 1,
+                            inputColor = colorObject.inputColor
                         )
 
                         Column{
@@ -190,31 +207,11 @@ fun Home( navController: NavController, songViewModel: SongViewModel,
                                 color = Color.White,
                                 fontSize = 30.sp
                             )
-
-// How I know the reminders --->>
-//                            if(allR.isNotEmpty()){
-//                                allR.forEach{
-//                                    Text("${it.reminderData} / ${it.reminderTable}")
-//                                }
-//                            } else {
-//                                Text("false")
-//                            }
-
                         }
 
-                        addReminder(){
-                            reminderViewModel.addReminder(
-                                4,
-                                "Pray",
-                                reminderrepeat = ""
-                            )
-                            toastAlert(
-                                context,
-                                "Reminded added successfuy"
-                            )
-                        }
                     }
 
+                    // Madrinha dela: 84 955 7859
 
                     if (showModal){
                         Column(
@@ -367,7 +364,7 @@ fun Home( navController: NavController, songViewModel: SongViewModel,
 
 
         } else {
-            Text("Carregando dados")
+            LoadingScreen()
         }
 
 

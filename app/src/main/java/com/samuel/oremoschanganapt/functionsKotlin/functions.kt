@@ -29,10 +29,11 @@ import com.samuel.oremoschanganapt.ui.theme.Blue
 import com.samuel.oremoschanganapt.ui.theme.Green
 import com.samuel.oremoschanganapt.ui.theme.Lightblue
 import com.samuel.oremoschanganapt.ui.theme.Lightgray
-import com.samuel.oremoschanganapt.ui.theme.Orange
 import com.samuel.oremoschanganapt.ui.theme.Orangered
+import com.samuel.oremoschanganapt.ui.theme.Pink
 import com.samuel.oremoschanganapt.ui.theme.Purple
 import com.samuel.oremoschanganapt.ui.theme.Red
+import com.samuel.oremoschanganapt.ui.theme.Tomato
 import java.time.Instant
 import java.time.LocalDate
 import java.util.Locale
@@ -145,7 +146,8 @@ fun colorToString(color: Color): String{
     return when(color){
         Red -> "Red"
         Orangered -> "Orangered"
-        Orange -> "Orange"
+        Pink -> "Pink"
+        Tomato -> "Tomato"
         Lightblue -> "Lightblue"
         Lightgray -> "Lightgray"
         Blue -> "Blue"
@@ -161,7 +163,8 @@ fun stringToColor(value: String): Color{
     return when(value){
         "Red" -> Red
         "Orangered" -> Orangered
-        "Orange" -> Orange
+        "Pink" -> Pink
+        "Tomato" -> Tomato
         "Lightblue" -> Lightblue
         "Lightgray" -> Lightgray
         "Blue" -> Blue

@@ -1,4 +1,4 @@
-package com.samuel.oremoschanganapt.view
+package com.samuel.oremoschanganapt.view.songsPackage
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 //import com.samuel.oremoschanganapt.apresentacaoOracao.CancaoState
 import com.samuel.oremoschanganapt.components.BottomAppBarPrincipal
+import com.samuel.oremoschanganapt.components.LoadingScreen
 import com.samuel.oremoschanganapt.components.buttons.ShortcutsButton
 import com.samuel.oremoschanganapt.repository.colorObject
 import com.samuelsumbane.oremoschanganapt.db.SongViewModel
@@ -113,7 +114,7 @@ fun CanticosAgrupados( navController: NavController, songViewModel: SongViewMode
                     }
                 }
             } else {
-                Text("Carregando cancoes")
+                LoadingScreen("Cânticos agrupados")
             }
         }
         ShortcutsButton(navController)

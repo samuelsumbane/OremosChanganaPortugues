@@ -3,6 +3,7 @@ package com.samuel.oremoschanganapt.components.buttons
 import android.graphics.drawable.Icon
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -26,9 +27,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.samuel.oremoschanganapt.repository.colorObject
 import com.samuel.oremoschanganapt.ui.theme.Orange
+import com.samuel.oremoschanganapt.ui.theme.RedButton
+import com.samuel.oremoschanganapt.ui.theme.Shapes
 import com.samuel.oremoschanganapt.ui.theme.Typography
 import com.samuel.oremoschanganapt.ui.theme.White
 import com.samuelsumbane.oremoschanganapt.db.PrayViewModel
@@ -38,16 +43,17 @@ import kotlinx.coroutines.CoroutineScope
 @Composable
 fun MorePagesBtn(
     text: String,
-    shape: RoundedCornerShape,
+    modifier: Modifier = Modifier,
     onClick: () -> Unit
 ){
     val col = colorObject.mainColor
 
     Button(
-        modifier = Modifier.width(140.dp).height(150.dp),
+        modifier = modifier.fillMaxWidth()
+            .height(120.dp),
 //        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
         colors = ButtonDefaults.buttonColors(containerColor = col),
-        shape = shape,
+        shape = RoundedCornerShape(14.dp),
         contentPadding = PaddingValues(15.dp),
         onClick = onClick
     ) {
@@ -104,3 +110,17 @@ fun StarButton(
     return loved
 }
 
+
+@Composable
+fun NormalButton(text: String, btnColor: Color, onClick: () -> Unit){
+    Button(
+        onClick = onClick,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = btnColor,
+            contentColor = MaterialTheme.colorScheme.onPrimary
+        ),
+        shape = RoundedCornerShape(12.dp)
+    ) {
+        Text(text)
+    }
+}
