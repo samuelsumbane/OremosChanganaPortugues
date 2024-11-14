@@ -101,4 +101,9 @@ dependencies {
     // Realm
     implementation("io.realm.kotlin:library-base:1.11.0")
 
+    //
+    implementation("com.google.accompanist:accompanist-permissions:0.30.1")
+
+    //
+    implementation("androidx.work:work-runtime-ktx:2.7.1")
 }

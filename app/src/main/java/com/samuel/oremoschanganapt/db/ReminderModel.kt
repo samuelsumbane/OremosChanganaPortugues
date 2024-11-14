@@ -10,6 +10,7 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.samuel.oremoschanganapt.MyApp
+import com.samuel.oremoschanganapt.MyApp.Companion.realm
 import com.samuel.oremoschanganapt.functionsKotlin.americanFormat
 import com.samuel.oremoschanganapt.functionsKotlin.localTime
 //import com.samuelsumbane.oremoschanganapt.MyApp
@@ -44,7 +45,7 @@ class ReminderViewModel : ViewModel() {
     ) {
         viewModelScope.launch {
             realm.write {
-                val reminder = Reminder().apply{
+                val reminder = Reminder().apply {
                     reminderId = getNextId()
                     reminderData = reminderdata
                     reminderTable = remindertable
@@ -57,20 +58,26 @@ class ReminderViewModel : ViewModel() {
         }
     }
 
-//    fun updateReminder(
-//        prayId: Int,
-//        prayloved: Boolean
-//    ){
-//        viewModelScope.launch {
-//            realm.write {
-//                val pray = this.query<Reminder>("prayId == $0", prayId).find().first()
-//                pray.let {
-//                    pray.loved = prayloved
-//                }
-//                copyToRealm(pray, updatePolicy = UpdatePolicy.ALL)
-//            }
-//        }
-//    }
+    fun updateReminder(
+        reminderdate: Long? = null, remindertime: Long? = null,
+        reminderid: Int? = null
+    ){
+        viewModelScope.launch {
+           realm.write {
+                val foundReminder = this.query<Reminder>(query = "reminderId == $0", reminderid).find().firstOrNull()
+                try {
+                    foundReminder?.let {
+                        foundReminder.reminderDate = reminderdate
+                        foundReminder.reminderTime = remindertime
+
+                        copyToRealm(foundReminder, updatePolicy = UpdatePolicy.ALL)
+                    }
+                } catch (e: Exception){
+                    Log.d("Error deleting reminder", "${e.message}")
+                }
+           }
+        }
+    }
 
     fun getReminderById(reminderId: Int): Reminder? {
         return realm.query<Reminder>("reminderId == $0", reminderId).first().find()

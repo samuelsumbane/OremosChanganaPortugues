@@ -77,28 +77,28 @@ fun MorePages(navController: NavController){
                         navController.navigate("apendice")
                     }
 
-                    Spacer(Modifier.width(35.dp))
+                    Spacer(Modifier.width(25.dp))
 
                     MorePagesBtn("Festas Moveis", Modifier.weight(1f)){
                         navController.navigate("festasmoveis")
                     }
                 }
 
-                Spacer(Modifier.height(35.dp))
+                Spacer(Modifier.height(25.dp))
 
                 Row( Modifier.fillMaxWidth(), ) {
 
                     MorePagesBtn("Leccionário", Modifier.weight(1f)) {
                         navController.navigate("licionario")
                     }
-                    Spacer(Modifier.width(35.dp))
+                    Spacer(Modifier.width(25.dp))
 
                     MorePagesBtn("Favoritos", Modifier.weight(1f)) {
                         navController.navigate("favoritospage")
                     }
                 }
 
-                Spacer(Modifier.height(35.dp))
+                Spacer(Modifier.height(25.dp))
 
                 Row(
                     Modifier.fillMaxWidth().height(85.dp),

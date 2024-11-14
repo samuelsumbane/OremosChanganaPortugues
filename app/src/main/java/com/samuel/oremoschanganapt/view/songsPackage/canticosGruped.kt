@@ -53,7 +53,7 @@ fun CanticosAgrupados( navController: NavController, songViewModel: SongViewMode
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text="Cânticos Agrupados", color = MaterialTheme.colorScheme.secondary, fontStyle = FontStyle.Italic, fontWeight = FontWeight.Bold) },
+                title = { Text(text="Cânticos Agrupados", color = MaterialTheme.colorScheme.onPrimary, fontStyle = FontStyle.Italic, fontWeight = FontWeight.Bold) },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color.Transparent
                 ),
@@ -98,11 +98,10 @@ fun CanticosAgrupados( navController: NavController, songViewModel: SongViewMode
                                     )
                                     .clickable {
                                         if (gruposvalores[index] != "indice") {
-                                            navController.navigate("canticospage/${gruposvalores[index]}")
+                                            navController.navigate("canticospage/${gruposvalores[index]}/${grupos[index]}")
                                         } else {
                                             navController.navigate("conticospage/outro")
                                         }
-
                                     },
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.Center

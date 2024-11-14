@@ -31,7 +31,7 @@ class SongViewModel: ViewModel() {
                     val existingPrays = realm.query<Song>().find()
                     if (existingPrays.isEmpty()) {
                         songsData.forEach {
-                            addSong(it.number, it.group, it.title, it.subTitle, it.body, it.loved)
+                            addSong(it.number, it.group, it.title, it.subTitle, it.body)
                         }
                     }
                 } catch (e: Exception){
@@ -52,7 +52,6 @@ class SongViewModel: ViewModel() {
             songtitle: String,
             songSubtitle: String,
             songbody: String,
-            songloved: Boolean
         ) {
             viewModelScope.launch {
                 realm.write {
@@ -63,28 +62,12 @@ class SongViewModel: ViewModel() {
                         title = songtitle
                         subTitle = songSubtitle
                         body = songbody
-                        loved = songloved
                     }
                     copyToRealm(song, updatePolicy = UpdatePolicy.ALL)
                 }
             }
         }
 
-        fun updateSong(
-            songid: Int,
-            songloved: Boolean
-        ){
-            viewModelScope.launch {
-                realm.write {
-                    var song = this.query<Song>("songId == $0", songid).find().first()
-                    song.let {
-                        song.loved = songloved
-//                        song.lov
-                    }
-                    copyToRealm(song, updatePolicy = UpdatePolicy.ALL)
-                }
-            }
-        }
 
 //        fun selectSong(songId: Int): Song{
 //            var song = Song()

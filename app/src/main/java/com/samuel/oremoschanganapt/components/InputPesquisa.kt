@@ -20,7 +20,7 @@ fun InputPesquisa(
     onValueChange: (String) -> Unit,
     modifier: Modifier,
     label: String,
-    inputColor: Color = Color.White,
+    inputColor: Color = colorObject.inputColor,
     maxLines: Int,
 ){
 //    val inputColor = colorObject.inputColor

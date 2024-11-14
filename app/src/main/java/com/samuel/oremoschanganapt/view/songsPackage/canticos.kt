@@ -4,9 +4,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+//import androidx.compose.foundation.layout.FlowColumnScopeInstance.weight
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -28,6 +31,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -37,6 +41,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -46,22 +52,25 @@ import com.samuel.oremoschanganapt.R
 //import com.samuel.oremoschanganapt.apresentacaoOracao.CancaoEvent
 //import com.samuel.oremoschanganapt.apresentacaoOracao.CancaoState
 import com.samuel.oremoschanganapt.components.BottomAppBarPrincipal
+import com.samuel.oremoschanganapt.components.LoadingScreen
 import com.samuel.oremoschanganapt.components.SearchContainer
+import com.samuel.oremoschanganapt.components.SongRow
 import com.samuel.oremoschanganapt.components.buttons.ShortcutsButton
 import com.samuel.oremoschanganapt.components.buttons.StarButton
 import com.samuel.oremoschanganapt.functionsKotlin.isNumber
 import com.samuel.oremoschanganapt.repository.colorObject
+import com.samuelsumbane.oremoschanganapt.db.CommonViewModel
 import com.samuelsumbane.oremoschanganapt.db.SongViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CanticosPage(navController: NavController, value: String, songViewModel: SongViewModel){
+fun CanticosPage(navController: NavController, value: String, readbleValue: String, songViewModel: SongViewModel,
+                 commonViewModel: CommonViewModel){
 
-    var pesquisaTexto by remember { mutableStateOf("") }
+    var searchValue by remember { mutableStateOf("") }
     var pesquisaTextoAvancada by remember { mutableStateOf("") }
-
-//    val dados =
     val allSongs by songViewModel.songs.collectAsState()
+    var activeInput by remember { mutableIntStateOf(0) }
 
     val dados = when(value){
         "todos" -> allSongs
@@ -69,18 +78,15 @@ fun CanticosPage(navController: NavController, value: String, songViewModel: Son
         else -> allSongs.filter{ it.group == value }
     }
 
-//    var activeInput = 0 //normal
-    var activeInput by remember { mutableStateOf(0) }
-
     LaunchedEffect(activeInput) {
-        pesquisaTexto = ""
+        searchValue = ""
         pesquisaTextoAvancada = ""
     }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = "Canticos", color = MaterialTheme.colorScheme.onPrimary) },
+                title = { Text(text = readbleValue.replaceFirstChar{char -> char.uppercase()}, color = MaterialTheme.colorScheme.onPrimary) },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color.Transparent
                 ),
@@ -90,22 +96,14 @@ fun CanticosPage(navController: NavController, value: String, songViewModel: Son
                     }
                 },
                 actions = {
-                    Row(
-                        modifier = Modifier
-//                            .background(Color.Green)
-//                            .fillMaxWidth()
-                            .padding(50.dp, 0.dp, 0.dp, 0.dp)
-                    ) {
-                        pesquisaTexto = SearchContainer(pesquisatexto = pesquisaTexto)
+                    Row ( modifier = Modifier.padding(50.dp, 0.dp, 0.dp, 0.dp) ) {
+                        searchValue = SearchContainer(pesquisatexto = searchValue)
 
-                        Row(
-                            modifier = Modifier.width(50.dp)
-                                .padding(0.dp, 7.dp, 0.dp, 0.dp)
+                        Row (
+                            modifier = Modifier.width(50.dp) .padding(0.dp, 7.dp, 0.dp, 0.dp)
                         ) {
                             IconButton(
-                                onClick = {
-                                    activeInput = if (activeInput == 0) { 1 } else { 0 }
-                                },
+                                onClick = { activeInput = if (activeInput == 0) { 1 } else { 0 } },
                             ) {
                                 Icon(
                                     imageVector = ImageVector.vectorResource(id = R.drawable.ic_reloadicon),
@@ -123,110 +121,56 @@ fun CanticosPage(navController: NavController, value: String, songViewModel: Son
         }
     ){paddingVales ->
 
-        Column(modifier = Modifier
-            .fillMaxSize()
-            .padding(paddingVales),
-        ){
-//            Text(text = "$value")
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(8.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ){
-                items(
-                    if (pesquisaTexto.isNotBlank()) {
-//
-                        val numOrNot = isNumber(pesquisaTexto)
+        when{
+            allSongs.isEmpty() -> LoadingScreen("Canticos")
+
+            else -> {
+                val filteredSongs = remember(dados, searchValue){
+
+                    if (searchValue.isNotBlank()) {
+                        val numOrNot = isNumber(searchValue)
                         if (numOrNot) {
-                            dados.filter { it.number == pesquisaTexto }
+                            dados.filter { it.number == searchValue }
                         } else {
-                            dados.filter { it.title.contains(pesquisaTexto, ignoreCase = true) }
+                            dados.filter {
+                                it.title.contains(searchValue, ignoreCase = true)
+                            }
                         }
-                    }else if (pesquisaTextoAvancada.isNotBlank()){
+                    } else if (pesquisaTextoAvancada.isNotBlank()){
                             val numOrNot = isNumber(pesquisaTextoAvancada)
                             if (numOrNot){
                                 dados.filter { it.number == pesquisaTextoAvancada }
-                            }else{
+                            } else{
                                 dados.filter{ it.title.contains(pesquisaTextoAvancada, ignoreCase = true) ||
-                                        it.body.contains(pesquisaTextoAvancada, ignoreCase = true)
+                                    it.body.contains(pesquisaTextoAvancada, ignoreCase = true)
                                 }
                             }
                     } else { dados }
+                }
 
-                ) { cancao ->
-                    val songId = cancao.songId
-                    val mainColor = colorObject.mainColor
-                    Row(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .height(60.dp)
-                            .clip(RoundedCornerShape(14.dp))
-//                            .background(MaterialTheme.colorScheme.secondary)
-                            .background(mainColor)
-                            .padding(8.dp, 0.dp, 0.dp, 0.dp)
-                            .clickable {
-                                navController.navigate("eachCantico/${songId}")
-                            }
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .weight(0.9f)
-                                .fillMaxHeight()
-                        ){
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .weight(0.15f)
-                                    .height(60.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.Center
-                            ){
-                                Text(
-                                    text = cancao.number,
-                                    fontSize = 16.sp,
-                                    color = MaterialTheme.colorScheme.onPrimary,
-                                    fontWeight = FontWeight.Bold
-                                )
-                            }
+                // widget
+                Column( modifier = Modifier.fillMaxSize().padding(paddingVales) ){
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize().padding(5.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ){
+                        items( filteredSongs ) { cancao ->
+                            val songId = cancao.songId
+                            val mainColor = colorObject.mainColor
 
-                            Column(
-                                modifier = Modifier.weight(1f),
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.Center
-                            ) {
-                                Text(
-                                    text = cancao.title,
-                                    fontSize = 18.sp,
-                                    color = MaterialTheme.colorScheme.onPrimary,
-                                    textAlign = TextAlign.Center
-                                )
+                            // -------->>
+                            SongRow(
+                                commonViewModel,
+                                navController,
+                                cancao, songId
+                            )
 
-                                Text(
-                                    text = cancao.subTitle,
-                                    fontSize = 12.sp,
-                                    color = MaterialTheme.colorScheme.onPrimary,
-                                    textAlign = TextAlign.Center
-                                )
-                            }
                         }
-
-                        StarButton(
-                            itemLoved = cancao.loved,
-                            prayViewModel = null,
-                            songViewModel = songViewModel,
-                            id = cancao.songId,
-                            view = "songViewModel"
-                        )
-
                     }
                 }
+
+                ShortcutsButton(navController)
             }
         }
-
-        ShortcutsButton(navController)
     }
 }
-
-

@@ -47,6 +47,7 @@ import androidx.compose.runtime.mutableFloatStateOf
 import com.samuel.oremoschanganapt.components.buttons.ShortcutsButton
 import com.samuel.oremoschanganapt.components.buttons.StarButton
 import com.samuel.oremoschanganapt.db.ReminderViewModel
+import com.samuelsumbane.oremoschanganapt.db.CommonViewModel
 import com.samuelsumbane.oremoschanganapt.db.PrayViewModel
 
 
@@ -56,14 +57,14 @@ import com.samuelsumbane.oremoschanganapt.db.PrayViewModel
 fun EachOracao(navController: NavController, prayId: Int,
                prayViewModel: PrayViewModel,
                defViewModel: DefViewModel,
-               reminderViewModel: ReminderViewModel
+               reminderViewModel: ReminderViewModel,
+               commonViewModel: CommonViewModel
 ){
 
     val allDef by defViewModel.defs.collectAsState()
     val prayData = prayViewModel.getPrayById(prayId)
 
     if (prayData != null){
-        var lovedPray by remember { mutableStateOf(prayData.loved) }
 
         val reminderes by reminderViewModel.reminders.collectAsState()
 
@@ -83,7 +84,6 @@ fun EachOracao(navController: NavController, prayId: Int,
                         val context = LocalContext.current
 
                         var hasReminder = false
-                        Log.d("pray", "$prayId")
 
                         if (reminderes.isNotEmpty()){
                             for(reminder in reminderes){
@@ -108,12 +108,7 @@ fun EachOracao(navController: NavController, prayId: Int,
                             IconButton(
                                 // by now fun is add reminder ------>>
                                 onClick = {
-//                                    reminderViewModel.addReminder(
-//                                        reminderdata = prayId,
-//                                        remindertable = "Pray",
-//                                        reminderrepeat = "No repeat"
-//                                    )
-                                    navController.navigate("configurereminder/$prayId/Pray")
+                                    navController.navigate("configurereminder/$prayId/Pray/0/0/0")
                                 }
                             ) {
                                 Icon(Icons.Default.Call, contentDescription = "no reminder set")
@@ -121,13 +116,26 @@ fun EachOracao(navController: NavController, prayId: Int,
                         }
 
                         // The star icon ------>>
-                        lovedPray = StarButton(
-                            itemLoved = lovedPray,
-                            prayViewModel = prayViewModel,
-                            songViewModel = null,
+
+                        val prayLoved = commonViewModel.getLovedItem("Pray", prayData.prayId)
+                        val itemIsLoved: Boolean = prayLoved != null
+
+                        StarButton(
+                            itemLoved = itemIsLoved,
+                            commonViewModel = commonViewModel,
                             id = prayData.prayId,
-                            view = "prayViewModel"
+                            itemTable = "Pray"
                         )
+
+
+//                        var d = comm
+//                        lovedPray = StarButton(
+//                            itemLoved = lovedPray,
+//                            prayViewModel = prayViewModel,
+//                            songViewModel = null,
+//                            id = prayData.prayId,
+//                            view = "prayViewModel"
+//                        )
 
                         ShareIconButton(context,  text = "${prayData.title} \n ${prayData.body}")
                     }
@@ -169,8 +177,7 @@ fun EachOracao(navController: NavController, prayId: Int,
                     }
                 }
 
-                ShortcutsButton(navController)
-
+                ShortcutsButton(navController, )
             }
         }
 

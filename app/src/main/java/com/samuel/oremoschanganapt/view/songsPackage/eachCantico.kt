@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Call
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -35,19 +37,31 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.samuel.oremoschanganapt.components.buttons.ShortcutsButton
 import com.samuel.oremoschanganapt.components.buttons.StarButton
+import com.samuel.oremoschanganapt.db.ReminderViewModel
 import com.samuel.oremoschanganapt.functionsKotlin.ShareIconButton
+import com.samuelsumbane.oremoschanganapt.db.CommonViewModel
 import com.samuelsumbane.oremoschanganapt.db.DefViewModel
 import com.samuelsumbane.oremoschanganapt.db.SongViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EachCantico(navController: NavController, songId: Int, songViewModel: SongViewModel, defViewModel: DefViewModel){
+fun EachCantico(navController: NavController, songId: Int,
+                songViewModel: SongViewModel,
+                reminderViewModel: ReminderViewModel,
+                defViewModel: DefViewModel, commonViewModel: CommonViewModel
+){
 
     val allDef by defViewModel.defs.collectAsState()
     val songData = songViewModel.getSongById(songId)
 
+
     if(songData != null) {
-        var lovedSong by remember { mutableStateOf(songData.loved) }
+        val reminderes by reminderViewModel.reminders.collectAsState()
+        //
+        val prayLoved = commonViewModel.getLovedItem("Song", songData.songId)
+        val itemIsLoved: Boolean = prayLoved != null
+        var lovedSong by remember { mutableStateOf(itemIsLoved) }
+
 
         Scaffold(
             topBar = {
@@ -64,12 +78,43 @@ fun EachCantico(navController: NavController, songId: Int, songViewModel: SongVi
                     actions = {
                         val context = LocalContext.current
 
+                        var hasReminder = false
+                        if (reminderes.isNotEmpty()){
+                            for(reminder in reminderes){
+                                if (reminder.reminderTable == "Pray"){
+                                    if (reminder.reminderId == songId){
+                                        hasReminder = true
+                                    }
+                                }
+                            }
+                        } else { hasReminder = false }
+
+                        if (hasReminder) {
+                            IconButton(
+                                // by now the fun is delete reminder ----->>
+                                onClick = {
+                                    reminderViewModel.deleteReminder(songId)
+                                }
+                            ) {
+                                Icon(Icons.Default.CheckCircle, contentDescription = "reminder set")
+                            }
+                        } else {
+                            IconButton(
+                                // by now fun is add reminder ------>>
+                                onClick = {
+                                    navController.navigate("configurereminder/$songId/Song/0/0/0")
+                                }
+                            ) {
+                                Icon(Icons.Default.Call, contentDescription = "no reminder set")
+                            }
+                        }
+
+                        // ---------->>
                         lovedSong = StarButton(
-                            itemLoved = lovedSong,
-                            prayViewModel = null,
-                            songViewModel = songViewModel,
+                            itemLoved = itemIsLoved,
+                            commonViewModel = commonViewModel,
                             id = songData.songId,
-                            view = "songViewModel"
+                            itemTable = "Song"
                         )
 
                         ShareIconButton(context,  text = "${songData.number} - ${songData.title} \n ${songData.body}")

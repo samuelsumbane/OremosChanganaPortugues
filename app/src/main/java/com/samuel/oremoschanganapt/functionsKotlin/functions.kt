@@ -1,4 +1,5 @@
 package com.samuel.oremoschanganapt.functionsKotlin
+import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
@@ -37,6 +38,55 @@ import com.samuel.oremoschanganapt.ui.theme.Tomato
 import java.time.Instant
 import java.time.LocalDate
 import java.util.Locale
+import java.time.ZoneOffset
+import java.util.Calendar
+
+//@SuppressLint("ScheduleExactAlarm")
+//@OptIn(ExperimentalMaterial3Api::class)
+//fun scheduleReminderCheck(context: Context) {
+//    val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+//    var title = ""
+//    var text = ""
+//    // 1 minuto --------->>
+//    val intervalMillis = 60 * 1000L
+
+//    val realm = MyApp.realm
+//    realm.writeBlocking {
+//        val reminders = this.query<Reminder>(query = "reminderDate == $0", getCurrentDateInMillis()).find()
+
+//        Log.d("Reminder", "${getCurrentDateInMillis()} | ${getCurrentTimeInMillis()}")
+
+//        if (reminders.isNotEmpty()) {
+//            for (reminder in reminders) {
+//                title = if (reminder.reminderTable == "Pray") {
+//                    "A oracao a sua espera"
+//                } else {
+//                    "O cantico a sua espera"
+//                }
+//
+//                text = reminder.reminderData.toString()
+        //
+//        title = "kdjfas"
+//        text = "dfalsdf"
+//
+//                val intent = Intent(context, ReminderReceiver::class.java).apply {
+//                    putExtra("NOTIFICATION_TITLE", title)
+//                    putExtra("NOTIFICATION_MESSAGE", text)
+//                }
+//
+//                val pendingIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+//
+//                alarmManager.setRepeating(
+//                    AlarmManager.RTC_WAKEUP,
+//                    System.currentTimeMillis() + intervalMillis,
+//                    intervalMillis,
+//                    pendingIntent
+//                )
+//            }
+//        }
+//    }
+
+//}
 
 
 // verifica se é um numero ou nao
@@ -212,25 +262,53 @@ fun longToRealDate(long: Long): String{
     return formatter.format(instant)
 }
 
+//@RequiresApi(Build.VERSION_CODES.O)
+//@OptIn(ExperimentalMaterial3Api::class)
+//fun convertTimePickerStateToLong(timePickerState: TimePickerState): Long {
+//    val selectedTime = LocalTime.of(timePickerState.hour, timePickerState.minute)
+//    return selectedTime.atDate(LocalDate.now())
+//        .atZone(ZoneId.systemDefault())
+//        .toInstant()
+//        .toEpochMilli()
+//}
+
+//@OptIn(ExperimentalMaterial3Api::class)
+//fun convertTimePickerStateToLong(timePickerState: TimePickerState): Long {
+//    val hoursInMillis = timePickerState.hour * 60 * 60 * 1000L
+//    val minutesInMillis = timePickerState.minute * 60 * 1000L
+//    return hoursInMillis + minutesInMillis
+//}
+
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 fun convertTimePickerStateToLong(timePickerState: TimePickerState): Long {
     val selectedTime = LocalTime.of(timePickerState.hour, timePickerState.minute)
-    return selectedTime.atDate(LocalDate.now())
-        .atZone(ZoneId.systemDefault())
-        .toInstant()
-        .toEpochMilli()
+    // Usa UTC para garantir que não haja deslocamento de fuso horário
+    return selectedTime.toSecondOfDay() * 1000L
 }
+
+
+
+//@RequiresApi(Build.VERSION_CODES.O)
+//fun convertLongToTimeString(timeInMillis: Long): String {
+//    val time = Instant.ofEpochMilli(timeInMillis)
+//        .atZone(ZoneId.systemDefault())
+//        .toLocalTime()
+//
+//    val formatter = DateTimeFormatter.ofPattern("HH:mm") // Formato de 24h, pode ajustar
+//    return time.format(formatter)
+//}
 
 @RequiresApi(Build.VERSION_CODES.O)
 fun convertLongToTimeString(timeInMillis: Long): String {
     val time = Instant.ofEpochMilli(timeInMillis)
-        .atZone(ZoneId.systemDefault())
+        .atOffset(ZoneOffset.UTC) // Usa UTC para garantir que não haja deslocamento de fuso horário
         .toLocalTime()
 
-    val formatter = DateTimeFormatter.ofPattern("HH:mm") // Formato de 24h, pode ajustar
+    val formatter = DateTimeFormatter.ofPattern("HH:mm")
     return time.format(formatter)
 }
+
 
 @RequiresApi(Build.VERSION_CODES.O)
 fun dateStringToLong(dateInString: String): Long{
@@ -261,7 +339,49 @@ fun timeStringToLong(timeOfDay: String): Long {
         .toEpochMilli()
 }
 
+//fun getCurrentTimeInMillis(): Long {
+//    val calendar = Calendar.getInstance()
+//    val hours = calendar.get(Calendar.HOUR_OF_DAY)
+//    val minutes = calendar.get(Calendar.MINUTE)
+//
+//    // Ajusta para retornar somente a hora e minuto em milissegundos
+//    return hours * 60 * 60 * 1000L + minutes * 60 * 1000L
+//}
+
+//@RequiresApi(Build.VERSION_CODES.O)
+//fun getCurrentDateTimeInMillis(): Long {
+//    return LocalDateTime.now()
+//        .atZone(ZoneId.systemDefault())
+//        .toInstant()
+//        .toEpochMilli()
+//}
+
+fun getCurrentTimeInMillis(): Long {
+    val calendar = Calendar.getInstance()
+    val hoursInMillis = calendar.get(Calendar.HOUR_OF_DAY) * 60 * 60 * 1000L
+    val minutesInMillis = calendar.get(Calendar.MINUTE) * 60 * 1000L
+
+    // Retorna somente hora e minuto em milissegundos
+    return hoursInMillis + minutesInMillis
+}
+
+
+fun getCurrentDateInMillis(): Long {
+    val calendar = Calendar.getInstance()
+    calendar.set(Calendar.HOUR_OF_DAY, 0)
+    calendar.set(Calendar.MINUTE, 0)
+    calendar.set(Calendar.SECOND, 0)
+    calendar.set(Calendar.MILLISECOND, 0)
+
+    // Retorna a data em milissegundos
+    return calendar.timeInMillis
+}
+
+
+
 fun restartActivity(context: Context) {
     val activity = context as? Activity
     activity?.recreate()
 }
+
+

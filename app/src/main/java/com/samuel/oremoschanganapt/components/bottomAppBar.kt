@@ -46,7 +46,7 @@ fun BottomAppBarPrincipal(navController: NavController, activePage: String){
 
 @Composable
 fun BottomAppBarHome(navController: NavController, activePage: String, activeIconColor: Color ){
-    val menuColor = colorObject.menuContainerColor
+    val menuColor = colorObject.mainColor
     BottomAppBar(
         containerColor = Color.Transparent,
 //            .padding(0.dp, 0.dp, 0.dp, 5.dp)

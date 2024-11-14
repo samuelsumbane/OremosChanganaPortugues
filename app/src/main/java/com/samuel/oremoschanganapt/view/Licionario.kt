@@ -76,11 +76,6 @@ fun Licionario(navController: NavController){
 
 class BooksItem(val title: String, val books: String)
 
-//@Preview(showBackground = true)
-//@Composable
-//fun PreviewL(){
-//    Licionario()
-//}
 
 @Composable
 fun BooksCard(

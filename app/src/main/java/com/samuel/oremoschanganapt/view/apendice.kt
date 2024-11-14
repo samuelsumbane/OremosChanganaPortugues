@@ -14,6 +14,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -28,6 +29,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -88,7 +90,6 @@ fun Apendice(navController: NavController){
     }
 }
 
-
 class Item(val title: String, val subTitle: String)
 
 @Composable
@@ -99,7 +100,6 @@ fun ptTabContent(
     Column(
         modifier = Modifier.background(divColor)
             .fillMaxSize()
-//        .fillMaxSize()
             .verticalScroll(rememberScrollState())
             .padding(10.dp),
         Arrangement.spacedBy(20.dp)
@@ -304,29 +304,37 @@ fun ListWidget(
     Column(
         modifier = Modifier.fillMaxSize()
     ){
+        var showContent by remember { mutableStateOf(false) }
+        val rS = 12.dp // rowShape ---------->>
         Row (
-            Modifier.fillMaxSize().height(40.dp)
-                .background(divBgColor, RoundedCornerShape(14.dp, 14.dp, 0.dp, 0.dp))
-                .clickable {  }.padding(10.dp),
+            Modifier.fillMaxSize().height(45.dp)
+                .background(divBgColor, shape = if (showContent)
+                    RoundedCornerShape(rS, rS, 0.dp, 0.dp) else RoundedCornerShape(rS) )
+                .clickable { showContent = !showContent }.padding(10.dp),
             Arrangement.SpaceBetween
         ){
             Text("$title", color = textColor)
-            Icon(Icons.Default.KeyboardArrowDown, contentDescription = "Open or Close")
+            if (showContent)
+                Icon(Icons.Default.KeyboardArrowUp, contentDescription = "Open or Close")
+            else
+                Icon(Icons.Default.KeyboardArrowDown, contentDescription = "Open or Close")
+
         }
 
-        Column(
-            Modifier.background(divBgColor, RoundedCornerShape(0.dp, 0.dp, 14.dp, 14.dp)).fillMaxWidth()
-        ){
+        if ( showContent ){
+            Column(
+                Modifier.background(divBgColor, RoundedCornerShape(0.dp, 0.dp, 14.dp, 14.dp)).fillMaxWidth()
+            ){
 
-            dataList.forEach { list ->
-                list.forEach { item ->
-                    Row(
-                        Modifier.fillMaxWidth()
-                            .padding(5.dp),
-                        horizontalArrangement = Arrangement.SpaceAround
-                    ){
-                        Text(item.title, fontWeight = FontWeight.Bold, textAlign = TextAlign.Justify, color = textColor)
-                        Text(item.subTitle, color = textColor)
+                dataList.forEach { list ->
+                    list.forEach { item ->
+                        Row(
+                            Modifier.fillMaxWidth().padding(5.dp),
+                            horizontalArrangement = Arrangement.SpaceAround
+                        ){
+                            Text(item.title, fontWeight = FontWeight.Bold, textAlign = TextAlign.Justify, color = textColor)
+                            Text(item.subTitle, color = textColor)
+                        }
                     }
                 }
             }

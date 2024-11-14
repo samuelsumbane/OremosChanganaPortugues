@@ -4,19 +4,18 @@
 * shortcut button - done
 
 * Temas personalizados - done
-* notificacoes personalizadas  - not yet
+* notificacoes personalizadas  - a little a bit
 * conteudo exclusivo - done
+
 * sincronizacao. - not yet
 
 
 
-* AP�NDICE
-* FESTAS MOVEIS AT� AO ANO 2025 - done
-* LECCION�RIO LIT�RGIO  - done
-
 
 // Definicoes
 * font-size - done
+* appearance (mode and color theme) - done
+
 
 
 

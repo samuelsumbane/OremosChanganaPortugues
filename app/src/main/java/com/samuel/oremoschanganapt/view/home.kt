@@ -1,6 +1,10 @@
 package com.samuel.oremoschanganapt.view
 
 import android.annotation.SuppressLint
+import android.app.AlarmManager
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
 import android.os.Build
 import android.util.Log
 import android.widget.Toast
@@ -30,7 +34,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.*
 import androidx.navigation.NavController
+import androidx.work.Data
+import androidx.work.ExistingWorkPolicy
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
+import com.samuel.oremoschanganapt.AppNotificationService
+//import com.samuel.oremoschanganapt.NotificationWorker
 import com.samuel.oremoschanganapt.R
+import com.samuel.oremoschanganapt.ReminderReceiver
 //import com.samuel.oremoschanganapt.apresentacaoOracao.*
 import com.samuel.oremoschanganapt.components.*
 import com.samuel.oremoschanganapt.db.ReminderViewModel
@@ -38,6 +49,7 @@ import com.samuel.oremoschanganapt.functionsKotlin.americanFormat
 import com.samuel.oremoschanganapt.functionsKotlin.isNumber
 import com.samuel.oremoschanganapt.functionsKotlin.localTime
 import com.samuel.oremoschanganapt.functionsKotlin.restartActivity
+//import com.samuel.oremoschanganapt.functionsKotlin.scheduleReminderCheck
 import com.samuel.oremoschanganapt.functionsKotlin.stringToColor
 import com.samuel.oremoschanganapt.repository.colorObject
 import com.samuel.oremoschanganapt.ui.theme.Dodgerblue
@@ -50,6 +62,7 @@ import com.samuelsumbane.oremoschanganapt.db.PrayViewModel
 import com.samuelsumbane.oremoschanganapt.db.SongViewModel
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+import java.util.concurrent.TimeUnit
 
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -115,14 +128,6 @@ fun Home( navController: NavController, songViewModel: SongViewModel,
                     val (newMode, newThemeColor) = AppearanceWidget(mode, themeColor)
                     mode = newMode; themeColor = newThemeColor
 
-                    // reminders -------->>
-                    Button(
-                        onClick = { navController.navigate("reminderspage") }
-                    ) {
-                        Text("Lembretes")
-                    }
-
-//                    Log.d("newvalues", "$themeColor")
                 } else {
                     Text("Carregando dados")
                 }
@@ -131,21 +136,12 @@ fun Home( navController: NavController, songViewModel: SongViewModel,
         }
     ) {
 
-
         if (defs.isNotEmpty()){
-//            val def = defs.first()
-//            val themeColor by remember { mutableStateOf(def.themeColor)}
-//            val rThemeColor = stringToColor(themeColor)  // Real theme color
-
-//            colorObject.mainColor = rThemeColor
-
             Scaffold(
                 bottomBar = { BottomAppBarHome(navController, "home", lerp(colorObject.mainColor, Color.White, 0.35f)) }
             ) {
                 Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-//                        .background(color = HomeColor)
+                    modifier = Modifier.fillMaxSize()
                         .background(color = Color.Transparent)
                 ) {
                     Image(
@@ -155,13 +151,38 @@ fun Home( navController: NavController, songViewModel: SongViewModel,
                         contentScale = ContentScale.Crop
                     )
 
+                    //
+                    allR.forEach {
+                        Log.d("Reminder", "ex: ${it.reminderDate} || ${it.reminderTime}")
+                    }
+
+                    //
+//                    scheduleReminderCheck(context)
+
+//                    val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+//                    val intent = Intent(context, ReminderReceiver::class.java)
+//                    val pendingIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+//
+//                    // Define o intervalo para 1 minuto
+//                    val intervalMillis = 60 * 1000L
+//
+//                    // Agende o AlarmManager para rodar periodicamente
+//                    alarmManager.setRepeating(
+//                        AlarmManager.RTC_WAKEUP,
+//                        System.currentTimeMillis() + intervalMillis,
+//                        intervalMillis,
+//                        pendingIntent
+//                    )
+
+
+                    //
+
+
                     Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth()
                             .fillMaxHeight(.3f)
                             .background(
-//                            color = HomeColor,
-                            color = Color.Transparent,
+                                color = Color.Transparent,
                                 shape = RoundedCornerShape(0.dp, 0.dp, 0.dp, 40.dp),
                             ),
                         verticalArrangement = Arrangement.SpaceAround,
@@ -211,9 +232,7 @@ fun Home( navController: NavController, songViewModel: SongViewModel,
 
                     }
 
-                    // Madrinha dela: 84 955 7859
-
-                    if (showModal){
+                    if (showModal) {
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth(0.90f)
@@ -243,7 +262,6 @@ fun Home( navController: NavController, songViewModel: SongViewModel,
                                     }
                                 ){  oracao ->
                                     val prayTitle = oracao.title
-                                    val prayBody = oracao.body
 
                                     Row(
                                         modifier = Modifier
@@ -255,7 +273,7 @@ fun Home( navController: NavController, songViewModel: SongViewModel,
                                             )
                                             .padding(8.dp, 0.dp, 0.dp, 0.dp)
                                             .clickable {
-                                                navController.navigate("eachOracao/${prayTitle}/${prayBody}")
+                                                navController.navigate("eachOracao/${oracao.prayId}")
                                             }
                                     ) {
                                         Row(
@@ -319,7 +337,7 @@ fun Home( navController: NavController, songViewModel: SongViewModel,
                                             )
                                             .padding(8.dp, 0.dp, 0.dp, 0.dp)
                                             .clickable {
-                                                navController.navigate("eachCantico/${songNumber}/${songTitle}/${songBody} ")
+                                                navController.navigate("eachCantico/${cantico.songId}")
                                             }
                                     ) {
                                         Row(

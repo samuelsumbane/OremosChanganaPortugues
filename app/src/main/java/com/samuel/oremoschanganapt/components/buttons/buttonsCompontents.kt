@@ -1,12 +1,10 @@
 package com.samuel.oremoschanganapt.components.buttons
 
-import android.graphics.drawable.Icon
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
@@ -19,7 +17,6 @@ import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -27,18 +24,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.samuel.oremoschanganapt.repository.colorObject
 import com.samuel.oremoschanganapt.ui.theme.Orange
-import com.samuel.oremoschanganapt.ui.theme.RedButton
-import com.samuel.oremoschanganapt.ui.theme.Shapes
 import com.samuel.oremoschanganapt.ui.theme.Typography
 import com.samuel.oremoschanganapt.ui.theme.White
-import com.samuelsumbane.oremoschanganapt.db.PrayViewModel
-import com.samuelsumbane.oremoschanganapt.db.SongViewModel
-import kotlinx.coroutines.CoroutineScope
+import com.samuelsumbane.oremoschanganapt.db.CommonViewModel
+
 
 @Composable
 fun MorePagesBtn(
@@ -83,21 +75,21 @@ fun ShortcutButtonChild(
 @Composable
 fun StarButton(
     itemLoved: Boolean,
-    prayViewModel: PrayViewModel?,
-    songViewModel: SongViewModel?,
+    commonViewModel: CommonViewModel,
     id: Int,
-    view: String
+    itemTable: String
 ): Boolean{
     var loved by remember { mutableStateOf(itemLoved) }
     IconButton(
         modifier = Modifier.size(50.dp),
         onClick = {
-            loved = !itemLoved
-            if (view == "prayViewModel"){
-                prayViewModel?.updatePray(id, loved)
+//            commonViewModel -------->>
+            if ( loved ) {
+                commonViewModel.removeLovedId(itemTable, id)
             } else {
-                songViewModel?.updateSong(id, loved)
+                commonViewModel.addLovedId(itemTable, id)
             }
+            loved = !itemLoved
         }
     ){
         if (loved){
@@ -112,13 +104,21 @@ fun StarButton(
 
 
 @Composable
-fun NormalButton(text: String, btnColor: Color, onClick: () -> Unit){
+fun NormalButton(text: String,
+                 btnColor: Color,
+                 textColor: Color = Color.White,
+                 hasBorder: Boolean = false,
+                 borderWidth: Int = 1,
+                 onClick: () -> Unit
+){
     Button(
         onClick = onClick,
         colors = ButtonDefaults.buttonColors(
-            containerColor = btnColor,
-            contentColor = MaterialTheme.colorScheme.onPrimary
+            containerColor = if(hasBorder) Color.Transparent else btnColor,
+            contentColor = textColor
         ),
+        border = BorderStroke(if(hasBorder) borderWidth.dp else 0.dp, btnColor),
+
         shape = RoundedCornerShape(12.dp)
     ) {
         Text(text)

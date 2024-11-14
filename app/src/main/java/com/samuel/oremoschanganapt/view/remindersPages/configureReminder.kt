@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.samuel.oremoschanganapt.components.DatePickerModalInput
 import com.samuel.oremoschanganapt.components.TimePickerDialog
+import com.samuel.oremoschanganapt.components.buttons.NormalButton
 import com.samuel.oremoschanganapt.components.selectDateOrTimeOptions
 import com.samuel.oremoschanganapt.components.toastAlert
 import com.samuel.oremoschanganapt.db.ReminderViewModel
@@ -44,6 +45,7 @@ import com.samuel.oremoschanganapt.functionsKotlin.longToRealDate
 import com.samuel.oremoschanganapt.functionsKotlin.stringToColor
 import com.samuel.oremoschanganapt.functionsKotlin.timeStringToLong
 import com.samuel.oremoschanganapt.repository.colorObject
+import com.samuel.oremoschanganapt.ui.theme.BlueButton
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
@@ -51,6 +53,7 @@ import com.samuel.oremoschanganapt.repository.colorObject
 fun ConfigureReminder(navController: NavController,
                       id: Int, table: String,
                       rdate: Long, rtime: Long,
+                      rId: Int? = null,
                       reminderViewModel: ReminderViewModel
 ){
     Scaffold(
@@ -69,9 +72,6 @@ fun ConfigureReminder(navController: NavController,
         }
     ) { paddingVales ->
 
-//        var date by remember { mutableStateOf(americanFormat())}
-//        var time by remember { mutableStateOf("08:00")}
-
         var reminderdate by remember { mutableStateOf<Long?>(rdate) }
         var remindertime by remember { mutableStateOf<Long?>(rtime) }
         var reminderrepeat = "no-repeat"
@@ -79,63 +79,40 @@ fun ConfigureReminder(navController: NavController,
 
         var showDatePicker by remember { mutableStateOf(false)}
         var showTimePicker by remember { mutableStateOf(false)}
-//            var showReminderBtns by remember { mutableStateOf(true)}
-        var showSelectDateOptions by remember { mutableStateOf(false)}
-        var showSelectTimeOptions by remember { mutableStateOf(false)}
         val mainColor = colorObject.mainColor
-
         var selectedTime: TimePickerState? by remember { mutableStateOf(null) }
-
 
         Column (
             Modifier.fillMaxSize()
                 .padding(paddingVales)
                 .background(MaterialTheme.colorScheme.background)
         ) {
-            Column (
-                Modifier.padding(start = 20.dp)
-            ) {
-                Button(
-                    onClick = { showDatePicker = true }
-                ) {
-                    Text("Definir a data")
-                }
-                Spacer(Modifier.height(15.dp))
+            Column ( Modifier.padding(start = 60.dp, top = 20.dp) ) {
                 Text("Data: ${reminderdate?.let { longToRealDate(it) }} ")
-
-                Spacer(Modifier.height(30.dp))
-
-                Button(
-                    onClick = { showTimePicker = true}
-                ) {
-                    Text("Definir a hora")
-                }
                 Spacer(Modifier.height(15.dp))
-                Text("Hora: ${ remindertime?.let { convertLongToTimeString(it) } }")
+                NormalButton("Definir a data", mainColor) { showDatePicker = true }
 
-////                reminderdate -> "${reminderdate?.let { longToRealDate( it ) }}"
-//                remindertime -> "${remindertime?.let{
-//                convertLongToTimeString(remindertime!!) // Convert Long to string --->
-//            }}"
+                Spacer(Modifier.height(40.dp))
+
+                Text("Hora: ${ remindertime?.let { convertLongToTimeString(it) } }")
+                Spacer(Modifier.height(15.dp))
+                NormalButton("Definir a hora", mainColor) { showTimePicker = true }
             }
 
-
-            if(showTimePicker){
+            if (showTimePicker) {
                 TimePickerDialog(
                     onDismiss = { showTimePicker = false },
                     onConfirm = { timePickerState ->
                         selectedTime = timePickerState
                         // Convert to Long ---------->
                         remindertime = convertTimePickerStateToLong(timePickerState)
-
                         showTimePicker = false
-//                        showDatePicker = true
                     },
                     textColor = mainColor
                 )
             }
 
-            if(showDatePicker){
+            if (showDatePicker) {
                 DatePickerModalInput(
                     onDateSelected = {timestamp ->
                         reminderdate = timestamp
@@ -143,8 +120,6 @@ fun ConfigureReminder(navController: NavController,
                     }
                 ) { showDatePicker = false }
             }
-
-
 
             Spacer(Modifier.height(60.dp))
 
@@ -154,32 +129,35 @@ fun ConfigureReminder(navController: NavController,
                     .align(Alignment.CenterHorizontally),
                 horizontalArrangement = Arrangement.SpaceAround
             ){
-                Button( onClick = { navController.popBackStack() } ) {
-                    Text("Cancelar")
+
+                NormalButton("Cancelar", BlueButton, hasBorder = true,
+                    textColor = BlueButton ) {
+                    navController.popBackStack()
                 }
 
-                Button(
-                    onClick = {
-
-                        if (reminderdate == null ) {
-                            toastAlert(context, "Por favor, selecione a data")
-                        } else if (remindertime == null){
-                            toastAlert(context, "Por favor, selecione a hora")
+                NormalButton("Concluir", BlueButton) {
+                    if (reminderdate == null ) {
+                        toastAlert(context, "Por favor, selecione a data")
+                    } else if (remindertime == null){
+                        toastAlert(context, "Por favor, selecione a hora")
+                    } else {
+                        if (rId != 0){
+                            // Edit reminder --------->>
+                            reminderViewModel.updateReminder( reminderdate, remindertime, rId)
                         } else {
+                            // Create reminder ---------->>
                             reminderViewModel.addReminder(
-                                id,
-                                table,
+                                id, table,
                                 reminderdate,
                                 remindertime,
                                 reminderrepeat
                             )
-                            navController.popBackStack()
+                            toastAlert(context, "Lembrete adicionado com sucesso.")
                         }
-
+                        navController.popBackStack()
                     }
-                ) {
-                    Text("Concluir")
                 }
+
             }
         }
     }

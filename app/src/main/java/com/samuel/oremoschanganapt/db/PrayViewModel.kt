@@ -28,7 +28,7 @@ class PrayViewModel : ViewModel() {
                 val existingPrays = realm.query<Pray>().find()
                 if (existingPrays.isEmpty()) {
                     prayData.forEach {
-                        addPray(it.title, it.subTitle, it.body, it.loved)
+                        addPray(it.title, it.subTitle, it.body)
                     }
                 }
             } catch (e: Exception){
@@ -46,7 +46,6 @@ class PrayViewModel : ViewModel() {
         praytitle: String,
         praysubTitle: String,
         praybody: String,
-        prayloved: Boolean
     ) {
         viewModelScope.launch {
             realm.write {
@@ -55,27 +54,12 @@ class PrayViewModel : ViewModel() {
                     title = praytitle
                     subTitle = praysubTitle
                     body = praybody
-                    loved = prayloved
                 }
                 copyToRealm(pray, updatePolicy = UpdatePolicy.ALL)
             }
         }
     }
 
-    fun updatePray(
-        prayId: Int,
-        prayloved: Boolean
-    ){
-        viewModelScope.launch {
-            realm.write {
-                val pray = this.query<Pray>("prayId == $0", prayId).find().first()
-                pray.let {
-                    pray.loved = prayloved
-                }
-                copyToRealm(pray, updatePolicy = UpdatePolicy.ALL)
-            }
-        }
-    }
 
     fun getPrayById(prayId: Int): Pray? {
         return realm.query<Pray>("prayId == $0", prayId).first().find()

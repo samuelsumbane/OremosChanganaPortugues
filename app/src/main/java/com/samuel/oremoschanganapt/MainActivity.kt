@@ -1,3 +1,4 @@
+@file:OptIn(ExperimentalPermissionsApi::class)
 package com.samuel.oremoschanganapt
 
 import android.os.Build
@@ -10,32 +11,30 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.lerp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
 import com.samuel.oremoschanganapt.components.LoadingScreen
 import com.samuel.oremoschanganapt.db.ReminderViewModel
 import com.samuel.oremoschanganapt.functionsKotlin.stringToColor
 import com.samuel.oremoschanganapt.repository.colorObject
+import com.samuel.oremoschanganapt.repository.TablesViewModels
 import com.samuel.oremoschanganapt.ui.theme.OremosChanganaTheme
 import com.samuel.oremoschanganapt.view.Apendice
+import com.samuel.oremoschanganapt.view.FavoritosPage
 import com.samuel.oremoschanganapt.view.songsPackage.CanticosAgrupados
 import com.samuel.oremoschanganapt.view.songsPackage.CanticosPage
 import com.samuel.oremoschanganapt.view.songsPackage.EachCantico
 import com.samuel.oremoschanganapt.view.praysPackage.EachOracao
-//import com.samuel.oremoschanganapt.view.CanticosAgrupados
-//import com.samuel.oremoschanganapt.view.CanticosPage
-//import com.samuel.oremoschanganapt.view.EachCantico
-//import com.samuel.oremoschanganapt.view.EachOracao
-import com.samuel.oremoschanganapt.view.FavoritosPage
 import com.samuel.oremoschanganapt.view.FestasMoveis
 import com.samuel.oremoschanganapt.view.Home
 import com.samuel.oremoschanganapt.view.Licionario
@@ -43,6 +42,7 @@ import com.samuel.oremoschanganapt.view.MorePages
 import com.samuel.oremoschanganapt.view.praysPackage.OracoesPage
 import com.samuel.oremoschanganapt.view.remindersPages.ConfigureReminder
 import com.samuel.oremoschanganapt.view.remindersPages.RemindersPage
+import com.samuelsumbane.oremoschanganapt.db.CommonViewModel
 import com.samuelsumbane.oremoschanganapt.db.DefViewModel
 //import com.samuel.oremoschanganapt.view.OracoesPage
 import com.samuelsumbane.oremoschanganapt.db.PrayViewModel
@@ -55,16 +55,27 @@ class  MainActivity : ComponentActivity() {
     private val prayViewModel: PrayViewModel by viewModels()
     private val defViewModel: DefViewModel by viewModels()
     private val reminderViewModel: ReminderViewModel by viewModels()
+    private val commonViewModel: CommonViewModel by viewModels()
 
+//    val allViews = TablesViewModels(prayViewModel, songViewModel)
+
+//    val x = TablesViewModels.songViewModel
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
 
+
+
             val allSongs by songViewModel.songs.collectAsState()
             val allPrays by prayViewModel.prays.collectAsState()
             val defs by defViewModel.defs.collectAsState()
+            val lovedData by commonViewModel.lovedData.collectAsState()
+
+            TablesViewModels.songViewModel = songViewModel
+            TablesViewModels.prayViewModel = prayViewModel
+            TablesViewModels.commonViewModel = commonViewModel
 
 //            updateLocale(this, Locale(settings.language))
 ////                val mode by remember { mutableStateOf(settings.mode) }
@@ -80,11 +91,11 @@ class  MainActivity : ComponentActivity() {
 
                 colorObject.mainColor = stringToColor(def.themeColor)
                 val rThemeColor = colorObject.mainColor
-                colorObject.menuContainerColor = lerp(rThemeColor, Color.Black, 0.3f)
+//                colorObject.menuContainerColor = lerp(rThemeColor, Color.Black, 0.3f)
                 colorObject.inputColor = rThemeColor.copy(alpha = 0.75f)
 
 
-                if(allPrays.isNotEmpty()) {
+                if (allPrays.isNotEmpty()) {
                     OremosChanganaTheme(darkTheme = mutableAppMode) {
                         // A surface container using the 'background' color from the theme
                         Surface(
@@ -92,9 +103,28 @@ class  MainActivity : ComponentActivity() {
                             color = MaterialTheme.colorScheme.background
                         ) {
 
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                                val postNotificationPermission = rememberPermissionState(permission = android.Manifest.permission.POST_NOTIFICATIONS)
+                                LaunchedEffect(key1 = true) {
+                                    if (!postNotificationPermission.status.isGranted) {
+                                        postNotificationPermission.launchPermissionRequest()
+                                    }
+                                }
+
+                            }
+
+//                            val appNotificationService = AppNotificationService(this, "novo title", "sdkjfla kfjlasdlfkjasd")
+//
+//                            Column {
+//                                Spacer(Modifier.height(40.dp))
+//                                Button(onClick = {appNotificationService.showBasicNotication()}) {
+//                                    Text("Basic notificaton")
+//                                }
+//                            }
+
                             val navController = rememberNavController()
 
-                            NavHost(navController = navController, startDestination = "home") {
+                            NavHost(navController = navController, startDestination = "oracoespage") {
                                 // define rotas
 
                                 //                        composable("splash") {
@@ -110,26 +140,29 @@ class  MainActivity : ComponentActivity() {
 
                                 composable(route = "oracoespage") {
                                     OracoesPage(
-                                        navController, prayViewModel
+                                        navController, prayViewModel, songViewModel, commonViewModel
                                     )
                                 }
-                                composable(route = "canticospage/{value}") { backStackEntry ->
+
+                                composable(route = "canticospage/{value}/{readbleValue}") { backStackEntry ->
                                     val value = backStackEntry.arguments?.getString("value") ?: ""
+                                    val readbleValue = backStackEntry.arguments?.getString("readbleValue") ?: ""
+
                                     CanticosPage(
-                                        navController, value, songViewModel,
+                                        navController, value, readbleValue, songViewModel, commonViewModel
                                     )
                                 }
                                 //
                                 composable(route = "eachCantico/{songid}") { aC ->
                                     val songid = aC.arguments?.getString("songid") ?: ""
                                     val songId = songid.toInt()
-                                    EachCantico(navController, songId, songViewModel, defViewModel)
+                                    EachCantico(navController, songId, songViewModel, reminderViewModel, defViewModel, commonViewModel)
                                 }
 
                                 composable(route = "eachOracao/{prayid}") { eO ->
                                     val prayid = eO.arguments?.getString("prayid") ?: ""
                                     val prayId = prayid.toInt()
-                                    EachOracao(navController, prayId, prayViewModel, defViewModel, reminderViewModel)
+                                    EachOracao(navController, prayId, prayViewModel, defViewModel, reminderViewModel, commonViewModel)
                                 }
 //                            //
                                 composable(route = "canticosAgrupados") {
@@ -141,7 +174,8 @@ class  MainActivity : ComponentActivity() {
                                 composable(route = "favoritospage") {
                                     FavoritosPage(
                                         navController,
-                                        prayViewModel, songViewModel
+                                        prayViewModel,
+                                        songViewModel, commonViewModel
                                     )
                                 }
 
@@ -170,13 +204,17 @@ class  MainActivity : ComponentActivity() {
                                     )
                                 }
 
-                                composable("configurereminder/{id}/{table}/{rdate}/{rtime}"){ cR ->
+                                composable("configurereminder/{id}/{table}/{rdate}/{rtime}/{reminderid}"){ cR ->
                                     val stringId = cR.arguments?.getString("id") ?: ""
                                     val id = stringId.toInt()
                                     val table = cR.arguments?.getString("table") ?: ""
-                                    val rDate = cR.arguments?.getLong("rdate") ?: 0L
-                                    val rTime = cR.arguments?.getLong("rtime") ?: 0L
-                                    ConfigureReminder(navController, id, table, rDate, rTime, reminderViewModel)
+                                    val rdate = cR.arguments?.getString("rdate") ?: ""
+                                    val rDate = rdate.toLong()
+                                    val rtime = cR.arguments?.getString("rtime") ?: ""
+                                    val rTime = rtime.toLong()
+                                    val rid = cR.arguments?.getString("reminderid") ?: ""
+                                    val rId = rid.toInt()
+                                    ConfigureReminder(navController, id, table, rDate, rTime, rId, reminderViewModel)
                                 }
                             }
                         }
