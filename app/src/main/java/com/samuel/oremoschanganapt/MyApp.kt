@@ -39,7 +39,7 @@ class MyApp: Application() {
             NotificationManager.IMPORTANCE_HIGH
         )
 
-        notificationChannel.description = "A notificaiton servi"
+        notificationChannel.description = "A notificaiton service"
 
         val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.createNotificationChannel(notificationChannel)

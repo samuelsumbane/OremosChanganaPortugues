@@ -1,7 +1,5 @@
 package com.samuel.oremoschanganapt.functionsKotlin
 import android.annotation.SuppressLint
-import android.app.NotificationChannel
-import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.os.Build
@@ -14,6 +12,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import android.app.Activity
+import android.app.AlarmManager
+import android.app.PendingIntent
 import android.graphics.Bitmap
 import androidx.compose.ui.graphics.Color
 import androidx.annotation.RequiresApi
@@ -26,6 +26,7 @@ import java.time.format.DateTimeFormatter
 import android.content.res.Configuration
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.TimePickerState
+import com.samuel.oremoschanganapt.ReminderReceiver
 import com.samuel.oremoschanganapt.ui.theme.Blue
 import com.samuel.oremoschanganapt.ui.theme.Green
 import com.samuel.oremoschanganapt.ui.theme.Lightblue
@@ -41,52 +42,32 @@ import java.util.Locale
 import java.time.ZoneOffset
 import java.util.Calendar
 
-//@SuppressLint("ScheduleExactAlarm")
-//@OptIn(ExperimentalMaterial3Api::class)
-//fun scheduleReminderCheck(context: Context) {
-//    val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-//    var title = ""
-//    var text = ""
-//    // 1 minuto --------->>
-//    val intervalMillis = 60 * 1000L
 
-//    val realm = MyApp.realm
-//    realm.writeBlocking {
-//        val reminders = this.query<Reminder>(query = "reminderDate == $0", getCurrentDateInMillis()).find()
 
-//        Log.d("Reminder", "${getCurrentDateInMillis()} | ${getCurrentTimeInMillis()}")
+@SuppressLint("ScheduleExactAlarm")
+@RequiresApi(Build.VERSION_CODES.M)
+fun scheduleNotificationForSongOrPray(context: Context, title: String, message: String, timestamp: Long) {
+    val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
-//        if (reminders.isNotEmpty()) {
-//            for (reminder in reminders) {
-//                title = if (reminder.reminderTable == "Pray") {
-//                    "A oracao a sua espera"
-//                } else {
-//                    "O cantico a sua espera"
-//                }
-//
-//                text = reminder.reminderData.toString()
-        //
-//        title = "kdjfas"
-//        text = "dfalsdf"
-//
-//                val intent = Intent(context, ReminderReceiver::class.java).apply {
-//                    putExtra("NOTIFICATION_TITLE", title)
-//                    putExtra("NOTIFICATION_MESSAGE", text)
-//                }
-//
-//                val pendingIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
-//
-//                alarmManager.setRepeating(
-//                    AlarmManager.RTC_WAKEUP,
-//                    System.currentTimeMillis() + intervalMillis,
-//                    intervalMillis,
-//                    pendingIntent
-//                )
-//            }
-//        }
-//    }
+    val intent = Intent(context, ReminderReceiver::class.java).apply {
+        putExtra("NOTIFICATION_TITLE", title)
+        putExtra("NOTIFICATION_MESSAGE", message)
+    }
 
-//}
+    val pendingIntent = PendingIntent.getBroadcast(
+        context,
+        0,
+        intent,
+        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+    )
+
+    alarmManager.setExactAndAllowWhileIdle(
+        AlarmManager.RTC_WAKEUP,
+        timestamp,
+        pendingIntent
+    )
+}
+
 
 
 // verifica se é um numero ou nao
@@ -96,7 +77,7 @@ fun isNumber(valor: Any): Boolean {
         when (valor) {
             is Byte, is Short, is Int, is Long, is Float, is Double -> true
             is String -> {
-                // Tenta fazer a conversão de String para um tipo numérico
+                // Try to convert string to number ---------->>
                 valor.toDouble()
                 true
             }

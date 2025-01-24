@@ -1,8 +1,8 @@
 package com.samuel.oremoschanganapt.view.sideBar
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,7 +12,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
@@ -30,7 +32,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -39,6 +40,9 @@ import androidx.compose.ui.window.PopupProperties
 import com.samuel.oremoschanganapt.components.colorPickerDemo
 import com.samuel.oremoschanganapt.functionsKotlin.stringToColor
 import com.samuel.oremoschanganapt.R
+import com.samuel.oremoschanganapt.components.DefTabButton
+import com.samuel.oremoschanganapt.components.buttons.ExpandContentTabBtn
+import com.samuel.oremoschanganapt.components.buttons.NormalButton
 
 // AppearanceWidget ============>
 @Composable
@@ -50,38 +54,15 @@ fun AppearanceWidget(
     var mode by remember { mutableStateOf(modeSetting) }
     var themeColor by remember { mutableStateOf(themeColorSetting) }
 
-    Column(
-        Modifier.fillMaxWidth(0.90f)
-            .border(1.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(10.dp))
-            .background(Color.Transparent, RoundedCornerShape(10.dp)),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.SpaceBetween
-    ) {
-        Button(
-            onClick = { visibleAppearanceTab = !visibleAppearanceTab},
-            modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color.Transparent,
-                contentColor = MaterialTheme.colorScheme.tertiary
-            )
+    DefTabButton {
+        ExpandContentTabBtn(
+            ImageVector.vectorResource(R.drawable.grid_view_24),
+            "Aparência"
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Icon(
-                    imageVector = ImageVector.vectorResource(R.drawable.grid_view_24),
-                    contentDescription = "language icon"
-                )
-                Text(text = "Aparencia", fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                Icon(
-                    Icons.Default.KeyboardArrowDown,
-                    contentDescription = "go to languagepage"
-                )
-            }
+            visibleAppearanceTab = !visibleAppearanceTab
         }
 
-        if(visibleAppearanceTab){
+        AnimatedVisibility(visibleAppearanceTab){
             Column(
                 Modifier
                     .fillMaxWidth()
@@ -98,14 +79,7 @@ fun AppearanceWidget(
             ) {
                 Spacer(modifier = Modifier.height(10.dp))
 
-                Column(
-                    Modifier
-                        .fillMaxWidth()
-//                        .background(
-//                            MaterialTheme.colorScheme.onSecondary,
-//                            RoundedCornerShape(10.dp)
-//                        ),
-                ) {
+                Column(Modifier.fillMaxWidth()) {
                     Row(Modifier.padding(start = 15.dp, top = 10.dp)) {
                         SidebarText( text = "Modo", fontSize = 15 )
                     }
@@ -191,10 +165,10 @@ fun SidebarText(text: String, bold: Boolean = false, fontSize: Int = 16){
 }
 
 @Composable
-fun RowColors(
+fun RowColors (
     rowText: String,
     defaultColor: String
-): String{
+): String {
     var returnValue by remember { mutableStateOf("") }
     Row(
         Modifier
@@ -212,3 +186,64 @@ fun RowColors(
     }
     return returnValue
 }
+
+@Composable
+fun RowAbout () {
+    var visibleAppearanceTab by remember { mutableStateOf(false) }
+
+    DefTabButton {
+        ExpandContentTabBtn(
+            Icons.Default.Info, "Sobre"
+        ) { visibleAppearanceTab = !visibleAppearanceTab }
+
+        AnimatedVisibility(visibleAppearanceTab) {
+            Column(
+                Modifier
+                    .fillMaxWidth()
+                    .background(
+                        MaterialTheme.colorScheme.onSecondary,
+                        RoundedCornerShape(
+                            topStart = 0.dp,
+                            topEnd = 0.dp,
+                            bottomEnd = 10.dp,
+                            bottomStart = 10.dp
+                        )
+                    ),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Spacer(modifier = Modifier.height(10.dp))
+                About()
+            }
+        }
+    }
+}
+
+
+@Composable
+fun RowBackup(
+    onBackupClick: () -> Unit,
+    onRestoreClick: () -> Unit
+) {
+    var isThisTabVisible by remember { mutableStateOf(false) }
+
+    DefTabButton {
+        ExpandContentTabBtn(
+            Icons.Default.Refresh,
+            "Backup / Restorar"
+        ) { isThisTabVisible = !isThisTabVisible }
+
+        AnimatedVisibility(isThisTabVisible) {
+            Column() {
+                Text("Pode salvar (Backup) a lista de orações ou/e cânticos favoritos no dispositivo e carregar (Restorar) quando quiser actualizar a lista actual.", modifier = Modifier.padding(10.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(10.dp),
+                    horizontalArrangement = Arrangement.SpaceAround
+                ) {
+                    NormalButton("Backup", Color.DarkGray) { onBackupClick() }
+                    NormalButton("Restorar", Color.DarkGray) { onRestoreClick() }
+                }
+            }
+        }
+    }
+}
+

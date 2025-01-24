@@ -118,24 +118,15 @@ fun EachOracao(navController: NavController, prayId: Int,
                         // The star icon ------>>
 
                         val prayLoved = commonViewModel.getLovedItem("Pray", prayData.prayId)
-                        val itemIsLoved: Boolean = prayLoved != null
+                        val lovedState = remember { mutableStateOf(prayLoved != null) }
 
-                        StarButton(
-                            itemLoved = itemIsLoved,
-                            commonViewModel = commonViewModel,
-                            id = prayData.prayId,
-                            itemTable = "Pray"
-                        )
-
-
-//                        var d = comm
-//                        lovedPray = StarButton(
-//                            itemLoved = lovedPray,
-//                            prayViewModel = prayViewModel,
-//                            songViewModel = null,
-//                            id = prayData.prayId,
-//                            view = "prayViewModel"
-//                        )
+                        StarButton(lovedState = lovedState) {
+                            if (lovedState.value) {
+                                commonViewModel.removeLovedId("Pray", prayData.prayId)
+                            } else {
+                                commonViewModel.addLovedId("Pray", prayData.prayId)
+                            }
+                        }
 
                         ShareIconButton(context,  text = "${prayData.title} \n ${prayData.body}")
                     }

@@ -1088,5 +1088,32 @@ val songsData = listOf(
     Song("541","UsoVario","Tu tens palavras da vida eterna (328)","","Coro: Tu tens palavras da vida eterna\n a quem irei eu, Meu Senhor. (2 v)\n\n 1 - Tu és a fonte de água viva\n     se eu bebo desta fonte viverei. \n \n 2 - Tu és o pão da vida,\n     Se eu ando nesta luz viverei\n \n 3 - Tu és a luz do mundo,\n     e eu ando nesta luz viverei."),
 
     Song("542","UsoVario","Tudo é possível","","Coro: Tudo é possível a quem amar seu irmão\n Tudo é possível a quem repartir seu pão.\n\n 1 - Quem tem amor ao irmão e confia no Senhor\n     Faz milagre do pão e cria o mundo melhor\n \n 2 - Se quiseres, meu irmão, o mundo pode mudar\n     Diz sim ao teu coração e o milagre vai-se dar.\n \n 3 - A salvação deste povo, não é de fora que vem\n     Vem do teu coração, cheio de paz e de bem.\n \n 4 - Se tens um coração nobre, a fome pode acabar\n     de és pobre e dás ao mais pobre, o teu pouco há-de sobrar,\n \n 5 - Jovem, Criança, mulher, quem ama tem alma rica\n     O que um pobre ao outro der, é pão que se multiplica.\n \n 6 - Pão nosso de cada dia, que nos dá o Pai do Céu\n     Pão da vida e da alegria, Se for pão nosso e não, meu.")
+)
 
+
+var groupValues = mapOf(
+    "new" to "novos cânticos",
+    "todos" to "todos cânticos",
+    "Entrada" to "entrada | a ku sungula a ntirho",
+    "ActoPenitencial" to "acto penitencial",
+    "Gloria" to "glória",
+    "Aclamacao" to "aclamação ao envagelho | a ku twalisa envagelho",
+    "Ofertorio" to "ofertório | ta minyikelo",
+    "Elevacao" to "elevação",
+    "PaiNosso" to "pai-nosso | ta bava wa hina",
+    "SaudacaoPaz" to "saudacao da paz | ta ku losava hi ku rula",
+    "CordeiroDeus" to "cordeiro de deus | xinhempfana",
+    "Comunhao" to "comunhão | xilalelo",
+    "Gracas" to "acção de graças | ta ku tlangela",
+    "Natal" to "natal | ta ku pswaliwa ka",
+    "Quaresma" to "quaresma | ta nkari wa mahlomulo",
+    "Pascoa" to "páscoa | ta nkarhi wa paskwa",
+    "Ascensao" to "ascensão e pentecconstes | ta ku xika ka moya wa ku kwetsima",
+    "NossaSenhora" to "nossa senhora | ta maria wa ku phat",
+    "Baptismo" to "baptismo - profissão de fé | ta ntsakamiso",
+    "Catecumenado" to "catecumenado, vocação, apostolado",
+    "Matrimonio" to "matrimónio",
+    "Adoracao" to "adoração, bênção, acção de grança",
+    "Funerais" to "funerais | ta makhombo",
+    "UsoVario" to "uso vário | tinsimu tinwani"
 )

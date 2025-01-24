@@ -1,15 +1,11 @@
-package com.samuel.oremoschanganapt.view.remindersPages
+package com.samuel.oremoschanganapt.view.morepagesPackage.remindersPages
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.outlined.ArrowBack
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -29,21 +25,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.samuel.oremoschanganapt.components.DatePickerModalInput
 import com.samuel.oremoschanganapt.components.TimePickerDialog
 import com.samuel.oremoschanganapt.components.buttons.NormalButton
-import com.samuel.oremoschanganapt.components.selectDateOrTimeOptions
 import com.samuel.oremoschanganapt.components.toastAlert
 import com.samuel.oremoschanganapt.db.ReminderViewModel
-import com.samuel.oremoschanganapt.functionsKotlin.americanFormat
 import com.samuel.oremoschanganapt.functionsKotlin.convertLongToTimeString
 import com.samuel.oremoschanganapt.functionsKotlin.convertTimePickerStateToLong
-import com.samuel.oremoschanganapt.functionsKotlin.localTime
 import com.samuel.oremoschanganapt.functionsKotlin.longToRealDate
-import com.samuel.oremoschanganapt.functionsKotlin.stringToColor
-import com.samuel.oremoschanganapt.functionsKotlin.timeStringToLong
 import com.samuel.oremoschanganapt.repository.colorObject
 import com.samuel.oremoschanganapt.ui.theme.BlueButton
 
@@ -83,20 +76,22 @@ fun ConfigureReminder(navController: NavController,
         var selectedTime: TimePickerState? by remember { mutableStateOf(null) }
 
         Column (
-            Modifier.fillMaxSize()
+            Modifier
+                .fillMaxSize()
                 .padding(paddingVales)
-                .background(MaterialTheme.colorScheme.background)
+                .background(MaterialTheme.colorScheme.background),
+            verticalArrangement = Arrangement.SpaceEvenly
         ) {
-            Column ( Modifier.padding(start = 60.dp, top = 20.dp) ) {
-                Text("Data: ${reminderdate?.let { longToRealDate(it) }} ")
-                Spacer(Modifier.height(15.dp))
-                NormalButton("Definir a data", mainColor) { showDatePicker = true }
+            Row( Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceAround) {
 
-                Spacer(Modifier.height(40.dp))
+                BigTextButton(text = "${reminderdate?.let { longToRealDate(it) }}") {
+                    showDatePicker = true
+                }
 
-                Text("Hora: ${ remindertime?.let { convertLongToTimeString(it) } }")
-                Spacer(Modifier.height(15.dp))
-                NormalButton("Definir a hora", mainColor) { showTimePicker = true }
+                BigTextButton(text = "${ remindertime?.let { convertLongToTimeString(it) }}") {
+                    showTimePicker = true
+                }
+
             }
 
             if (showTimePicker) {
@@ -121,16 +116,15 @@ fun ConfigureReminder(navController: NavController,
                 ) { showDatePicker = false }
             }
 
-            Spacer(Modifier.height(60.dp))
-
             Row(
-                Modifier.fillMaxWidth(0.9f)
+                Modifier
+                    .fillMaxWidth(0.9f)
                     .height(40.dp)
                     .align(Alignment.CenterHorizontally),
                 horizontalArrangement = Arrangement.SpaceAround
             ){
 
-                NormalButton("Cancelar", BlueButton, hasBorder = true,
+                NormalButton("Cancelar", BlueButton,
                     textColor = BlueButton ) {
                     navController.popBackStack()
                 }
@@ -160,5 +154,13 @@ fun ConfigureReminder(navController: NavController,
 
             }
         }
+    }
+}
+
+@Composable
+fun BigTextButton(text: String, onClick: () -> Unit) {
+    val color = MaterialTheme.colorScheme.primary
+    TextButton(onClick) {
+        Text(text, color = color, fontSize = 32.sp, fontWeight = FontWeight.Bold)
     }
 }

@@ -1,6 +1,5 @@
 package com.samuel.oremoschanganapt.components
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -8,21 +7,20 @@ import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
-import com.samuel.oremoschanganapt.repository.colorObject
 
 @Composable
 fun SearchContainer(
-    pesquisatexto: String,
+    searchString: String,
     searchInputLabel: String = "Pesquisar oração",
     isContainerActive: Boolean = false,
     showIcon: Boolean = true
@@ -31,42 +29,45 @@ fun SearchContainer(
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp
 
-    val percent = ( 35.0 * screenWidth.toDouble()  / 100)
-    val percentTwoDigits = String.format("%.2f", percent).toDouble()
-    val columnW = screenWidth - percentTwoDigits
-    var pesquisaTexto by remember { mutableStateOf(pesquisatexto) }
-//    val showIcon =
-//    val iconColor = MaterialTheme.colorScheme.onPrimary
+    val columnW by remember(screenWidth) {
+        derivedStateOf { screenWidth - (screenWidth * 0.35) }
+    }
+
+    var pesquisaTexto by remember { mutableStateOf(searchString) }
+    var setFocus by remember { mutableStateOf(true) }
 
     Column(
         Modifier
-            .width(if(activeContainer) columnW.dp else 40.dp)
+            .width(if (activeContainer) columnW.dp else 32.dp)
             .height(64.dp)
-//            .background(Color.Red)
-            .clickable { activeContainer = !activeContainer }
+            .clickable {
+                activeContainer = !activeContainer
+                setFocus = activeContainer
+            }
     ){
-        if(activeContainer){
-            Row {
-                InputPesquisa(
+        if (activeContainer) {
+            Row (
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
+            ) {
+                InputSearch(
                     value = pesquisaTexto,
                     onValueChange = { pesquisaTexto = it },
-                    modifier = Modifier.fillMaxWidth(0.9f).height(52.dp),
-                    label = searchInputLabel,
-                    maxLines = 1
+                    modifier = Modifier.align(Alignment.CenterVertically),
                 )
 
                 if (showIcon) {
-                    Column(Modifier.fillMaxHeight(),
+                    Column(Modifier.fillMaxHeight()
+                        .width(30.dp),
                         verticalArrangement = Arrangement.Center
                     ){
-                        IconButton(onClick = {activeContainer = !activeContainer}){
+                        IconButton(onClick = { activeContainer = !activeContainer }){
                             Icon(Icons.Default.KeyboardArrowRight, contentDescription="Close search input",
                                 modifier = Modifier.width(30.dp).fillMaxHeight(0.9f)
                             )
                         }
                     }
                 }
-
             }
 
         } else {

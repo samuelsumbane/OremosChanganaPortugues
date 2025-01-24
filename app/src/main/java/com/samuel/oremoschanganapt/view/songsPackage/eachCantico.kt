@@ -35,6 +35,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.samuel.oremoschanganapt.components.LoadingScreen
 import com.samuel.oremoschanganapt.components.buttons.ShortcutsButton
 import com.samuel.oremoschanganapt.components.buttons.StarButton
 import com.samuel.oremoschanganapt.db.ReminderViewModel
@@ -58,11 +59,11 @@ fun EachCantico(navController: NavController, songId: Int,
     if(songData != null) {
         val reminderes by reminderViewModel.reminders.collectAsState()
         //
-        val prayLoved = commonViewModel.getLovedItem("Song", songData.songId)
-        val itemIsLoved: Boolean = prayLoved != null
-        var lovedSong by remember { mutableStateOf(itemIsLoved) }
-
-
+        val songLoved = commonViewModel.getLovedItem("Song", songData.songId)
+//        val itemIsLoved: Boolean = songLoved != null
+        val lovedState = remember { mutableStateOf(songLoved != null) }
+        
+//        var lovedSong by remember { mutableStateOf() }
         Scaffold(
             topBar = {
                 TopAppBar(
@@ -110,31 +111,28 @@ fun EachCantico(navController: NavController, songId: Int,
                         }
 
                         // ---------->>
-                        lovedSong = StarButton(
-                            itemLoved = itemIsLoved,
-                            commonViewModel = commonViewModel,
-                            id = songData.songId,
-                            itemTable = "Song"
-                        )
+                        StarButton(lovedState = lovedState) {
+                            if (lovedState.value) {
+                                commonViewModel.removeLovedId("Song", songData.songId)
+                            } else {
+                                commonViewModel.addLovedId("Song", songData.songId)
+                            }
+                        }
 
                         ShareIconButton(context,  text = "${songData.number} - ${songData.title} \n ${songData.body}")
                     }
                 )
             },
 
-            ){paddingValues ->
+            ) { paddingValues ->
 
             val scrollState = rememberScrollState()
-
             if(allDef.isNotEmpty()) {
-
                 val def = allDef.first()
                 val dbScale by remember { mutableStateOf(def.textScale) }
                 var scale by remember { mutableStateOf(dbScale.toFloat()) }
 
-
-                Box(modifier = Modifier
-                    .fillMaxSize()
+                Box(modifier = Modifier.fillMaxSize()
                     .pointerInput(Unit) {
                         detectTransformGestures { _, pan, zoom, _ ->
                             val newScale = scale * zoom
@@ -144,8 +142,7 @@ fun EachCantico(navController: NavController, songId: Int,
                     }
                 ) {
                     Column(
-                        modifier = Modifier
-                            .fillMaxSize()
+                        modifier = Modifier.fillMaxSize()
                             .padding(paddingValues)
                             .verticalScroll(scrollState),
                         horizontalAlignment = Alignment.CenterHorizontally
@@ -166,14 +163,11 @@ fun EachCantico(navController: NavController, songId: Int,
                         Text(text = songData.body, fontSize = 19.sp * scale, lineHeight = (24.sp * scale))
 
                     }
-
                 }
-                ShortcutsButton(navController)
 
+                ShortcutsButton(navController)
             }
         }
-    } else {
-        Text("Carregando a cantico...")
-    }
+    } else LoadingScreen()
 
 }

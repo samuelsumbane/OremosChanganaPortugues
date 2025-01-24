@@ -1,8 +1,9 @@
-package com.samuel.oremoschanganapt.view
+package com.samuel.oremoschanganapt.view.morepagesPackage
 
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -27,6 +28,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -34,6 +36,7 @@ import androidx.navigation.NavController
 import com.samuel.oremoschanganapt.components.BottomAppBarPrincipal
 import com.samuel.oremoschanganapt.components.PrayRow
 import com.samuel.oremoschanganapt.components.SearchContainer
+import com.samuel.oremoschanganapt.components.SidebarNav
 import com.samuel.oremoschanganapt.components.SongRow
 import com.samuel.oremoschanganapt.components.buttons.ShortcutsButton
 import com.samuel.oremoschanganapt.functionsKotlin.isNumber
@@ -41,13 +44,16 @@ import com.samuelsumbane.oremoschanganapt.db.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FavoritosPage(
+fun LovedDataPage(
     navController: NavController,
     prayViewModel: PrayViewModel,
     songViewModel: SongViewModel,
     commonViewModel: CommonViewModel
 ){
     var searchValue by remember { mutableStateOf("") }
+    val configuration = LocalConfiguration.current
+    val isPortrait = configuration.orientation == android.content.res.Configuration.ORIENTATION_PORTRAIT
+
 
     val lovedData by commonViewModel.lovedData.collectAsState()
     val lPrays = mutableListOf<Pray>()
@@ -71,10 +77,8 @@ fun FavoritosPage(
 
     val filteredPrays = remember(lPrays, searchValue){
         if (searchValue.isNotEmpty()) {
-            lPrays.filter { it.title.contains(searchValue, ignoreCase = true)}
-        } else {
-            lPrays
-        }
+            lPrays.filter { it.title.contains(searchValue, ignoreCase = true) }
+        } else lPrays
     }
 
     val filteredSongs = remember(lSongs, searchValue){
@@ -84,12 +88,11 @@ fun FavoritosPage(
                 lSongs.filter { it.number == searchValue }
             } else {
                 lSongs.filter {
-                    it.title.contains(searchValue,ignoreCase = true)
+                    it.title.contains(searchValue, ignoreCase = true)
                 }
             }
-        } else { lSongs }
+        } else lSongs
     }
-
 
     Scaffold(
         topBar = {
@@ -104,27 +107,31 @@ fun FavoritosPage(
                     }
                 },
                 actions = {
-
                     searchValue = SearchContainer(searchValue, "Pesquisar favoritos")
                 }
             )
         },
         bottomBar = {
-            BottomAppBarPrincipal(navController, "oracoespage")
+            if (isPortrait) {
+                BottomAppBarPrincipal(navController, "morepages")
+            }
         }
-    ){paddingVales ->
+    ) { paddingVales ->
 
-        Column(modifier = Modifier
-            .fillMaxSize()
-            .padding(paddingVales),
-        ){
+//        Column(modifier = Modifier.fillMaxSize().padding(paddingVales),
+//        ){
+        Row(Modifier.fillMaxSize().padding(paddingVales)) {
+            if (!isPortrait) {
+                SidebarNav(navController, "canticosAgrupados")
+            }
+
             if (lovedData.isEmpty()){
                 Column(
                     modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally
                 ){
                     Text(text = "Nenhuma oração ou cântico encontrado.", textAlign = TextAlign.Center, fontWeight = FontWeight.Bold)
                 }
-            }else if (lovedData.isNotEmpty()) {
+            } else  {
 
                 LazyColumn(
                     modifier = Modifier.fillMaxWidth().padding(8.dp),

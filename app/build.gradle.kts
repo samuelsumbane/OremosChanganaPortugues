@@ -91,10 +91,6 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 
 
-    // Room
-    val roomVersion = "2.6.1"
-    implementation("androidx.room:room-ktx:$roomVersion")
-
     // Navigation
     implementation("androidx.navigation:navigation-compose:2.7.6")
 
@@ -106,4 +102,8 @@ dependencies {
 
     //
     implementation("androidx.work:work-runtime-ktx:2.7.1")
+
+    //
+    implementation("com.google.code.gson:gson:2.10.1")
+
 }

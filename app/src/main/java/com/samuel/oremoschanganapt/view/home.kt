@@ -1,18 +1,12 @@
 package com.samuel.oremoschanganapt.view
 
 import android.annotation.SuppressLint
-import android.app.AlarmManager
-import android.app.PendingIntent
-import android.content.Context
-import android.content.Intent
 import android.os.Build
-import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -28,41 +22,33 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.*
 import androidx.navigation.NavController
-import androidx.work.Data
-import androidx.work.ExistingWorkPolicy
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkManager
-import com.samuel.oremoschanganapt.AppNotificationService
 //import com.samuel.oremoschanganapt.NotificationWorker
 import com.samuel.oremoschanganapt.R
-import com.samuel.oremoschanganapt.ReminderReceiver
 //import com.samuel.oremoschanganapt.apresentacaoOracao.*
 import com.samuel.oremoschanganapt.components.*
 import com.samuel.oremoschanganapt.db.ReminderViewModel
-import com.samuel.oremoschanganapt.functionsKotlin.americanFormat
 import com.samuel.oremoschanganapt.functionsKotlin.isNumber
-import com.samuel.oremoschanganapt.functionsKotlin.localTime
-import com.samuel.oremoschanganapt.functionsKotlin.restartActivity
 //import com.samuel.oremoschanganapt.functionsKotlin.scheduleReminderCheck
 import com.samuel.oremoschanganapt.functionsKotlin.stringToColor
+import com.samuel.oremoschanganapt.repository.TablesViewModels
 import com.samuel.oremoschanganapt.repository.colorObject
 import com.samuel.oremoschanganapt.ui.theme.Dodgerblue
-import com.samuel.oremoschanganapt.ui.theme.HomeColor
+import com.samuel.oremoschanganapt.ui.theme.ShapeEditText
 //import com.samuel.oremoschanganapt.ui.theme.grayHomeColor
-import com.samuel.oremoschanganapt.view.sideBar.About
 import com.samuel.oremoschanganapt.view.sideBar.AppearanceWidget
+import com.samuel.oremoschanganapt.view.sideBar.RowBackup
+import com.samuel.oremoschanganapt.view.sideBar.RowAbout
 import com.samuelsumbane.oremoschanganapt.db.DefViewModel
 import com.samuelsumbane.oremoschanganapt.db.PrayViewModel
 import com.samuelsumbane.oremoschanganapt.db.SongViewModel
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
-import java.util.concurrent.TimeUnit
 
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -74,63 +60,112 @@ fun Home( navController: NavController, songViewModel: SongViewModel,
 
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+//    val drawerState = rememberDrawerState(initialValue = DrawerValue.Open)
     val scope = rememberCoroutineScope()
     val scrollState = rememberScrollState()
     var textInputValue by remember { mutableStateOf("") }
-
     val allSongs by songViewModel.songs.collectAsState()
     val allPrays by prayViewModel.prays.collectAsState()
     val defs by defViewModel.defs.collectAsState()
-
     val allR by reminderViewModel.reminders.collectAsState()
-
     var showModal by remember { mutableStateOf(false) }
     val context = LocalContext.current
+    val commonViewModel = TablesViewModels.commonViewModel!!
 
+    val configuration = LocalConfiguration.current
+    val isPortrait = configuration.orientation == android.content.res.Configuration.ORIENTATION_PORTRAIT
+
+
+    val filteredPrays = remember(allPrays, textInputValue){
+        if (textInputValue.isNotEmpty()) {
+            allPrays.filter { it.title.contains(textInputValue, ignoreCase = true)}
+        } else emptyList()
+    }
+
+    val filteredSongs = remember(allSongs, textInputValue){
+        if (textInputValue.isNotBlank()) {
+            val numOrNot = isNumber(textInputValue)
+            if (numOrNot) {
+                allSongs.filter { it.number == textInputValue }
+            } else {
+                allSongs.filter {
+                    it.title.contains(textInputValue,ignoreCase = true)
+                }
+            }
+        } else emptyList()
+    }
+
+    val screenWidth = configuration.screenWidthDp
+    val screenHeight = configuration.screenHeightDp
+
+    val inVertical by remember(screenWidth) {
+        derivedStateOf { screenWidth - (screenWidth * 0.15) }
+    }
+    val inHorizontal by remember(screenHeight) {
+        derivedStateOf { screenHeight }
+    }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
         gesturesEnabled = true,
         drawerContent = {
-            ModalDrawerSheet {
-//                About()
-
+            ModalDrawerSheet(
+                Modifier.width(if (isPortrait) inVertical.dp else inHorizontal.dp )
+                    .padding(end = 10.dp)
+            ) {
                 Spacer(modifier = Modifier.height(30.dp))
-                if (defs.isNotEmpty()){
-                    val def = defs.first()
-                    var themeColor by remember { mutableStateOf(def.themeColor)}
-                    var mode by remember { mutableStateOf(def.appMode) }
+                var mainColor = colorObject.mainColor
 
-                    LaunchedEffect(themeColor) {
-                        coroutineScope {
-                            if (def.themeColor != themeColor){
-                                defViewModel.updateDef("themeColor", themeColor)
-                                var mainColor = colorObject.mainColor
+                Column (
+                    Modifier.fillMaxWidth(0.95f).padding(start=10.dp)
+                        .verticalScroll(scrollState),
+                    verticalArrangement = Arrangement.spacedBy(40.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
 
-                                mainColor = stringToColor(themeColor)
-                                colorObject.menuContainerColor = lerp(mainColor, Color.Black, 0.3f)
-                                colorObject.inputColor = mainColor.copy(alpha = 0.75f)
+                ) {
+                    Spacer(Modifier.height(5.dp))
+                    Text("Oremos Changana - Português", style = MaterialTheme.typography.titleLarge)
+                    Spacer(Modifier.height(5.dp))
 
+                    if (defs.isNotEmpty()) {
+                        val def = defs.first()
+                        var themeColor by remember { mutableStateOf(def.themeColor)}
+                        var mode by remember { mutableStateOf(def.appMode) }
+
+                        LaunchedEffect(themeColor) {
+                            coroutineScope {
+                                if (def.themeColor != themeColor){
+                                    defViewModel.updateDef("themeColor", themeColor)
+                                    mainColor = stringToColor(themeColor)
+                                    colorObject.menuContainerColor = lerp(mainColor, Color.Black, 0.3f)
+                                    colorObject.inputColor = mainColor.copy(alpha = 0.75f)
+                                }
                             }
                         }
-                    }
 
-                    LaunchedEffect(mode) {
-                        coroutineScope {
-                            defViewModel.updateDef("appMode", mode)
-                            if (mode != def.appMode){
-                                toastAlert(context, "Modo guardado! Será aplicado na próxima vez que abrir a aplicação", duration = Toast.LENGTH_LONG)
+                        LaunchedEffect(mode) {
+                            coroutineScope {
+                                defViewModel.updateDef("appMode", mode)
+                                if (mode != def.appMode){
+                                    toastAlert(context, "Modo guardado! Será aplicado na próxima vez que abrir a aplicação", duration = Toast.LENGTH_LONG)
+                                }
                             }
                         }
-                    }
+                        // appearencia ------->>
+                        val (newMode, newThemeColor) = AppearanceWidget(mode, themeColor)
+                        mode = newMode; themeColor = newThemeColor
 
-                    // appearencia ==============>
-                    val (newMode, newThemeColor) = AppearanceWidget(mode, themeColor)
-                    mode = newMode; themeColor = newThemeColor
+                    } else LoadingScreen()
 
-                } else {
-                    Text("Carregando dados")
+                    RowBackup(
+                        onBackupClick = { commonViewModel.exportBackupToExternalStorage(context) },
+                        onRestoreClick = { commonViewModel.restoreBackupFromExternalStorage(context) }
+                    )
+
+                    // About --------->>
+                    RowAbout()
                 }
+
 
             }
         }
@@ -144,6 +179,7 @@ fun Home( navController: NavController, songViewModel: SongViewModel,
                     modifier = Modifier.fillMaxSize()
                         .background(color = Color.Transparent)
                 ) {
+
                     Image(
                         painter = painterResource(id = R.drawable.homepic),
                         contentDescription = null,
@@ -151,32 +187,10 @@ fun Home( navController: NavController, songViewModel: SongViewModel,
                         contentScale = ContentScale.Crop
                     )
 
-                    //
-                    allR.forEach {
-                        Log.d("Reminder", "ex: ${it.reminderDate} || ${it.reminderTime}")
-                    }
-
-                    //
+//                    allR.forEach {
+//                        Log.d("Reminder", "ex: ${it.reminderDate} || ${it.reminderTime}")
+//                    }
 //                    scheduleReminderCheck(context)
-
-//                    val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-//                    val intent = Intent(context, ReminderReceiver::class.java)
-//                    val pendingIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
-//
-//                    // Define o intervalo para 1 minuto
-//                    val intervalMillis = 60 * 1000L
-//
-//                    // Agende o AlarmManager para rodar periodicamente
-//                    alarmManager.setRepeating(
-//                        AlarmManager.RTC_WAKEUP,
-//                        System.currentTimeMillis() + intervalMillis,
-//                        intervalMillis,
-//                        pendingIntent
-//                    )
-
-
-                    //
-
 
                     Column(
                         modifier = Modifier.fillMaxWidth()
@@ -188,49 +202,56 @@ fun Home( navController: NavController, songViewModel: SongViewModel,
                         verticalArrangement = Arrangement.SpaceAround,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Row(
-                            Modifier.fillMaxWidth()
-//                            .background(Color.Red)
-                        ){
+                        Row (Modifier.fillMaxWidth()) {
                             IconButton(onClick = { scope.launch { drawerState.open() } }) {
                                 Icon(imageVector = Icons.Default.Menu, contentDescription = "Menu",
                                     tint = Color.White, modifier = Modifier.size(30.dp))
                             }
                         }
 
-                        InputPesquisa(
+                        OutlinedTextField(
                             value = textInputValue,
                             onValueChange = {
                                 textInputValue = it
                                 showModal = textInputValue != ""
                             },
-                            modifier = Modifier
-                                .fillMaxWidth(0.75f)
-                                .height(58.dp),
-                            label = "Pesquisar Cântico / Oração",
+                            label = { Text(text = "Pesquisar Cântico / Oração", color = MaterialTheme.colorScheme.onPrimary) },
                             maxLines = 1,
-                            inputColor = colorObject.inputColor
+                            shape = ShapeEditText.medium,
+                            colors = TextFieldDefaults.colors(
+                                focusedContainerColor =  colorObject.inputColor,
+                                unfocusedContainerColor = colorObject.inputColor,
+                                focusedIndicatorColor = Color.Transparent,
+                                unfocusedIndicatorColor = Color.Transparent
+                            ),
+                            textStyle = TextStyle(color = MaterialTheme.colorScheme.onPrimary),
+                            modifier = Modifier.height(55.dp)
                         )
 
-                        Column{
-                            Text(
-                                text = "Oremos",
-                                fontWeight = FontWeight.Bold,
-                                textAlign = TextAlign.Center,
-                                color = Color.White,
-                                fontSize = 45.sp
-                            )
-                            Spacer(modifier = Modifier.height(4.dp))
-                            Text(
-                                text = "A HI KHONGELENI",
-                                fontWeight = FontWeight.Bold,
-                                textAlign = TextAlign.Center,
-                                color = Color.White,
-                                fontSize = 30.sp
-                            )
-                        }
 
+                        Column {
+                            HomeTexts(text = "Oremos", fontSize = 45)
+                            Spacer(modifier = Modifier.height(4.dp))
+                            HomeTexts(text = "A HI KHONGELENI", fontSize = 30)
+                        }
                     }
+                    //
+
+
+//                    Button(
+//                        onClick = {
+//                             commonViewModel.exportBackupToExternalStorage(context)
+//                        }
+//                    ) {
+//                        Text("Backup")
+//                    }
+//
+////                    Spacer(Modifier.height(40.dp))
+//                    Button({
+//                        commonViewModel.restoreBackupFromExternalStorage(context)
+//                    }) {
+//                        Text("Carregar")
+//                    }
 
                     if (showModal) {
                         Column(
@@ -249,142 +270,29 @@ fun Home( navController: NavController, songViewModel: SongViewModel,
                                     .padding(8.dp),
                                 verticalArrangement = Arrangement.spacedBy(16.dp)
                             ) {
-                                items(
-                                    if (textInputValue.isNotBlank()) {
-                                        allPrays.filter {
-                                            it.title.contains(
-                                                textInputValue,
-                                                ignoreCase = true
-                                            )
-                                        }
-                                    } else {
-                                        allPrays.filter { it.title == "0000" } // invalid number, in order to clean the list
-                                    }
-                                ){  oracao ->
-                                    val prayTitle = oracao.title
 
-                                    Row(
-                                        modifier = Modifier
-                                            .fillMaxSize()
-                                            .height(45.dp)
-                                            .background(
-                                                MaterialTheme.colorScheme.primary,
-                                                RoundedCornerShape(10.dp)
-                                            )
-                                            .padding(8.dp, 0.dp, 0.dp, 0.dp)
-                                            .clickable {
-                                                navController.navigate("eachOracao/${oracao.prayId}")
-                                            }
-                                    ) {
-                                        Row(
-                                            modifier = Modifier
-                                                .fillMaxSize()
-                                                .weight(0.9f)
-                                                .fillMaxHeight()
-                                        ) {
-
-                                            Column(
-                                                modifier = Modifier.weight(1f),
-                                                horizontalAlignment = Alignment.CenterHorizontally,
-                                                verticalArrangement = Arrangement.Center
-                                            ) {
-                                                Text(
-                                                    text = prayTitle,
-                                                    fontSize = 18.sp,
-                                                    color = MaterialTheme.colorScheme.onPrimary,
-                                                    textAlign = TextAlign.Center
-                                                )
-                                                Text(
-                                                    text = "Oração",
-                                                    fontSize = 13.sp,
-                                                    color = MaterialTheme.colorScheme.onPrimary,
-                                                    textAlign = TextAlign.Center
-                                                )
-                                            }
-                                        }
-                                    }
+                                items (filteredPrays, key={ it.prayId }) { oracao ->
+                                    PrayRow(
+                                        commonViewModel,
+                                        navController, oracao
+                                    )
                                 }
 
-                                items(
-                                    if (textInputValue.isNotBlank()) {
-                                        val numOrNot = isNumber(textInputValue)
-                                        if (numOrNot) {
-                                            allSongs.filter { it.number == textInputValue }
-                                        } else {
-                                            allSongs.filter {
-                                                it.title.contains(
-                                                    textInputValue,
-                                                    ignoreCase = true
-                                                )
-                                            }
-                                        }
-                                    } else {
-                                        allSongs.filter { it.number == "0000" } // invalid number, in order to clean the list
-                                    }
-
-                                ) { cantico ->
-                                    val songTitle = cantico.title
-                                    val songBody = cantico.body
-                                    val songNumber = cantico.number
-
-                                    Row(
-                                        modifier = Modifier
-                                            .fillMaxSize()
-                                            .height(45.dp)
-                                            .background(
-                                                MaterialTheme.colorScheme.primary,
-                                                RoundedCornerShape(10.dp)
-                                            )
-                                            .padding(8.dp, 0.dp, 0.dp, 0.dp)
-                                            .clickable {
-                                                navController.navigate("eachCantico/${cantico.songId}")
-                                            }
-                                    ) {
-                                        Row(
-                                            modifier = Modifier
-                                                .fillMaxSize()
-                                                .weight(0.9f)
-                                                .fillMaxHeight()
-                                        ) {
-
-                                            Column(
-                                                modifier = Modifier.weight(1f),
-                                                horizontalAlignment = Alignment.CenterHorizontally,
-                                                verticalArrangement = Arrangement.Center
-                                            ) {
-                                                Text(
-                                                    text = songTitle,
-                                                    fontSize = 18.sp,
-                                                    color = MaterialTheme.colorScheme.onPrimary,
-                                                    textAlign = TextAlign.Center
-                                                )
-                                                Text(
-                                                    text = "Cântico: $songNumber",
-                                                    fontSize = 13.sp,
-                                                    color = MaterialTheme.colorScheme.onPrimary,
-                                                    textAlign = TextAlign.Center
-                                                )
-                                            }
-                                        }
-
-                                    }
+                                items (filteredSongs, key={ it.songId }) { cancao ->
+                                    SongRow(
+                                        commonViewModel,
+                                        navController,
+                                        cancao, cancao.songId
+                                    )
                                 }
                             }
                         }
-
                     }
-
-
-
                 }
             }
-
-
 
         } else {
             LoadingScreen()
         }
-
-
     }
 }

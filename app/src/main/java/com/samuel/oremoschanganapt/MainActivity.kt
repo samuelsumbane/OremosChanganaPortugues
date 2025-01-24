@@ -1,6 +1,8 @@
 @file:OptIn(ExperimentalPermissionsApi::class)
 package com.samuel.oremoschanganapt
 
+import android.app.AlarmManager
+import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -17,36 +19,41 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
+//import com.google.android.play.core.review.ReviewManagerFactory
+//import com.google.android.play.core.review.model.ReviewErrorCode
 import com.samuel.oremoschanganapt.components.LoadingScreen
 import com.samuel.oremoschanganapt.db.ReminderViewModel
 import com.samuel.oremoschanganapt.functionsKotlin.stringToColor
 import com.samuel.oremoschanganapt.repository.colorObject
 import com.samuel.oremoschanganapt.repository.TablesViewModels
 import com.samuel.oremoschanganapt.ui.theme.OremosChanganaTheme
-import com.samuel.oremoschanganapt.view.Apendice
-import com.samuel.oremoschanganapt.view.FavoritosPage
+import com.samuel.oremoschanganapt.view.morepagesPackage.Apendice
+import com.samuel.oremoschanganapt.view.morepagesPackage.LovedDataPage
 import com.samuel.oremoschanganapt.view.songsPackage.CanticosAgrupados
-import com.samuel.oremoschanganapt.view.songsPackage.CanticosPage
+import com.samuel.oremoschanganapt.view.songsPackage.SongsPage
 import com.samuel.oremoschanganapt.view.songsPackage.EachCantico
 import com.samuel.oremoschanganapt.view.praysPackage.EachOracao
-import com.samuel.oremoschanganapt.view.FestasMoveis
+import com.samuel.oremoschanganapt.view.morepagesPackage.FestasMoveis
 import com.samuel.oremoschanganapt.view.Home
-import com.samuel.oremoschanganapt.view.Licionario
+import com.samuel.oremoschanganapt.view.morepagesPackage.Licionario
 import com.samuel.oremoschanganapt.view.MorePages
 import com.samuel.oremoschanganapt.view.praysPackage.OracoesPage
-import com.samuel.oremoschanganapt.view.remindersPages.ConfigureReminder
-import com.samuel.oremoschanganapt.view.remindersPages.RemindersPage
+import com.samuel.oremoschanganapt.view.morepagesPackage.remindersPages.ConfigureReminder
+import com.samuel.oremoschanganapt.view.morepagesPackage.remindersPages.RemindersPage
 import com.samuelsumbane.oremoschanganapt.db.CommonViewModel
 import com.samuelsumbane.oremoschanganapt.db.DefViewModel
 //import com.samuel.oremoschanganapt.view.OracoesPage
 import com.samuelsumbane.oremoschanganapt.db.PrayViewModel
 import com.samuelsumbane.oremoschanganapt.db.SongViewModel
+//import kotlin.coroutines.jvm.internal.CompletedContinuation.context
+//import com.google.android.play.core.review.ReviewManagerFactory
 
 
 class  MainActivity : ComponentActivity() {
@@ -66,7 +73,9 @@ class  MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
 
+//            val viewModel = ViewModelProvider(this).get(CommonViewModel::class.java)
 
+//            val sucesso = viewModel.exportarFavoritos(context)
 
             val allSongs by songViewModel.songs.collectAsState()
             val allPrays by prayViewModel.prays.collectAsState()
@@ -94,6 +103,7 @@ class  MainActivity : ComponentActivity() {
 //                colorObject.menuContainerColor = lerp(rThemeColor, Color.Black, 0.3f)
                 colorObject.inputColor = rThemeColor.copy(alpha = 0.75f)
 
+                val localContext = LocalContext.current
 
                 if (allPrays.isNotEmpty()) {
                     OremosChanganaTheme(darkTheme = mutableAppMode) {
@@ -110,26 +120,35 @@ class  MainActivity : ComponentActivity() {
                                         postNotificationPermission.launchPermissionRequest()
                                     }
                                 }
-
                             }
 
-//                            val appNotificationService = AppNotificationService(this, "novo title", "sdkjfla kfjlasdlfkjasd")
-//
-//                            Column {
-//                                Spacer(Modifier.height(40.dp))
-//                                Button(onClick = {appNotificationService.showBasicNotication()}) {
-//                                    Text("Basic notificaton")
+                            val alarmManager = this.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+
+
+//                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+//                                if (alarmManager.canScheduleExactAlarms()) {
+//                                    if (lastTimestamp != null) {
+//                                        scheduleNotificationForSongOrPray(this, "faskdf", "fdsafa", lastTimestamp)
+//                                        Log.d("future", "$lastTimestamp")
+//                                    }
+//                                } else {
+//                                    val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM)
+//                                    this.startActivity(intent)
+//                                }
+//                            } else {
+//                                if (lastTimestamp != null) {
+//                                    scheduleNotificationForSongOrPray(this, lastTimestamp)
+//                                    Log.d("future", "$lastTimestamp")
 //                                }
 //                            }
 
                             val navController = rememberNavController()
 
-                            NavHost(navController = navController, startDestination = "oracoespage") {
+                            NavHost(navController = navController, startDestination = "home") {
                                 // define rotas
-
-                                //                        composable("splash") {
-                                //                            SplashWindow(navController)
-                                //                        }
+                                //     composable("splash") {
+                                //          SplashWindow(navController)
+                                //     }
 
                                 composable(route = "home") {
                                     Home(
@@ -148,9 +167,10 @@ class  MainActivity : ComponentActivity() {
                                     val value = backStackEntry.arguments?.getString("value") ?: ""
                                     val readbleValue = backStackEntry.arguments?.getString("readbleValue") ?: ""
 
-                                    CanticosPage(
+                                    SongsPage(
                                         navController, value, readbleValue, songViewModel, commonViewModel
                                     )
+
                                 }
                                 //
                                 composable(route = "eachCantico/{songid}") { aC ->
@@ -172,7 +192,7 @@ class  MainActivity : ComponentActivity() {
                                 }
 
                                 composable(route = "favoritospage") {
-                                    FavoritosPage(
+                                    LovedDataPage(
                                         navController,
                                         prayViewModel,
                                         songViewModel, commonViewModel

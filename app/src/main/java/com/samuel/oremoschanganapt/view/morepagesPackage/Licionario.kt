@@ -1,4 +1,4 @@
-package com.samuel.oremoschanganapt.view
+package com.samuel.oremoschanganapt.view.morepagesPackage
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -35,13 +35,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.samuel.oremoschanganapt.components.SearchContainer
 import com.samuel.oremoschanganapt.components.buttons.ShortcutsButton
 import com.samuel.oremoschanganapt.repository.colorObject
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Licionario(navController: NavController){
+fun Licionario(navController: NavController) {
+
     val scroll = rememberScrollState()
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -192,3 +195,4 @@ val bookList: List<List<BooksItem>> = listOf(
     listOf(BooksItem("33° Domingo do tempo comum","AProv. 31,10-13.19-31 1 Tes. 5, 1-6 Mt. 25, 14-30\nB Dan. 12, 1-3 Heb. 10, 11-18 Mc. 13, 24-32\nC Mal. 4, 1 -2 2 Tes. 3, 7-12 Lc. 21, 5-19")),
     listOf(BooksItem("34° Domingo do tempo comum (Cristo Rei)","A Ezq. 34, 11-17 1 Cor. 15, 20-28 Mt. 25, 31-46\nB Dan. 7, 13-14 Apoc, 1,5-8 Jo. 18, 33-37\nC 2 Sam. 5, 1-3 Col. 1, 12-20 Lc. 23, 35-43"))
 )
+

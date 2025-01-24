@@ -8,17 +8,19 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.Star
-import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -95,8 +97,7 @@ fun ShortcutsButton(navController: NavController) {
     ){
 
         var offsetY by remember { mutableStateOf(screenHeight) }
-        var childColumnHeight by remember { mutableStateOf(200) }
-        var pesquisaTexto by remember { mutableStateOf("") }
+        val childColumnHeight by remember { mutableIntStateOf(230) }
         var showSearchModal by remember { mutableStateOf(false) }
 
         LaunchedEffect(offsetY) {
@@ -121,13 +122,18 @@ fun ShortcutsButton(navController: NavController) {
                 horizontalAlignment = Alignment.CenterHorizontally
             ){
 
-                Row(){
-                    searchValue = SearchContainer(
-                        pesquisatexto = searchValue,
-                        searchInputLabel = "Pesquisar aqui",
-                        isContainerActive = true,
-                        showIcon = false
-                    )
+                Row {
+                    Column {
+                        Text("Pesquisar Cântico / Oração", style = MaterialTheme.typography.bodySmall,
+                            modifier = Modifier.align(Alignment.CenterHorizontally))
+                        searchValue = SearchContainer(
+                            searchString = searchValue,
+                            searchInputLabel = "Pesquisar cantico / oracao",
+                            isContainerActive = true,
+                            showIcon = false
+                        )
+                    }
+
 
                     IconButton(
                         onClick = {showSearchModal = !showSearchModal}
@@ -143,7 +149,6 @@ fun ShortcutsButton(navController: NavController) {
                     Modifier
                         .fillMaxHeight(1f)
                         .fillMaxWidth(0.95f),
-//                    .background(Color.Magenta),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     items ( filteredPrays ) { oracao ->
@@ -174,10 +179,12 @@ fun ShortcutsButton(navController: NavController) {
                 .offset {IntOffset(0, offsetY.roundToInt())}
         ){
 
-            if(isActive){
+            if (isActive) {
                 Column(
-                    Modifier.width(70.dp)
+                    Modifier.width(80.dp)
                         .height(childColumnHeight.dp)
+//                        .background(Color.Red)
+                        .padding(end = 5.dp)
                     ,
                     verticalArrangement = Arrangement.Center
                 ){
@@ -211,18 +218,15 @@ fun ShortcutsButton(navController: NavController) {
 
             Column(
                 Modifier.width(50.dp)
-//                    .background(Color.Red)
                     .height(childColumnHeight.dp),
                 verticalArrangement = Arrangement.SpaceAround
-//                verticalArrangement = Arrangement.Center
             ){
-
-                IconButton(
-                    onClick = {showSearchModal = !showSearchModal}
-                ) {
-                    Icon(Icons.Default.Search, contentDescription="Search",
-                        modifier = Modifier.size(30.dp)
-                    )
+                if (isActive) {
+                    ShortcutButtonChild(
+                        modifier = Modifier.align(Alignment.End),
+                        icon = Icons.Default.Search,
+                        description = "Search"
+                    ) {showSearchModal = !showSearchModal; isActive = !isActive}
                 }
 
                 IconButton(
@@ -236,16 +240,17 @@ fun ShortcutsButton(navController: NavController) {
                         },
                     colors = IconButtonDefaults.iconButtonColors(containerColor = MaterialTheme.colorScheme.tertiary),
                     onClick = { isActive = !isActive }
-                ) {
-//                    Icon(imageVector = ImageVector.vectorResource(id = R.drawable.brightness), contentDescription = "s", tint = MaterialTheme.colorScheme.onPrimary)
-                }
+                ){}
 
-                IconButton(
-                    onClick = {}
-                ) {
-
+                if (isActive) {
+                    ShortcutButtonChild(
+                        modifier = Modifier.align(Alignment.End),
+                        icon = Icons.Default.Home,
+                        description = "Home"
+                    ) {navController.navigate("home")}
                 }
             }
+            Spacer(Modifier.width(5.dp))
         }
     }
 }

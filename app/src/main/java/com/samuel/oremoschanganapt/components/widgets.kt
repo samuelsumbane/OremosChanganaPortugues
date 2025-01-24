@@ -9,10 +9,12 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -25,19 +27,24 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -55,66 +62,29 @@ fun toastAlert(context: Context, text: String, duration: Int = Toast.LENGTH_SHOR
     toast.show()
 }
 
-
 @Composable
-fun addReminder(
-    onClick: () -> Unit
-){
-    IconButton(
-        onClick = onClick
-    ) {
-        Icon(Icons.Default.Info, contentDescription = "Reminder")
+fun LoadingScreen() {
+    Column(Modifier.fillMaxSize(), Arrangement.Center, Alignment.CenterHorizontally) {
+        CircularProgressIndicator(
+            modifier = Modifier.width(54.dp),
+            color = MaterialTheme.colorScheme.onPrimary,
+            trackColor = colorObject.mainColor,
+        )
     }
 }
 
-//@Composable
-//fun reminder(
-//    onClick: () -> Unit
-//){
-//    IconButton(
-//        onClick = onClick
-//    ) {
-//        Icon(Icons.Default.Info, contentDescription = "Reminder")
-//    }
-//}
-
 @Composable
-fun ZoomingLoadingEffect(
+fun HomeTexts(
     text: String,
-    durationMillis: Int = 1000,
-    fontSize: TextUnit = 20.sp
+    fontSize: Int
 ) {
-    // Controla o fator de escala do texto
-    val infiniteTransition = rememberInfiniteTransition()
-
-    val scale by infiniteTransition.animateFloat(
-        initialValue = 1f,
-        targetValue = 1.2f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = durationMillis, easing = FastOutSlowInEasing),
-            repeatMode = RepeatMode.Reverse
-        )
+    Text(
+        text = text,
+        fontWeight = FontWeight.Bold,
+        textAlign = TextAlign.Center,
+        color = Color.White,
+        fontSize = fontSize.sp
     )
-
-    Box(modifier = Modifier.graphicsLayer(scaleX = scale, scaleY = scale)) {
-        Text(
-            text = text, fontWeight = FontWeight.Bold, fontSize = fontSize,
-            fontFamily = FontFamily.Cursive
-        )
-    }
-}
-
-@Composable
-fun LoadingScreen(text: String = "Oremos Changana-PT") {
-    Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            ZoomingLoadingEffect(
-                text = text,
-                durationMillis = 1000,
-                fontSize = 32.sp
-            )
-        }
-    }
 }
 
 @Composable
@@ -123,17 +93,20 @@ fun SongRow(
     navController: NavController,
     song: Song,
     songId: Int
-){
+) {
     val mainColor = colorObject.mainColor
     Row(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
             .height(55.dp)
             .clickable { navController.navigate("eachCantico/${songId}") },
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Row(
-            modifier = Modifier.size(40.dp)
-                .height(60.dp).background(mainColor, RoundedCornerShape(50))
+            modifier = Modifier
+                .size(40.dp)
+                .height(60.dp)
+                .background(mainColor, RoundedCornerShape(50))
                 .align(Alignment.CenterVertically),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
@@ -149,11 +122,15 @@ fun SongRow(
         Spacer(Modifier.width(4.dp))
 
         Row (
-            modifier = Modifier.fillMaxHeight().weight(1f)
+            modifier = Modifier
+                .fillMaxHeight()
+                .weight(1f)
                 .background(mainColor, RoundedCornerShape(25))
         ) {
             Column(
-                modifier = Modifier.fillMaxHeight().weight(1f),
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .weight(1f),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
@@ -175,14 +152,15 @@ fun SongRow(
             }
 
             val prayLoved = commonViewModel.getLovedItem("Song", song.songId)
-            val itemIsLoved: Boolean = prayLoved != null
+            val itemIsLoved = remember { mutableStateOf(prayLoved != null) }
 
-            StarButton(
-                itemLoved = itemIsLoved,
-                commonViewModel = commonViewModel,
-                id = song.songId,
-                itemTable = "Song"
-            )
+            StarButton(lovedState = itemIsLoved) {
+                if (itemIsLoved.value) {
+                    commonViewModel.removeLovedId("Song", song.songId)
+                } else {
+                    commonViewModel.addLovedId("Song", song.songId)
+                }
+            }
         }
         Spacer(Modifier.width(4.dp))
     }
@@ -190,27 +168,33 @@ fun SongRow(
 
 
 @Composable
-fun  PrayRow (
+fun PrayRow(
     commonViewModel: CommonViewModel,
     navController: NavController,
     pray: Pray,
-){
+) {
     val mainColor = colorObject.mainColor
 
     Row(
-        modifier = Modifier.fillMaxSize()
-            .height(55.dp).background(mainColor, RoundedCornerShape(14.dp))
+        modifier = Modifier
+            .fillMaxSize()
+            .height(55.dp)
+            .background(mainColor, RoundedCornerShape(14.dp))
             .padding(8.dp, 0.dp, 0.dp, 0.dp)
-            .clickable{
+            .clickable {
                 navController.navigate("eachOracao/${pray.prayId}")
             }
     ) {
         Row(
-            modifier = Modifier.fillMaxSize().weight(0.9f)
+            modifier = Modifier
+                .fillMaxSize()
+                .weight(0.9f)
                 .fillMaxHeight()
         ){
             Column(
-                modifier = Modifier.fillMaxHeight().weight(1f),
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .weight(1f),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
@@ -221,7 +205,7 @@ fun  PrayRow (
                     textAlign = TextAlign.Center
                 )
 
-                if (pray.subTitle != "") {
+                if (pray.subTitle.isNotEmpty()) {
                     Text(
                         text = pray.subTitle,
                         fontSize = 16.sp,
@@ -234,13 +218,25 @@ fun  PrayRow (
         }
 
         val prayLoved = commonViewModel.getLovedItem("Pray", pray.prayId)
-        val itemIsLoved: Boolean = prayLoved != null
+        val lovedState = remember { mutableStateOf(prayLoved != null) }
 
-        StarButton(
-            itemLoved = itemIsLoved,
-            commonViewModel = commonViewModel,
-            id = pray.prayId,
-            itemTable = "Pray"
-        )
+        StarButton(lovedState = lovedState) {
+            if (lovedState.value) {
+                commonViewModel.removeLovedId("Pray", pray.prayId)
+            } else {
+                commonViewModel.addLovedId("Pray", pray.prayId)
+            }
+        }
     }
+}
+
+@Composable
+fun DefTabButton(content: @Composable () -> Unit){
+    Column(
+        Modifier.fillMaxWidth()
+            .border(1.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(10.dp))
+            .background(Color.Transparent, RoundedCornerShape(10.dp)),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.SpaceBetween
+    ) { content() }
 }

@@ -23,6 +23,8 @@ class AppNotificationService(
             .setSmallIcon(R.drawable.oremospic)
             .setPriority(NotificationManager.IMPORTANCE_HIGH)
             .setAutoCancel(true)
+            .setNumber(0)
+            .setBadgeIconType(NotificationCompat.BADGE_ICON_NONE)
             .build()
 
         notificationManager.notify(
