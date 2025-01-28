@@ -1,6 +1,5 @@
 package com.samuel.oremoschanganapt.view.morepagesPackage
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -27,6 +26,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
@@ -40,6 +41,7 @@ import com.samuel.oremoschanganapt.components.SidebarNav
 import com.samuel.oremoschanganapt.components.SongRow
 import com.samuel.oremoschanganapt.components.buttons.ShortcutsButton
 import com.samuel.oremoschanganapt.functionsKotlin.isNumber
+import com.samuel.oremoschanganapt.repository.colorObject
 import com.samuelsumbane.oremoschanganapt.db.*
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -48,30 +50,25 @@ fun LovedDataPage(
     navController: NavController,
     prayViewModel: PrayViewModel,
     songViewModel: SongViewModel,
-    commonViewModel: CommonViewModel
-){
+) {
     var searchValue by remember { mutableStateOf("") }
     val configuration = LocalConfiguration.current
     val isPortrait = configuration.orientation == android.content.res.Configuration.ORIENTATION_PORTRAIT
 
-
-    val lovedData by commonViewModel.lovedData.collectAsState()
+    val lovedPraysData by prayViewModel.prays.collectAsState()
+    val lovedSongsData by songViewModel.songs.collectAsState()
     val lPrays = mutableListOf<Pray>()
     val lSongs = mutableListOf<Song>()
 
-    lovedData.forEach {
-        when (it.tableName) {
-            "Pray" -> {
-                val pray = prayViewModel.getPrayById(it.lovedDataId)
-                lPrays.add(pray!!)
-            }
+    lovedPraysData.forEach { pray ->
+        if (pray.loved) {
+            lPrays.add(pray)
+        }
+    }
 
-            "Song" -> {
-                val song = songViewModel.getSongById(it.lovedDataId)
-                lSongs.add(song!!)
-            }
-
-            else ->  Log.d("LovedDataError", "unknown table")
+    lovedSongsData.forEach { song ->
+        if (song.loved) {
+            lSongs.add(song)
         }
     }
 
@@ -118,43 +115,58 @@ fun LovedDataPage(
         }
     ) { paddingVales ->
 
-//        Column(modifier = Modifier.fillMaxSize().padding(paddingVales),
-//        ){
         Row(Modifier.fillMaxSize().padding(paddingVales)) {
             if (!isPortrait) {
                 SidebarNav(navController, "canticosAgrupados")
             }
 
-            if (lovedData.isEmpty()){
+            if (lPrays.isEmpty() && lSongs.isEmpty()){
                 Column(
                     modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally
-                ){
+                ) {
                     Text(text = "Nenhuma oração ou cântico encontrado.", textAlign = TextAlign.Center, fontWeight = FontWeight.Bold)
                 }
             } else  {
-
                 LazyColumn(
                     modifier = Modifier.fillMaxWidth().padding(8.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    items (filteredPrays) { oracao ->
-                        PrayRow(
-                            commonViewModel,
-                            navController, oracao
-                        )
+                    if (filteredSongs.isNotEmpty()) {
+                        item { ColumnDivider(if (filteredSongs.size == 1) "Cântico" else "Cânticos") }
+                        items (filteredSongs) { cancao ->
+                            SongRow(navController, songViewModel, cancao, reloadIcon = false)
+                        }
                     }
-                    
-                    items (filteredSongs) { cancao ->
-                        SongRow(
-                            commonViewModel,
-                            navController,
-                            cancao, cancao.songId
-                        )
+                    if (filteredPrays.isNotEmpty()) {
+                        item { ColumnDivider(if (filteredPrays.size == 1) "Oração" else "Orações") }
+                        items (filteredPrays) { pray ->
+                            PrayRow(navController, prayViewModel, pray, reloadIcon = false)
+                        }
                     }
+
                 }
             }
         }
 
         ShortcutsButton(navController)
+    }
+}
+
+@Composable
+fun ColumnDivider(text: String) {
+    val mainColor = colorObject.mainColor
+    Column(
+        Modifier.fillMaxWidth()
+            .drawWithContent {
+                drawContent()
+                drawLine(
+                    color = mainColor,
+                    start = Offset(0f, size.height),
+                    end = Offset(size.width, size.height),
+                    strokeWidth = 3.dp.toPx(),
+                )
+            }
+    ) {
+        Text(text, Modifier.align(Alignment.CenterHorizontally).padding(bottom = 8.dp))
     }
 }

@@ -1,7 +1,6 @@
 package com.samuel.oremoschanganapt.view.praysPackage
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.Box
@@ -35,7 +34,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -44,10 +42,11 @@ import com.samuelsumbane.oremoschanganapt.db.DefViewModel
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableFloatStateOf
+import com.samuel.oremoschanganapt.components.StarButton
 import com.samuel.oremoschanganapt.components.buttons.ShortcutsButton
-import com.samuel.oremoschanganapt.components.buttons.StarButton
+//import com.samuel.oremoschanganapt.components.buttons.StarButton
 import com.samuel.oremoschanganapt.db.ReminderViewModel
-import com.samuelsumbane.oremoschanganapt.db.CommonViewModel
+import com.samuel.oremoschanganapt.db.CommonViewModel
 import com.samuelsumbane.oremoschanganapt.db.PrayViewModel
 
 
@@ -116,24 +115,23 @@ fun EachOracao(navController: NavController, prayId: Int,
                         }
 
                         // The star icon ------>>
-
-                        val prayLoved = commonViewModel.getLovedItem("Pray", prayData.prayId)
-                        val lovedState = remember { mutableStateOf(prayLoved != null) }
-
-                        StarButton(lovedState = lovedState) {
-                            if (lovedState.value) {
-                                commonViewModel.removeLovedId("Pray", prayData.prayId)
+                        var lovedState by remember { mutableStateOf(prayData.loved) }
+                        StarButton(lovedState) {
+                            if (lovedState) {
+                                prayViewModel.setLovedPray(prayData.prayId, false)
                             } else {
-                                commonViewModel.addLovedId("Pray", prayData.prayId)
+                                prayViewModel.setLovedPray(prayData.prayId, true)
                             }
+                            lovedState = !lovedState
                         }
+
 
                         ShareIconButton(context,  text = "${prayData.title} \n ${prayData.body}")
                     }
                 )
             },
 
-            ){paddingValues ->
+            ) { paddingValues ->
             val scrollState = rememberScrollState()
 
             if(allDef.isNotEmpty()){
@@ -151,8 +149,7 @@ fun EachOracao(navController: NavController, prayId: Int,
                 }) {
                     Column(
                         modifier = Modifier.fillMaxSize().padding(paddingValues)
-                            .verticalScroll(scrollState)
-                        ,
+                            .verticalScroll(scrollState),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Spacer(modifier = Modifier.height(12.dp))
@@ -160,9 +157,8 @@ fun EachOracao(navController: NavController, prayId: Int,
                         Spacer(modifier = Modifier.height(12.dp))
                         Spacer(modifier = Modifier.height(12.dp))
                         Text(
-                            text = prayData.body,
+                            text = prayData.body.trim(),
                             modifier = Modifier.fillMaxWidth().padding(14.dp, 0.dp, 14.dp, 0.dp),
-                            textAlign = TextAlign.Justify,
                             fontSize = 19.sp * scale, lineHeight = (24.sp * scale)
                         )
                     }

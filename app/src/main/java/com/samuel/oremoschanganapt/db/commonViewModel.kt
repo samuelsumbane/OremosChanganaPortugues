@@ -1,155 +1,121 @@
-package com.samuelsumbane.oremoschanganapt.db
+package com.samuel.oremoschanganapt.db
 
+import android.content.ContentUris
+import android.content.ContentValues
 import android.content.Context
 import android.os.Environment
-import android.util.Log
+import android.provider.MediaStore
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
-//import com.google.gson.Gson
 import com.samuel.oremoschanganapt.MyApp
 import com.samuel.oremoschanganapt.components.toastAlert
-//import com.samuel.oremoschanganapt.db.data.songData
-//import com.samuelsumbane.oremoschanganapt.MyApp
+import com.samuelsumbane.oremoschanganapt.db.Pray
+import com.samuelsumbane.oremoschanganapt.db.Song
 import io.realm.kotlin.UpdatePolicy
 import io.realm.kotlin.ext.query
-import io.realm.kotlin.query.Sort
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
 import java.io.File
 
+// POJO class to exporting ---------->>
+data class LovedDataPojo(
+    val lovedDataId: Int,
+    val tableName: String
+)
+
 class CommonViewModel: ViewModel() {
-
-        private val realm = MyApp.realm
-
-        val lovedData = realm
-            .query<LovedData>().asFlow().map { results -> results.list.toList() }
-            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
-
-
-        private fun getNextId(): Int {
-            val lastItem = realm.query<LovedData>().sort("itemId", Sort.DESCENDING).first().find()
-            return (lastItem?.lovedDataId ?: 0) + 1
-        }
-
-        fun getLovedItem(table: String, id: Int): LovedData? {
-             return realm.query<LovedData>(query = "lovedDataId == $0 && tableName == $1", id, table).find().firstOrNull()
-        }
-
-        fun addLovedId(table: String, id: Int )  {
-
-            viewModelScope.launch {
-                when(table) {
-                    "Pray", "Song" -> {
-                        realm.write {
-                            val tableData = LovedData().apply {
-                                itemId = getNextId()
-                                tableName = table
-                                lovedDataId = id
-                            }
-                            copyToRealm(tableData, updatePolicy = UpdatePolicy.ALL)
-                        }
-                    }
-                }
-            }
-        }
-
-        fun removeLovedId(idTable: String, id: Int ) {
-            viewModelScope.launch {
-                realm.write {
-                    try {
-                        val itemData = this.query<LovedData>(query = "lovedDataId == $0 && tableName == $1", id, idTable).find().firstOrNull()
-                        itemData?.let {
-                            delete(it)
-                        }
-                    } catch (ex: Exception) {
-                        Log.d("ExceptionError", "${ex.message}")
-                    }
-                }
-            }
-        }
-
-
-//        fun getSongById(songId: Int): Song? {
-//            return realm.query<Song>("songId == $0", songId).first().find()
-//        }
-
-
-
-    // POJO class to exporting ---------->>
-    data class LovedDataPojo(
-        val tableName: String,
-        val lovedDataId: Int,
-        val itemId: Int
-    )
+    private val realm = MyApp.realm
 
     fun exportBackupToExternalStorage(context: Context) {
-        // Select Realm data ------->>
-        val loved = realm.query<LovedData>().find()
+        try {
+            val resolver = context.contentResolver
+            val contentValues = ContentValues().apply {
+                put(MediaStore.Files.FileColumns.DISPLAY_NAME, "lovedItems_backup.json")
+                put(MediaStore.Files.FileColumns.MIME_TYPE, "application/json")
+                put(MediaStore.Files.FileColumns.RELATIVE_PATH, Environment.DIRECTORY_DOCUMENTS + "/OremosChanganapt_backup")
+            }
 
-        if (loved.isEmpty()) {
-            toastAlert(context, "Nenhum dado encontrado para exportar.")
-            return
-        }
+            // Select "loved" itens in tables Pray and Song -------->>
+            val lovedPrays = realm.query<Pray>("loved = true").find()
+            val lovedSongs = realm.query<Song>("loved = true").find()
 
-        // Map Realm data to POJO class -------->>
-        val lovedPojo = loved.map {
-            LovedDataPojo(
-                tableName = it.tableName,
-                lovedDataId = it.lovedDataId,
-                itemId = it.itemId
+            // Mapear os dados para o formato JSON
+            val lovedDataList = mutableListOf<LovedDataPojo>()
+            lovedPrays.forEach { lovedDataList.add(LovedDataPojo(it.prayId, "Pray")) }
+            lovedSongs.forEach { lovedDataList.add(LovedDataPojo(it.songId, "Song")) }
+
+            if (lovedDataList.isEmpty()) {
+                toastAlert(context, "Nenhum dado encontrado para exportar.")
+                return
+            }
+
+            val json = Gson().toJson(lovedDataList)
+
+            // Verificar e substituir arquivo existente
+            val queryUri = MediaStore.Files.getContentUri("external")
+            val selection = "${MediaStore.Files.FileColumns.RELATIVE_PATH} = ? AND ${MediaStore.Files.FileColumns.DISPLAY_NAME} = ?"
+            val selectionArgs = arrayOf(
+                Environment.DIRECTORY_DOCUMENTS + "/OremosChanganapt_backup/",
+                "lovedItems_backup.json"
             )
+
+            resolver.query(queryUri, null, selection, selectionArgs, null)?.use { cursor ->
+                if (cursor.moveToFirst()) {
+                    val id = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns._ID))
+                    val deleteUri = ContentUris.withAppendedId(queryUri, id)
+                    resolver.delete(deleteUri, null, null)
+                }
+            }
+
+            // Save new backup ------>>
+            val uri = resolver.insert(queryUri, contentValues)
+            uri?.let {
+                resolver.openOutputStream(it)?.use { outputStream ->
+                    outputStream.write(json.toByteArray())
+                    toastAlert(context, "Backup salvo com sucesso!")
+                }
+            } ?: run {
+                toastAlert(context, "Erro ao criar backup.")
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            toastAlert(context, "Falha ao salvar backup: ${e.message}")
         }
-
-        // Serialize the Json data --------->>
-        val json = Gson().toJson(lovedPojo)
-
-        // Define the dir to save backup --------->>
-        val directory = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS), "OremosChanganapt_backup")
-        if (!directory.exists()) {
-            directory.mkdirs() // Create a dir, if needed --------->>
-        }
-
-        val backupFile = File(directory, "lovedItems_backup.json")
-        backupFile.writeText(json)
-
-        toastAlert(context, "Backup salvo em: ${backupFile.absolutePath}")
     }
 
     fun restoreBackupFromExternalStorage(context: Context) {
-        val backupFile = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS), "OremosChanganapt_backup/lovedItems_backup.json")
+        try {
+            val backupFile = File(
+                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS),
+                "OremosChanganapt_backup/lovedItems_backup.json"
+            )
 
-        if (!backupFile.exists()) {
-            toastAlert(context, "Backup não encontrado.")
-            return
-        }
-
-        val json = backupFile.readText()
-        val lovedList: List<LovedDataPojo> = Gson().fromJson(json, Array<LovedDataPojo>::class.java).toList()
-
-        // Mapping to a structure of Realm ------->>
-        val lovedRealmList = lovedList.map {
-            LovedData().apply {
-                tableName = it.tableName
-                lovedDataId = it.lovedDataId
-                itemId = it.itemId
+            if (!backupFile.exists()) {
+                toastAlert(context, "Arquivo de backup não encontrado.")
+                return
             }
-        }
 
-        // Inserting or updating on Realm ---------->>
-        realm.writeBlocking {
-            lovedRealmList.forEach {
-                copyToRealm(it, updatePolicy = UpdatePolicy.ALL)
+            val json = backupFile.readText()
+            val lovedList: List<LovedDataPojo> = Gson().fromJson(json, Array<LovedDataPojo>::class.java).toList()
+
+            realm.writeBlocking {
+                lovedList.forEach { lovedItem ->
+                    when (lovedItem.tableName) {
+                        "Pray" -> {
+                            val pray = query<Pray>("prayId = $0", lovedItem.lovedDataId).first().find()
+                            pray?.apply { loved = true }?.let { copyToRealm(it, updatePolicy = UpdatePolicy.ALL) }
+                        }
+                        "Song" -> {
+                            val song = query<Song>("songId = $0", lovedItem.lovedDataId).first().find()
+                            song?.apply { loved = true }?.let { copyToRealm(it, updatePolicy = UpdatePolicy.ALL) }
+                        }
+                    }
+                }
             }
+            toastAlert(context, "Backup restaurado com sucesso.")
+        } catch (e: Exception) {
+            e.printStackTrace()
+            toastAlert(context, "Falha ao restaurar backup: ${e.message}")
         }
-
-        toastAlert(context, "Backup restaurado com sucesso.")
     }
-
-
-
 
     override fun onCleared() {
         super.onCleared()

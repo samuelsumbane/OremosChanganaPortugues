@@ -24,12 +24,12 @@ import com.samuel.oremoschanganapt.ui.theme.*
 
 @Preview
 @Composable
-fun colorPickerDemo(lastColor: Color = Orangered, withIcon: Boolean = true): String {
+fun colorPickerDemo(lastColor: Color = Lightblue, withIcon: Boolean = true): String {
     var expanded by remember { mutableStateOf(false) }
     var selectedColor by remember { mutableStateOf(lastColor) }
 
     val colors = listOf(
-        Lightgray, Lightblue, Blue, Green,  Pink, Tomato, Orangered, Red, Purple
+        Lightgray, Lightblue, Blue, Turquoise, Green,  Pink, Tomato, Red, Purple
     )
 
     Column(

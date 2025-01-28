@@ -54,11 +54,25 @@ class PrayViewModel : ViewModel() {
                     title = praytitle
                     subTitle = praysubTitle
                     body = praybody
+                    loved = false
                 }
                 copyToRealm(pray, updatePolicy = UpdatePolicy.ALL)
             }
         }
     }
+
+    fun setLovedPray(prayId: Int, loved: Boolean) {
+        viewModelScope.launch {
+            realm.write {
+                val pray = this.query<Pray>("prayId == $0", prayId).find().first()
+                pray.let {
+                    pray.loved = loved
+                }
+                copyToRealm(pray, updatePolicy = UpdatePolicy.ALL)
+            }
+        }
+    }
+
 
 
     fun getPrayById(prayId: Int): Pray? {

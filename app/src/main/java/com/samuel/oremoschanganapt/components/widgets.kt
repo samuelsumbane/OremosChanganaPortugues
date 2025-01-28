@@ -2,19 +2,13 @@ package com.samuel.oremoschanganapt.components
 
 import android.content.Context
 import android.widget.Toast
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -26,38 +20,43 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.samuel.oremoschanganapt.components.buttons.StarButton
 import com.samuel.oremoschanganapt.repository.colorObject
-import com.samuelsumbane.oremoschanganapt.db.CommonViewModel
+import com.samuel.oremoschanganapt.ui.theme.DarkColor
+import com.samuel.oremoschanganapt.ui.theme.Orange
+import com.samuel.oremoschanganapt.ui.theme.White
 import com.samuelsumbane.oremoschanganapt.db.Pray
+import com.samuelsumbane.oremoschanganapt.db.PrayViewModel
 import com.samuelsumbane.oremoschanganapt.db.Song
+import com.samuelsumbane.oremoschanganapt.db.SongViewModel
 
 
 fun toastAlert(context: Context, text: String, duration: Int = Toast.LENGTH_SHORT){
-    val duration = Toast.LENGTH_SHORT
     val toast = Toast.makeText(context, text, duration)
     toast.show()
 }
@@ -67,9 +66,11 @@ fun LoadingScreen() {
     Column(Modifier.fillMaxSize(), Arrangement.Center, Alignment.CenterHorizontally) {
         CircularProgressIndicator(
             modifier = Modifier.width(54.dp),
-            color = MaterialTheme.colorScheme.onPrimary,
+            color = MaterialTheme.colorScheme.tertiary,
             trackColor = colorObject.mainColor,
         )
+        Spacer(Modifier.height(20.dp))
+        Text("Carregando...")
     }
 }
 
@@ -88,25 +89,61 @@ fun HomeTexts(
 }
 
 @Composable
+fun CommonRow(
+    title: String,
+    subTitle: String,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxHeight()
+            .then(modifier),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = title,
+            fontSize = 18.sp,
+            color = Color.White,
+            textAlign = TextAlign.Center
+        )
+
+        if (subTitle != ""){
+            Text(
+                text = subTitle,
+                fontSize = 16.sp,
+                color = Color.White,
+                textAlign = TextAlign.Center
+            )
+        }
+    }
+}
+
+
+
+@Composable
 fun SongRow(
-    commonViewModel: CommonViewModel,
     navController: NavController,
+    songViewModel: SongViewModel,
     song: Song,
-    songId: Int
+    reloadIcon: Boolean = true
+
 ) {
     val mainColor = colorObject.mainColor
+    var lovedState by remember { mutableStateOf(song.loved) }
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .height(55.dp)
-            .clickable { navController.navigate("eachCantico/${songId}") },
+            .clickable { navController.navigate("eachCantico/${song.songId}") },
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Row(
             modifier = Modifier
                 .size(40.dp)
                 .height(60.dp)
-                .background(mainColor, RoundedCornerShape(50))
+                .border(1.dp, lerp(mainColor, DarkColor, 0.3f), RoundedCornerShape(50))
                 .align(Alignment.CenterVertically),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
@@ -114,7 +151,7 @@ fun SongRow(
             Text(
                 text = song.number,
                 fontSize = 16.sp,
-                color = MaterialTheme.colorScheme.onPrimary,
+                color = MaterialTheme.colorScheme.tertiary,
                 fontWeight = FontWeight.SemiBold
             )
         }
@@ -125,61 +162,94 @@ fun SongRow(
             modifier = Modifier
                 .fillMaxHeight()
                 .weight(1f)
-                .background(mainColor, RoundedCornerShape(25))
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .weight(1f),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                Text(
-                        text = song.title,
-                    fontSize = 18.sp,
-                    color = MaterialTheme.colorScheme.onPrimary,
-                    textAlign = TextAlign.Center
+                .background(
+                    brush = Brush.horizontalGradient(
+                        colors = listOf(mainColor, lerp(mainColor, DarkColor, 0.9f)),
+                    ),
+                    shape = RoundedCornerShape(16.dp)
                 )
+        ) {
+            CommonRow(song.title, song.subTitle, Modifier.weight(1f))
 
-                if (song.subTitle != ""){
-                    Text(
-                        text = song.subTitle,
-                        fontSize = 12.sp,
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        textAlign = TextAlign.Center
-                    )
-                }
-            }
-
-            val prayLoved = commonViewModel.getLovedItem("Song", song.songId)
-            val itemIsLoved = remember { mutableStateOf(prayLoved != null) }
-
-            StarButton(lovedState = itemIsLoved) {
-                if (itemIsLoved.value) {
-                    commonViewModel.removeLovedId("Song", song.songId)
+            StarButton(lovedState) {
+                if (lovedState) {
+                    songViewModel.setLovedSong(song.songId, false)
                 } else {
-                    commonViewModel.addLovedId("Song", song.songId)
+                    songViewModel.setLovedSong(song.songId, true)
                 }
+                if (reloadIcon) lovedState = !lovedState
             }
         }
-        Spacer(Modifier.width(4.dp))
+    }
+}
+
+@Composable
+fun StarButton(
+    lovedState: Boolean,
+    onClick: () -> Unit
+) {
+    // Icon size animation ------->>
+    val scale = remember { androidx.compose.animation.core.Animatable(1f) }
+    val iconColor by animateColorAsState(
+        targetValue = if (lovedState) Orange else White,
+        animationSpec = tween(durationMillis = 300)
+    )
+
+    LaunchedEffect(lovedState) {
+        if (lovedState) {
+            // Execute animation scale when "Loving" ------>>
+            scale.animateTo(
+                targetValue = 1.5f, // Increase to 1.5x ------>>
+                animationSpec = tween(durationMillis = 200)
+            )
+            scale.animateTo(
+                targetValue = 1f, // Back to normal size ------->>
+                animationSpec = tween(durationMillis = 200)
+            )
+        } else {
+            // Sure that scale stays on normal size ------>>
+            scale.snapTo(1f)
+        }
+    }
+
+    IconButton(
+        modifier = Modifier.size(50.dp),
+        onClick = { onClick() }
+    ) {
+        Icon(
+            imageVector = if (lovedState) Icons.Default.Star else Icons.Outlined.Star,
+            contentDescription = if (lovedState) "É favorito" else "Não é favorito",
+            tint = iconColor,
+            modifier = Modifier
+                .graphicsLayer(
+                    scaleX = scale.value,
+                    scaleY = scale.value
+                )
+        )
     }
 }
 
 
 @Composable
 fun PrayRow(
-    commonViewModel: CommonViewModel,
     navController: NavController,
+    prayViewModel: PrayViewModel,
     pray: Pray,
+    reloadIcon: Boolean = true
 ) {
     val mainColor = colorObject.mainColor
+    var lovedState by remember { mutableStateOf(pray.loved) }
 
     Row(
         modifier = Modifier
             .fillMaxSize()
             .height(55.dp)
-            .background(mainColor, RoundedCornerShape(14.dp))
+            .background(
+                brush = Brush.horizontalGradient(
+                    colors = listOf(mainColor, lerp(mainColor, DarkColor, 0.9f)),
+                ),
+                shape = RoundedCornerShape(16.dp)
+            )
             .padding(8.dp, 0.dp, 0.dp, 0.dp)
             .clickable {
                 navController.navigate("eachOracao/${pray.prayId}")
@@ -190,42 +260,17 @@ fun PrayRow(
                 .fillMaxSize()
                 .weight(0.9f)
                 .fillMaxHeight()
-        ){
-            Column(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .weight(1f),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                Text(
-                    text = pray.title,
-                    fontSize = 18.sp,
-                    color = MaterialTheme.colorScheme.onPrimary,
-                    textAlign = TextAlign.Center
-                )
-
-                if (pray.subTitle.isNotEmpty()) {
-                    Text(
-                        text = pray.subTitle,
-                        fontSize = 16.sp,
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        textAlign = TextAlign.Center
-                    )
-                }
-
-            }
+        ) {
+            CommonRow(pray.title, pray.subTitle, Modifier.weight(1f))
         }
 
-        val prayLoved = commonViewModel.getLovedItem("Pray", pray.prayId)
-        val lovedState = remember { mutableStateOf(prayLoved != null) }
-
-        StarButton(lovedState = lovedState) {
-            if (lovedState.value) {
-                commonViewModel.removeLovedId("Pray", pray.prayId)
+        StarButton(lovedState) {
+            if (lovedState) {
+                prayViewModel.setLovedPray(pray.prayId, false)
             } else {
-                commonViewModel.addLovedId("Pray", pray.prayId)
+                prayViewModel.setLovedPray(pray.prayId, true)
             }
+            if (reloadIcon) lovedState = !lovedState
         }
     }
 }
@@ -239,4 +284,29 @@ fun DefTabButton(content: @Composable () -> Unit){
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween
     ) { content() }
+}
+
+@Composable
+fun TextIconRow(title: String, showContent: Boolean, modifier: Modifier) {
+    val mainColor = colorObject.mainColor
+    val textColor = MaterialTheme.colorScheme.background
+    val rS = 9.dp // rowShape ---------->>
+
+    Row (
+        modifier = modifier.fillMaxSize().height(45.dp)
+            .background(
+                brush = Brush.horizontalGradient(
+                    colors = listOf(mainColor, lerp(mainColor, DarkColor, 0.9f)),
+                ), shape = if (showContent)
+                    RoundedCornerShape(rS, rS, 0.dp, 0.dp) else RoundedCornerShape(rS) )
+            .padding(10.dp),
+        Arrangement.SpaceBetween
+    ) {
+        Text(title, color = textColor)
+        if (showContent)
+            Icon(Icons.Default.KeyboardArrowUp, contentDescription = "Open or Close", tint = Color.White)
+        else
+            Icon(Icons.Default.KeyboardArrowDown, contentDescription = "Open or Close", tint = Color.White)
+
+    }
 }

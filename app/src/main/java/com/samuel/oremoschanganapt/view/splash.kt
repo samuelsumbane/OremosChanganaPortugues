@@ -54,7 +54,7 @@ fun SplashWindow(navController: NavController) {
             contentScale = ContentScale.Fit
         )
 
-        Text(text="Oremos ", color = MaterialTheme.colorScheme.onPrimary, fontSize = 27.sp, fontWeight = FontWeight.Bold, fontStyle = FontStyle.Italic)
-        Text(text="Changana - Português", color = MaterialTheme.colorScheme.onPrimary, fontSize = 25.sp, fontStyle = FontStyle.Italic)
+        Text(text="Oremos ", color = MaterialTheme.colorScheme.tertiary, fontSize = 27.sp, fontWeight = FontWeight.Bold, fontStyle = FontStyle.Italic)
+        Text(text="Changana - Português", color = MaterialTheme.colorScheme.tertiary, fontSize = 25.sp, fontStyle = FontStyle.Italic)
     }
 }

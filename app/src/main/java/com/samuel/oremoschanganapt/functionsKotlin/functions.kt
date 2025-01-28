@@ -31,11 +31,11 @@ import com.samuel.oremoschanganapt.ui.theme.Blue
 import com.samuel.oremoschanganapt.ui.theme.Green
 import com.samuel.oremoschanganapt.ui.theme.Lightblue
 import com.samuel.oremoschanganapt.ui.theme.Lightgray
-import com.samuel.oremoschanganapt.ui.theme.Orangered
 import com.samuel.oremoschanganapt.ui.theme.Pink
 import com.samuel.oremoschanganapt.ui.theme.Purple
 import com.samuel.oremoschanganapt.ui.theme.Red
 import com.samuel.oremoschanganapt.ui.theme.Tomato
+import com.samuel.oremoschanganapt.ui.theme.Turquoise
 import java.time.Instant
 import java.time.LocalDate
 import java.util.Locale
@@ -176,7 +176,6 @@ fun nextMonth(): String{
 fun colorToString(color: Color): String{
     return when(color){
         Red -> "Red"
-        Orangered -> "Orangered"
         Pink -> "Pink"
         Tomato -> "Tomato"
         Lightblue -> "Lightblue"
@@ -184,16 +183,15 @@ fun colorToString(color: Color): String{
         Blue -> "Blue"
         Purple -> "Purple"
         Green -> "Green"
+        Turquoise -> "Turquoise"
         else -> "404"
     }
 }
 
 // This function returns the color from string
-
 fun stringToColor(value: String): Color{
     return when(value){
         "Red" -> Red
-        "Orangered" -> Orangered
         "Pink" -> Pink
         "Tomato" -> Tomato
         "Lightblue" -> Lightblue
@@ -201,6 +199,7 @@ fun stringToColor(value: String): Color{
         "Blue" -> Blue
         "Purple" -> Purple
         "Green" -> Green
+        "Turquoise" -> Turquoise
         else -> Color.DarkGray
     }
 }
@@ -211,20 +210,6 @@ fun textStringToColor(text: String): Color{
         "White" -> Color.White
         "Black" -> Color.Black
         else -> Color.White
-    }
-}
-
-
-fun bitmapToByteArray(bitmap: Bitmap?): ByteArray {
-    val stream = ByteArrayOutputStream()
-    bitmap?.compress(Bitmap.CompressFormat.PNG, 100, stream)
-    return stream.toByteArray()
-}
-
-fun deleteImage(context: Context, fileName: String) {
-    val file = File(context.filesDir, fileName)
-    if (file.exists()) {
-        file.delete()
     }
 }
 
@@ -242,23 +227,6 @@ fun longToRealDate(long: Long): String{
         .withZone(ZoneId.systemDefault())
     return formatter.format(instant)
 }
-
-//@RequiresApi(Build.VERSION_CODES.O)
-//@OptIn(ExperimentalMaterial3Api::class)
-//fun convertTimePickerStateToLong(timePickerState: TimePickerState): Long {
-//    val selectedTime = LocalTime.of(timePickerState.hour, timePickerState.minute)
-//    return selectedTime.atDate(LocalDate.now())
-//        .atZone(ZoneId.systemDefault())
-//        .toInstant()
-//        .toEpochMilli()
-//}
-
-//@OptIn(ExperimentalMaterial3Api::class)
-//fun convertTimePickerStateToLong(timePickerState: TimePickerState): Long {
-//    val hoursInMillis = timePickerState.hour * 60 * 60 * 1000L
-//    val minutesInMillis = timePickerState.minute * 60 * 1000L
-//    return hoursInMillis + minutesInMillis
-//}
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)

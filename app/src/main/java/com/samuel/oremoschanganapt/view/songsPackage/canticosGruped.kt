@@ -27,7 +27,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -41,6 +43,7 @@ import com.samuel.oremoschanganapt.components.SidebarNav
 import com.samuel.oremoschanganapt.components.buttons.ShortcutsButton
 import com.samuel.oremoschanganapt.db.data.groupValues
 import com.samuel.oremoschanganapt.repository.colorObject
+import com.samuel.oremoschanganapt.ui.theme.DarkColor
 import com.samuelsumbane.oremoschanganapt.db.SongViewModel
 
 
@@ -56,7 +59,7 @@ fun CanticosAgrupados( navController: NavController, songViewModel: SongViewMode
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text="Cânticos Agrupados", color = MaterialTheme.colorScheme.onPrimary, fontStyle = FontStyle.Italic, fontWeight = FontWeight.Bold) },
+                title = { Text(text="Cânticos Agrupados", color = MaterialTheme.colorScheme.tertiary, fontStyle = FontStyle.Italic, fontWeight = FontWeight.Bold) },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color.Transparent
                 ),
@@ -94,7 +97,10 @@ fun CanticosAgrupados( navController: NavController, songViewModel: SongViewMode
                                         .fillMaxWidth()
                                         .height(65.dp)
                                         .padding(5.dp)
-                                        .background(mainColor, RoundedCornerShape(14.dp))
+                                        .background(
+                                            brush = Brush.horizontalGradient(
+                                            colors = listOf(mainColor, lerp(mainColor, DarkColor, 0.9f)),
+                                        ), RoundedCornerShape(14.dp))
                                         .clickable {
                                             navController.navigate("canticospage/${group.key}/${group.value}")
                                         },
@@ -104,7 +110,7 @@ fun CanticosAgrupados( navController: NavController, songViewModel: SongViewMode
                                     Text(
                                         text = group.value.uppercase(),
                                         textAlign = TextAlign.Center,
-                                        color = MaterialTheme.colorScheme.onPrimary,
+                                        color = Color.White,
                                         fontWeight = FontWeight.SemiBold
                                     )
                                 }

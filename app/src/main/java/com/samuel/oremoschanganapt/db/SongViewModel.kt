@@ -1,13 +1,11 @@
 package com.samuelsumbane.oremoschanganapt.db
 
 import android.util.Log
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.samuel.oremoschanganapt.MyApp
 //import com.samuel.oremoschanganapt.db.data.songData
 import com.samuel.oremoschanganapt.db.data.songsData
-import com.samuelsumbane.oremoschanganapt.db.data.prayData
 //import com.samuelsumbane.oremoschanganapt.MyApp
 import io.realm.kotlin.UpdatePolicy
 import io.realm.kotlin.ext.query
@@ -62,12 +60,24 @@ class SongViewModel: ViewModel() {
                         title = songtitle
                         subTitle = songSubtitle
                         body = songbody
+                        loved = false
                     }
                     copyToRealm(song, updatePolicy = UpdatePolicy.ALL)
                 }
             }
         }
 
+        fun setLovedSong(songId: Int, loved: Boolean) {
+            viewModelScope.launch {
+                realm.write {
+                    val song = this.query<Song>("songId == $0", songId).find().first()
+                    song.let {
+                        song.loved = loved
+                    }
+                    copyToRealm(song, updatePolicy = UpdatePolicy.ALL)
+                }
+            }
+        }
 
 //        fun selectSong(songId: Int): Song{
 //            var song = Song()

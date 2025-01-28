@@ -8,9 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -27,11 +25,10 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.max
 import androidx.navigation.NavController
 import com.samuel.oremoschanganapt.components.buttons.ShortcutsButton
 import com.samuel.oremoschanganapt.repository.colorObject
@@ -39,8 +36,7 @@ import com.samuel.oremoschanganapt.repository.colorObject
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FestasMoveis(navController: NavController){
-
+fun FestasMoveis(navController: NavController) {
     val scroll = rememberScrollState()
 
     val datas = listOf(
@@ -64,7 +60,7 @@ fun FestasMoveis(navController: NavController){
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text="Festas Moveis", color = MaterialTheme.colorScheme.onPrimary) },
+                title = { Text(text="Festas Móveis", color = MaterialTheme.colorScheme.tertiary) },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.background
                 ),
@@ -76,28 +72,23 @@ fun FestasMoveis(navController: NavController){
             )
         },
     ) { innerValues ->
-        val dbBgColor = colorObject.mainColor
-        val divBgColor = lerp(dbBgColor, Color.Black, 0.2f)
+        val itemBgColor = colorObject.mainColor
         Column(
             modifier = Modifier.fillMaxSize()
                 .padding(innerValues)
-//                .background(Color.Green)
                 .verticalScroll(scroll),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             datas.forEach{ row ->
                 Column(
-                    Modifier
-                        .fillMaxWidth(0.9f)
-//                        .widthIn(min = 40.dp, max = 40.dp)
-                        .background(divBgColor, RoundedCornerShape(10.dp))
-                ){
+                    Modifier.fillMaxWidth(0.9f)
+                        .background(brush = Brush.horizontalGradient(
+                            colors = listOf(itemBgColor, lerp(itemBgColor, MaterialTheme.colorScheme.background, 0.9f)),
+                        ), RoundedCornerShape(10.dp))
+                ) {
                     Column(
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(10.dp)
-//                            .background(Color.Blue)
-                    ){
+                        Modifier.fillMaxWidth().padding(10.dp)
+                    ) {
                         Row(
                             Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceAround
@@ -111,7 +102,6 @@ fun FestasMoveis(navController: NavController){
                         Text(text = "C. Cristo :  -------------------------------- ${row[5]}")
                         Text(text = "Advento :  --------------------------------- ${row[6]}")
                     }
-
                 }
                 Spacer(Modifier.height(10.dp))
             }

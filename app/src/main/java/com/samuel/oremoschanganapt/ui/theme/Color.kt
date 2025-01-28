@@ -17,7 +17,6 @@ val splashColor = Color(0xFFC2C2C2)
 //val HomeColor = Color(0xFF172028)
 
 val Lightgray = Color(0xFFAAAEB1)
-val Orangered = Color(0xFFF84D0D)
 val Orange = Color(0xFFFFAB00)
 val Lightblue = Color(0xFF7398A3)
 val Blue = Color(0xFF14BCFF)
@@ -26,6 +25,9 @@ val Red = Color(0xFFD41004)
 val Green = Color(0xFF00C853)
 val Pink = Color(0xFFFFC1E3)
 val Tomato = Color(0xFFFF6347)
+val Turquoise = Color(0xFF40E0D0)   // Turquesa
 
 val RedButton = Color(0xFFBB0F04)
 val BlueButton = Color(0xFF14BCFF)
+val DarkColor = Color(0xFF191C1E)
+//#191C1E

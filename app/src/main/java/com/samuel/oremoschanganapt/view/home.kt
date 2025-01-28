@@ -2,6 +2,7 @@ package com.samuel.oremoschanganapt.view
 
 import android.annotation.SuppressLint
 import android.os.Build
+import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
@@ -30,7 +31,6 @@ import androidx.compose.ui.unit.*
 import androidx.navigation.NavController
 //import com.samuel.oremoschanganapt.NotificationWorker
 import com.samuel.oremoschanganapt.R
-//import com.samuel.oremoschanganapt.apresentacaoOracao.*
 import com.samuel.oremoschanganapt.components.*
 import com.samuel.oremoschanganapt.db.ReminderViewModel
 import com.samuel.oremoschanganapt.functionsKotlin.isNumber
@@ -39,8 +39,6 @@ import com.samuel.oremoschanganapt.functionsKotlin.stringToColor
 import com.samuel.oremoschanganapt.repository.TablesViewModels
 import com.samuel.oremoschanganapt.repository.colorObject
 import com.samuel.oremoschanganapt.ui.theme.Dodgerblue
-import com.samuel.oremoschanganapt.ui.theme.ShapeEditText
-//import com.samuel.oremoschanganapt.ui.theme.grayHomeColor
 import com.samuel.oremoschanganapt.view.sideBar.AppearanceWidget
 import com.samuel.oremoschanganapt.view.sideBar.RowBackup
 import com.samuel.oremoschanganapt.view.sideBar.RowAbout
@@ -60,7 +58,6 @@ fun Home( navController: NavController, songViewModel: SongViewModel,
 
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-//    val drawerState = rememberDrawerState(initialValue = DrawerValue.Open)
     val scope = rememberCoroutineScope()
     val scrollState = rememberScrollState()
     var textInputValue by remember { mutableStateOf("") }
@@ -71,10 +68,10 @@ fun Home( navController: NavController, songViewModel: SongViewModel,
     var showModal by remember { mutableStateOf(false) }
     val context = LocalContext.current
     val commonViewModel = TablesViewModels.commonViewModel!!
+    val tertiaryColor = MaterialTheme.colorScheme.tertiary
 
     val configuration = LocalConfiguration.current
     val isPortrait = configuration.orientation == android.content.res.Configuration.ORIENTATION_PORTRAIT
-
 
     val filteredPrays = remember(allPrays, textInputValue){
         if (textInputValue.isNotEmpty()) {
@@ -117,68 +114,68 @@ fun Home( navController: NavController, songViewModel: SongViewModel,
                 var mainColor = colorObject.mainColor
 
                 Column (
-                    Modifier.fillMaxWidth(0.95f).padding(start=10.dp)
+                    Modifier.fillMaxWidth(0.95f)
+                        .fillMaxHeight()
+                        .padding(start=10.dp)
                         .verticalScroll(scrollState),
-                    verticalArrangement = Arrangement.spacedBy(40.dp),
+//                    verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally,
 
                 ) {
-                    Spacer(Modifier.height(5.dp))
-                    Text("Oremos Changana - Português", style = MaterialTheme.typography.titleLarge)
-                    Spacer(Modifier.height(5.dp))
+                    Text("Configurações", style = MaterialTheme.typography.titleLarge)
+                    Spacer(Modifier.height(75.dp))
 
-                    if (defs.isNotEmpty()) {
-                        val def = defs.first()
-                        var themeColor by remember { mutableStateOf(def.themeColor)}
-                        var mode by remember { mutableStateOf(def.appMode) }
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(30.dp),
+                    ) {
+                        if (defs.isNotEmpty()) {
+                            val def = defs.first()
+                            var themeColor by remember { mutableStateOf(def.themeColor)}
+                            var mode by remember { mutableStateOf(def.appMode) }
 
-                        LaunchedEffect(themeColor) {
-                            coroutineScope {
-                                if (def.themeColor != themeColor){
-                                    defViewModel.updateDef("themeColor", themeColor)
-                                    mainColor = stringToColor(themeColor)
-                                    colorObject.menuContainerColor = lerp(mainColor, Color.Black, 0.3f)
-                                    colorObject.inputColor = mainColor.copy(alpha = 0.75f)
+                            LaunchedEffect(themeColor) {
+                                coroutineScope {
+                                    if (def.themeColor != themeColor){
+                                        defViewModel.updateDef("themeColor", themeColor)
+                                        mainColor = stringToColor(themeColor)
+                                        colorObject.menuContainerColor = lerp(mainColor, Color.Black, 0.3f)
+                                        colorObject.inputColor = mainColor.copy(alpha = 0.75f)
+                                    }
                                 }
                             }
-                        }
 
-                        LaunchedEffect(mode) {
-                            coroutineScope {
-                                defViewModel.updateDef("appMode", mode)
-                                if (mode != def.appMode){
-                                    toastAlert(context, "Modo guardado! Será aplicado na próxima vez que abrir a aplicação", duration = Toast.LENGTH_LONG)
+                            LaunchedEffect(mode) {
+                                coroutineScope {
+                                    defViewModel.updateDef("appMode", mode)
+                                    if (mode != def.appMode){
+                                        toastAlert(context, "Modo guardado! Será aplicado na próxima vez que abrir a aplicação", duration = Toast.LENGTH_LONG)
+                                    }
                                 }
                             }
-                        }
-                        // appearencia ------->>
-                        val (newMode, newThemeColor) = AppearanceWidget(mode, themeColor)
-                        mode = newMode; themeColor = newThemeColor
+                            // appearencia ------->>
+                            val (newMode, newThemeColor) = AppearanceWidget(mode, themeColor)
+                            mode = newMode; themeColor = newThemeColor
 
-                    } else LoadingScreen()
+                        } else LoadingScreen()
 
-                    RowBackup(
-                        onBackupClick = { commonViewModel.exportBackupToExternalStorage(context) },
-                        onRestoreClick = { commonViewModel.restoreBackupFromExternalStorage(context) }
-                    )
+                        RowBackup(
+                            onBackupClick = { commonViewModel.exportBackupToExternalStorage(context) },
+                            onRestoreClick = { commonViewModel.restoreBackupFromExternalStorage(context) }
+                        )
 
-                    // About --------->>
-                    RowAbout()
+                        // About --------->>
+                        RowAbout(navController)
+                    }
                 }
-
-
             }
         }
     ) {
 
         if (defs.isNotEmpty()){
             Scaffold(
-                bottomBar = { BottomAppBarHome(navController, "home", lerp(colorObject.mainColor, Color.White, 0.35f)) }
+                bottomBar = { if (isPortrait) BottomAppBarPrincipal(navController, "home") }
             ) {
-                Box(
-                    modifier = Modifier.fillMaxSize()
-                        .background(color = Color.Transparent)
-                ) {
+                Box(Modifier.fillMaxSize()) {
 
                     Image(
                         painter = painterResource(id = R.drawable.homepic),
@@ -192,13 +189,14 @@ fun Home( navController: NavController, songViewModel: SongViewModel,
 //                    }
 //                    scheduleReminderCheck(context)
 
+                    if (!isPortrait) {
+                        SidebarNav(navController, "home", modifier = Modifier.fillMaxHeight().width(80.dp).padding(top=30.dp))
+                    }
+
                     Column(
                         modifier = Modifier.fillMaxWidth()
                             .fillMaxHeight(.3f)
-                            .background(
-                                color = Color.Transparent,
-                                shape = RoundedCornerShape(0.dp, 0.dp, 0.dp, 40.dp),
-                            ),
+                            .background(color = Color.Transparent),
                         verticalArrangement = Arrangement.SpaceAround,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
@@ -215,19 +213,18 @@ fun Home( navController: NavController, songViewModel: SongViewModel,
                                 textInputValue = it
                                 showModal = textInputValue != ""
                             },
-                            label = { Text(text = "Pesquisar Cântico / Oração", color = MaterialTheme.colorScheme.onPrimary) },
+                            label = { Text(text = "Pesquisar Cântico / Oração", color = MaterialTheme.colorScheme.background, modifier = Modifier.background(tertiaryColor)) },
                             maxLines = 1,
-                            shape = ShapeEditText.medium,
+                            shape = RoundedCornerShape(30.dp),
                             colors = TextFieldDefaults.colors(
-                                focusedContainerColor =  colorObject.inputColor,
-                                unfocusedContainerColor = colorObject.inputColor,
+                                focusedContainerColor =  tertiaryColor,
+                                unfocusedContainerColor = tertiaryColor,
                                 focusedIndicatorColor = Color.Transparent,
                                 unfocusedIndicatorColor = Color.Transparent
                             ),
-                            textStyle = TextStyle(color = MaterialTheme.colorScheme.onPrimary),
+                            textStyle = TextStyle(color = MaterialTheme.colorScheme.background),
                             modifier = Modifier.height(55.dp)
                         )
-
 
                         Column {
                             HomeTexts(text = "Oremos", fontSize = 45)
@@ -235,23 +232,6 @@ fun Home( navController: NavController, songViewModel: SongViewModel,
                             HomeTexts(text = "A HI KHONGELENI", fontSize = 30)
                         }
                     }
-                    //
-
-
-//                    Button(
-//                        onClick = {
-//                             commonViewModel.exportBackupToExternalStorage(context)
-//                        }
-//                    ) {
-//                        Text("Backup")
-//                    }
-//
-////                    Spacer(Modifier.height(40.dp))
-//                    Button({
-//                        commonViewModel.restoreBackupFromExternalStorage(context)
-//                    }) {
-//                        Text("Carregar")
-//                    }
 
                     if (showModal) {
                         Column(
@@ -263,27 +243,19 @@ fun Home( navController: NavController, songViewModel: SongViewModel,
                                 .align(Alignment.CenterEnd),
                             verticalArrangement = Arrangement.Center,
                             horizontalAlignment = Alignment.CenterHorizontally
-                        ){
+                        ) {
                             LazyColumn(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(8.dp),
                                 verticalArrangement = Arrangement.spacedBy(16.dp)
                             ) {
-
-                                items (filteredPrays, key={ it.prayId }) { oracao ->
-                                    PrayRow(
-                                        commonViewModel,
-                                        navController, oracao
-                                    )
+                                items (filteredPrays, key={ it.prayId }) { pray ->
+                                    PrayRow(navController, prayViewModel, pray)
                                 }
 
-                                items (filteredSongs, key={ it.songId }) { cancao ->
-                                    SongRow(
-                                        commonViewModel,
-                                        navController,
-                                        cancao, cancao.songId
-                                    )
+                                items (filteredSongs, key={ it.songId }) { song ->
+                                    SongRow(navController, songViewModel, song)
                                 }
                             }
                         }

@@ -6,7 +6,6 @@ import android.app.NotificationManager
 import android.os.Build
 import androidx.annotation.RequiresApi
 import com.samuelsumbane.oremoschanganapt.db.Def
-import com.samuelsumbane.oremoschanganapt.db.LovedData
 import com.samuelsumbane.oremoschanganapt.db.Pray
 import com.samuelsumbane.oremoschanganapt.db.Reminder
 import com.samuelsumbane.oremoschanganapt.db.Song
@@ -27,8 +26,7 @@ class MyApp: Application() {
             configuration = RealmConfiguration.create(
                 schema = setOf(
                     Pray::class, Song::class,
-                    Reminder::class, Def::class,
-                    LovedData::class
+                    Reminder::class, Def::class
                 )
             )
         )

@@ -1,5 +1,4 @@
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,7 +9,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.outlined.Add
-import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -18,7 +16,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
@@ -30,7 +27,6 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.samuel.oremoschanganapt.R
-import com.samuel.oremoschanganapt.functionsKotlin.colorToString
 import com.samuel.oremoschanganapt.repository.colorObject
 
 @Composable
@@ -38,13 +34,10 @@ fun IconTextButton(
     icon: String,
     text: String,
     isActive: Boolean,
-    iconColor: Color = Color.White,
-    textColor: Color = MaterialTheme.colorScheme.onPrimary,
     activeIconColor: Color = lerp(colorObject.mainColor, Color.White, 0.35f),
     onClick: () -> Unit
 ) {
     val mainColor by remember { mutableStateOf(colorObject.mainColor) }
-//    val activeIconColor = lerp(mainColor, Color.White, 0.35f)
 
     Box(
         modifier = Modifier
@@ -62,16 +55,14 @@ fun IconTextButton(
                 }
             }
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
             when (icon) {
                 "Home" -> {
                     Icon(
                         imageVector = Icons.Filled.Home,
                         contentDescription = "",
                         modifier = Modifier.size(25.dp),
-                        tint = iconColor
+                        tint = mainColor
                     )
                 }
                 "Oracao" -> {
@@ -79,15 +70,15 @@ fun IconTextButton(
                         imageVector = ImageVector.vectorResource(id = R.drawable.ic_pray),
                         contentDescription = "",
                         modifier = Modifier.size(25.dp),
-                        tint = iconColor
+                        tint = mainColor
                     )
                 }
                 "Cantico" -> {
                     Icon(
                         imageVector = ImageVector.vectorResource(id = R.drawable.ic_music),
                         contentDescription = null,
-                        modifier = Modifier.size(21.dp),
-                        tint = iconColor
+                        modifier = Modifier.size(24.dp).padding(top = 5.dp),
+                        tint = mainColor
                     )
                 }
                 "MorePages" -> {
@@ -95,7 +86,7 @@ fun IconTextButton(
                         imageVector = Icons.Outlined.Add,
                         contentDescription = "",
                         modifier = Modifier.size(25.dp),
-                        tint = iconColor
+                        tint = mainColor
                     )
                 }
             }
@@ -103,7 +94,7 @@ fun IconTextButton(
             Text(
                 text = text,
                 modifier = Modifier.padding(2.dp),
-                color = textColor, fontSize = 13.sp
+                color = MaterialTheme.colorScheme.background, fontSize = 13.sp
             )
         }
     }

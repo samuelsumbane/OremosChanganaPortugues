@@ -1,5 +1,6 @@
 package com.samuel.oremoschanganapt.view.morepagesPackage
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -7,14 +8,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -33,12 +31,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.samuel.oremoschanganapt.components.TextIconRow
 import com.samuel.oremoschanganapt.components.buttons.ShortcutsButton
 import com.samuel.oremoschanganapt.repository.colorObject
 
@@ -52,7 +52,7 @@ fun Apendice(navController: NavController){
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text="Apêndice", color = MaterialTheme.colorScheme.onPrimary) },
+                title = { Text(text="Apêndice", color = MaterialTheme.colorScheme.tertiary) },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.background
                 ),
@@ -65,7 +65,7 @@ fun Apendice(navController: NavController){
         },
     ) { innerValues ->
          val bgColor = MaterialTheme.colorScheme.background
-         val textColor = MaterialTheme.colorScheme.onPrimary
+         val textColor = MaterialTheme.colorScheme.tertiary
         Column(
             modifier = Modifier.padding(innerValues)
                 .background(bgColor)
@@ -82,8 +82,8 @@ fun Apendice(navController: NavController){
                 }
             }
             when (selectedTabIndex) {
-                0 -> changanaTabContent(Modifier.fillMaxSize(), bgColor)
-                1 -> ptTabContent(Modifier.fillMaxSize(), bgColor)
+                0 -> ChanganaTabContent(bgColor)
+                1 -> PtTabContent(bgColor)
             }
         }
         ShortcutsButton(navController)
@@ -93,10 +93,7 @@ fun Apendice(navController: NavController){
 class Item(val title: String, val subTitle: String)
 
 @Composable
-fun ptTabContent(
-    modifier: Modifier = Modifier,
-    divColor: Color
-){
+fun PtTabContent(divColor: Color) {
     Column(
         modifier = Modifier.background(divColor)
             .fillMaxSize()
@@ -193,10 +190,7 @@ fun ptTabContent(
 }
 
 @Composable
-fun changanaTabContent(
-    modifier: Modifier = Modifier,
-    divColor: Color
-){
+fun ChanganaTabContent(divColor: Color) {
     Column(
         modifier = Modifier.background(divColor)
             .fillMaxSize()
@@ -297,35 +291,19 @@ fun ListWidget(
     title: String,
     dataList: List<List<Item>>
 ){
-    val dbBgColor = colorObject.mainColor
-    val divBgColor = lerp(dbBgColor, Color.Black, 0.2f)
-    val textColor = MaterialTheme.colorScheme.onPrimary
+    val mainColor = colorObject.mainColor
+    val textColor = MaterialTheme.colorScheme.tertiary
 
-    Column(
-        modifier = Modifier.fillMaxSize()
-    ){
+    Column(modifier = Modifier.fillMaxSize()) {
         var showContent by remember { mutableStateOf(false) }
-        val rS = 12.dp // rowShape ---------->>
-        Row (
-            Modifier.fillMaxSize().height(45.dp)
-                .background(divBgColor, shape = if (showContent)
-                    RoundedCornerShape(rS, rS, 0.dp, 0.dp) else RoundedCornerShape(rS) )
-                .clickable { showContent = !showContent }.padding(10.dp),
-            Arrangement.SpaceBetween
-        ){
-            Text("$title", color = textColor)
-            if (showContent)
-                Icon(Icons.Default.KeyboardArrowUp, contentDescription = "Open or Close")
-            else
-                Icon(Icons.Default.KeyboardArrowDown, contentDescription = "Open or Close")
 
-        }
-
-        if ( showContent ){
+        TextIconRow(title, showContent, modifier = Modifier.clickable { showContent = !showContent })
+        AnimatedVisibility(showContent) {
             Column(
-                Modifier.background(divBgColor, RoundedCornerShape(0.dp, 0.dp, 14.dp, 14.dp)).fillMaxWidth()
-            ){
-
+                Modifier.background(brush = Brush.horizontalGradient(
+                    colors = listOf(mainColor, lerp(mainColor, MaterialTheme.colorScheme.background, 0.9f)),
+                ), RoundedCornerShape(0.dp, 0.dp, 14.dp, 14.dp)).fillMaxWidth()
+            ) {
                 dataList.forEach { list ->
                     list.forEach { item ->
                         Row(
@@ -339,5 +317,7 @@ fun ListWidget(
                 }
             }
         }
+
+
     }
 }

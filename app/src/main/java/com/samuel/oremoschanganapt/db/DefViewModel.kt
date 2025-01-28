@@ -32,7 +32,7 @@ class DefViewModel : ViewModel() {
                             val def = Def().apply {
                                 defId = getNextId()
                                 textScale = 1.0
-                                themeColor = "Tomato"
+                                themeColor = "Green"
                                 appMode = "System"
                             }
                             copyToRealm(def, updatePolicy = UpdatePolicy.ALL)

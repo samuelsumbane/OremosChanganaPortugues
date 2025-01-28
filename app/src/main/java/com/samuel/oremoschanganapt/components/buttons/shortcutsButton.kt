@@ -1,5 +1,6 @@
 package com.samuel.oremoschanganapt.components.buttons
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.*
@@ -41,7 +42,7 @@ import com.samuel.oremoschanganapt.components.SearchContainer
 import com.samuel.oremoschanganapt.components.SongRow
 import com.samuel.oremoschanganapt.functionsKotlin.isNumber
 import com.samuel.oremoschanganapt.repository.TablesViewModels
-import com.samuelsumbane.oremoschanganapt.db.CommonViewModel
+import com.samuel.oremoschanganapt.db.CommonViewModel
 import com.samuelsumbane.oremoschanganapt.db.PrayViewModel
 import com.samuelsumbane.oremoschanganapt.db.SongViewModel
 import kotlinx.coroutines.coroutineScope
@@ -64,10 +65,11 @@ fun ShortcutsButton(navController: NavController) {
     val searchStateActive by remember { mutableStateOf(true) }
     var searchValue by remember { mutableStateOf("") }
 
+    val prayViewModel = PrayViewModel()
+    val songViewModel = SongViewModel()
 
     val allPrays by TablesViewModels.prayViewModel!!.prays.collectAsState()
     val allSongs by TablesViewModels.songViewModel!!.songs.collectAsState()
-    val commonViewModel = TablesViewModels.commonViewModel!!
 
     val filteredPrays = remember(allPrays, searchValue){
         if (searchValue.isNotEmpty()) {
@@ -91,10 +93,7 @@ fun ShortcutsButton(navController: NavController) {
     }
 
 
-    Box(Modifier.fillMaxSize()
-//        .background( if(searchStateActive) Color.Green else Color.Transparent)
-        .background(Color.Transparent)
-    ){
+    Box(Modifier.fillMaxSize().background(Color.Transparent)) {
 
         var offsetY by remember { mutableStateOf(screenHeight) }
         val childColumnHeight by remember { mutableIntStateOf(230) }
@@ -134,16 +133,14 @@ fun ShortcutsButton(navController: NavController) {
                         )
                     }
 
-
                     IconButton(
                         onClick = {showSearchModal = !showSearchModal}
                     ) {
                         Icon(Icons.Default.Clear, contentDescription = "close",
-                            tint=MaterialTheme.colorScheme.onPrimary,
+                            tint=MaterialTheme.colorScheme.tertiary,
                             modifier = Modifier.size(32.dp))
                     }
                 }
-
 
                 LazyColumn(
                     Modifier
@@ -151,35 +148,21 @@ fun ShortcutsButton(navController: NavController) {
                         .fillMaxWidth(0.95f),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    items ( filteredPrays ) { oracao ->
-                        PrayRow(
-                            commonViewModel,
-                            navController, oracao
-                        )
-                    }
-
-                    items ( filteredSongs ) { cancao ->
-                        SongRow(
-                            commonViewModel,
-                            navController,
-                            cancao, cancao.songId
-                        )
-                    }
+                    items ( filteredPrays ) { PrayRow(navController, prayViewModel, it) }
+                    items ( filteredSongs ) { SongRow(navController, songViewModel, it) }
                 }
-
             }
         }
 
 
         Row(
             Modifier.align(Alignment.TopEnd)
-//                .background(Color.Yellow)
                 .fillMaxHeight()
                 .zIndex(10.0f)
                 .offset {IntOffset(0, offsetY.roundToInt())}
-        ){
-
-            if (isActive) {
+        ) {
+            // Leftpart (Songs icon, Pray icon, star icon) -------->>
+            AnimatedVisibility(isActive) {
                 Column(
                     Modifier.width(80.dp)
                         .height(childColumnHeight.dp)
@@ -188,7 +171,7 @@ fun ShortcutsButton(navController: NavController) {
                     ,
                     verticalArrangement = Arrangement.Center
                 ){
-                    // canticos
+                    // Songs
                     ShortcutButtonChild(
                         modifier = Modifier.align(Alignment.End),
                         icon = ImageVector.vectorResource(id = R.drawable.ic_music),
@@ -198,7 +181,7 @@ fun ShortcutsButton(navController: NavController) {
 
                     Spacer(Modifier.height(10.dp))
 
-                    // oracoes
+                    // Prays
                     ShortcutButtonChild(
                         icon = ImageVector.vectorResource(id = R.drawable.ic_pray),
                         description = "Oracoes",
@@ -221,7 +204,7 @@ fun ShortcutsButton(navController: NavController) {
                     .height(childColumnHeight.dp),
                 verticalArrangement = Arrangement.SpaceAround
             ){
-                if (isActive) {
+                AnimatedVisibility(isActive) {
                     ShortcutButtonChild(
                         modifier = Modifier.align(Alignment.End),
                         icon = Icons.Default.Search,
@@ -239,10 +222,11 @@ fun ShortcutsButton(navController: NavController) {
                             }
                         },
                     colors = IconButtonDefaults.iconButtonColors(containerColor = MaterialTheme.colorScheme.tertiary),
+//                    colors = IconButtonDefaults.iconButtonColors(containerColor = Color.Red),
                     onClick = { isActive = !isActive }
                 ){}
 
-                if (isActive) {
+                AnimatedVisibility(isActive) {
                     ShortcutButtonChild(
                         modifier = Modifier.align(Alignment.End),
                         icon = Icons.Default.Home,

@@ -37,6 +37,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.PopupProperties
+import androidx.navigation.NavController
 import com.samuel.oremoschanganapt.components.colorPickerDemo
 import com.samuel.oremoschanganapt.functionsKotlin.stringToColor
 import com.samuel.oremoschanganapt.R
@@ -121,7 +122,7 @@ fun ModeSwitcher(currentMode: String): String {
             border = BorderStroke(1.dp, Color.Black),
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color.Transparent,
-                contentColor = MaterialTheme.colorScheme.onPrimary
+                contentColor = MaterialTheme.colorScheme.tertiary
             ),
         ) {
             Row(
@@ -160,7 +161,7 @@ fun ModeSwitcher(currentMode: String): String {
 fun SidebarText(text: String, bold: Boolean = false, fontSize: Int = 16){
     Text(text = text, fontSize = fontSize.sp,
         fontWeight = if(bold) FontWeight.Bold else FontWeight.Normal,
-        color = MaterialTheme.colorScheme.onPrimary
+        color = MaterialTheme.colorScheme.tertiary
     )
 }
 
@@ -188,33 +189,11 @@ fun RowColors (
 }
 
 @Composable
-fun RowAbout () {
-    var visibleAppearanceTab by remember { mutableStateOf(false) }
-
+fun RowAbout (navController: NavController) {
     DefTabButton {
         ExpandContentTabBtn(
             Icons.Default.Info, "Sobre"
-        ) { visibleAppearanceTab = !visibleAppearanceTab }
-
-        AnimatedVisibility(visibleAppearanceTab) {
-            Column(
-                Modifier
-                    .fillMaxWidth()
-                    .background(
-                        MaterialTheme.colorScheme.onSecondary,
-                        RoundedCornerShape(
-                            topStart = 0.dp,
-                            topEnd = 0.dp,
-                            bottomEnd = 10.dp,
-                            bottomStart = 10.dp
-                        )
-                    ),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Spacer(modifier = Modifier.height(10.dp))
-                About()
-            }
-        }
+        ) { navController.navigate("about") }
     }
 }
 

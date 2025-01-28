@@ -10,6 +10,7 @@ class Pray: RealmObject {
     var title: String = ""
     var subTitle: String = ""
     var body: String = ""
+    var loved: Boolean = false
 
     @PrimaryKey
     var prayId: Int = 0
@@ -22,20 +23,10 @@ class Song: RealmObject {
     var title: String = ""
     var subTitle: String = ""
     var body: String = ""
+    var loved: Boolean = false
 
     @PrimaryKey
     var songId: Int = 0
-}
-
-
-// LovedData table ---------->>
-class LovedData: RealmObject {
-    var tableName: String = ""
-    var lovedDataId: Int = 0
-
-    @PrimaryKey
-    var itemId: Int = 0
-
 }
 
 class Reminder: RealmObject {
@@ -49,10 +40,9 @@ class Reminder: RealmObject {
     var reminderId: Int = 0
 }
 
-
 class Def: RealmObject {
     var textScale: Double = 1.0
-    var themeColor: String = "Tomato"
+    var themeColor: String = "Green"
     var appMode: String = "System"
 
     @PrimaryKey

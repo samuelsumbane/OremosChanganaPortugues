@@ -36,11 +36,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.samuel.oremoschanganapt.components.LoadingScreen
+import com.samuel.oremoschanganapt.components.StarButton
 import com.samuel.oremoschanganapt.components.buttons.ShortcutsButton
-import com.samuel.oremoschanganapt.components.buttons.StarButton
+//import com.samuel.oremoschanganapt.components.buttons.StarButton
 import com.samuel.oremoschanganapt.db.ReminderViewModel
 import com.samuel.oremoschanganapt.functionsKotlin.ShareIconButton
-import com.samuelsumbane.oremoschanganapt.db.CommonViewModel
+import com.samuel.oremoschanganapt.db.CommonViewModel
 import com.samuelsumbane.oremoschanganapt.db.DefViewModel
 import com.samuelsumbane.oremoschanganapt.db.SongViewModel
 
@@ -59,15 +60,15 @@ fun EachCantico(navController: NavController, songId: Int,
     if(songData != null) {
         val reminderes by reminderViewModel.reminders.collectAsState()
         //
-        val songLoved = commonViewModel.getLovedItem("Song", songData.songId)
+//        val songLoved = commonViewModel.getLovedItem("Song", songData.songId)
 //        val itemIsLoved: Boolean = songLoved != null
-        val lovedState = remember { mutableStateOf(songLoved != null) }
+//        val lovedState = remember { mutableStateOf(songLoved != null) }
         
 //        var lovedSong by remember { mutableStateOf() }
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text(text="Cântico: ${songData.number}", color = MaterialTheme.colorScheme.onPrimary) },
+                    title = { Text(text="Cântico: ${songData.number}", color = MaterialTheme.colorScheme.tertiary) },
                     colors = TopAppBarDefaults.topAppBarColors(
                         containerColor = MaterialTheme.colorScheme.background
                     ),
@@ -111,12 +112,14 @@ fun EachCantico(navController: NavController, songId: Int,
                         }
 
                         // ---------->>
-                        StarButton(lovedState = lovedState) {
-                            if (lovedState.value) {
-                                commonViewModel.removeLovedId("Song", songData.songId)
+                        var lovedState by remember { mutableStateOf(songData.loved) }
+                        StarButton(lovedState) {
+                            if (lovedState) {
+                                songViewModel.setLovedSong(songData.songId, false)
                             } else {
-                                commonViewModel.addLovedId("Song", songData.songId)
+                                songViewModel.setLovedSong(songData.songId, true)
                             }
+                            lovedState = !lovedState
                         }
 
                         ShareIconButton(context,  text = "${songData.number} - ${songData.title} \n ${songData.body}")
@@ -157,10 +160,10 @@ fun EachCantico(navController: NavController, songId: Int,
                         )
                         Spacer(modifier = Modifier.height(12.dp))
 
-                        //            Text(text = subTitulo, fontStyle = FontStyle.Italic)
+                        Text(text = songData.subTitle, fontStyle = androidx.compose.ui.text.font.FontStyle.Italic)
                         Spacer(modifier = Modifier.height(12.dp))
 
-                        Text(text = songData.body, fontSize = 19.sp * scale, lineHeight = (24.sp * scale))
+                        Text(text = songData.body.trimIndent(), fontSize = 19.sp * scale, lineHeight = (24.sp * scale))
 
                     }
                 }

@@ -1,13 +1,9 @@
 package com.samuel.oremoschanganapt.view.songsPackage
 
-import android.util.Log
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 //import androidx.compose.foundation.layout.FlowColumnScopeInstance.weight
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -50,7 +46,7 @@ import com.samuel.oremoschanganapt.components.SidebarNav
 import com.samuel.oremoschanganapt.components.SongRow
 import com.samuel.oremoschanganapt.components.buttons.ShortcutsButton
 import com.samuel.oremoschanganapt.functionsKotlin.isNumber
-import com.samuelsumbane.oremoschanganapt.db.CommonViewModel
+import com.samuel.oremoschanganapt.db.CommonViewModel
 import com.samuelsumbane.oremoschanganapt.db.SongViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -68,7 +64,6 @@ fun SongsPage(navController: NavController, value: String, readbleValue: String,
     val configuration = LocalConfiguration.current
     val isPortrait = configuration.orientation == android.content.res.Configuration.ORIENTATION_PORTRAIT
 
-    Log.d("samuel", "$isPortrait")
 
     val data = when(value){
         "todos" -> allSongs
@@ -84,7 +79,7 @@ fun SongsPage(navController: NavController, value: String, readbleValue: String,
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = readbleValue.replaceFirstChar{char -> char.uppercase()}, color = MaterialTheme.colorScheme.onPrimary) },
+                title = { Text(text = readbleValue.replaceFirstChar{char -> char.uppercase()}, color = MaterialTheme.colorScheme.tertiary) },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color.Transparent
                 ),
@@ -131,7 +126,6 @@ fun SongsPage(navController: NavController, value: String, readbleValue: String,
         }
     ) { paddingVales ->
 
-
         when{
             allSongs.isEmpty() -> LoadingScreen()
 
@@ -177,20 +171,10 @@ fun SongsPage(navController: NavController, value: String, readbleValue: String,
                             SidebarNav(navController, "canticosAgrupados")
                         }
                         LazyColumn(
-                            modifier = Modifier.weight(1f).padding(5.dp)
-                                .background(Color.Red),
+                            modifier = Modifier.weight(1f).padding(5.dp),
                             verticalArrangement = Arrangement.spacedBy(16.dp)
                         ){
-                            items( filteredSongs ) { cancao ->
-                                val songId = cancao.songId
-                                // -------->>
-                                SongRow(
-                                    commonViewModel,
-                                    navController,
-                                    cancao, songId
-                                )
-
-                            }
+                            items( filteredSongs ) { SongRow(navController, songViewModel, it) }
                         }
                     }
 

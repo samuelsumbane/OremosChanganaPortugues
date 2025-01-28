@@ -35,7 +35,7 @@ import com.samuel.oremoschanganapt.repository.colorObject
 import com.samuel.oremoschanganapt.repository.TablesViewModels
 import com.samuel.oremoschanganapt.ui.theme.OremosChanganaTheme
 import com.samuel.oremoschanganapt.view.morepagesPackage.Apendice
-import com.samuel.oremoschanganapt.view.morepagesPackage.LovedDataPage
+//import com.samuel.oremoschanganapt.view.morepagesPackage.LovedDataPage
 import com.samuel.oremoschanganapt.view.songsPackage.CanticosAgrupados
 import com.samuel.oremoschanganapt.view.songsPackage.SongsPage
 import com.samuel.oremoschanganapt.view.songsPackage.EachCantico
@@ -43,17 +43,17 @@ import com.samuel.oremoschanganapt.view.praysPackage.EachOracao
 import com.samuel.oremoschanganapt.view.morepagesPackage.FestasMoveis
 import com.samuel.oremoschanganapt.view.Home
 import com.samuel.oremoschanganapt.view.morepagesPackage.Licionario
-import com.samuel.oremoschanganapt.view.MorePages
+import com.samuel.oremoschanganapt.view.morepagesPackage.MorePages
+import com.samuel.oremoschanganapt.view.morepagesPackage.LovedDataPage
 import com.samuel.oremoschanganapt.view.praysPackage.OracoesPage
 import com.samuel.oremoschanganapt.view.morepagesPackage.remindersPages.ConfigureReminder
 import com.samuel.oremoschanganapt.view.morepagesPackage.remindersPages.RemindersPage
-import com.samuelsumbane.oremoschanganapt.db.CommonViewModel
+import com.samuel.oremoschanganapt.view.sideBar.About
+import com.samuel.oremoschanganapt.db.CommonViewModel
 import com.samuelsumbane.oremoschanganapt.db.DefViewModel
 //import com.samuel.oremoschanganapt.view.OracoesPage
 import com.samuelsumbane.oremoschanganapt.db.PrayViewModel
 import com.samuelsumbane.oremoschanganapt.db.SongViewModel
-//import kotlin.coroutines.jvm.internal.CompletedContinuation.context
-//import com.google.android.play.core.review.ReviewManagerFactory
 
 
 class  MainActivity : ComponentActivity() {
@@ -65,7 +65,6 @@ class  MainActivity : ComponentActivity() {
     private val commonViewModel: CommonViewModel by viewModels()
 
 //    val allViews = TablesViewModels(prayViewModel, songViewModel)
-
 //    val x = TablesViewModels.songViewModel
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -76,11 +75,11 @@ class  MainActivity : ComponentActivity() {
 //            val viewModel = ViewModelProvider(this).get(CommonViewModel::class.java)
 
 //            val sucesso = viewModel.exportarFavoritos(context)
-
             val allSongs by songViewModel.songs.collectAsState()
             val allPrays by prayViewModel.prays.collectAsState()
             val defs by defViewModel.defs.collectAsState()
-            val lovedData by commonViewModel.lovedData.collectAsState()
+//            val lovedData by commonViewModel.lovedData.collectAsState()
+
 
             TablesViewModels.songViewModel = songViewModel
             TablesViewModels.prayViewModel = prayViewModel
@@ -122,6 +121,16 @@ class  MainActivity : ComponentActivity() {
                                 }
                             }
 
+                            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+                                val writeStorage = rememberPermissionState(permission = android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                                LaunchedEffect(key1 = true) {
+                                    if (!writeStorage.status.isGranted) {
+                                        writeStorage.launchPermissionRequest()
+                                    }
+                                }
+                            }
+
+
                             val alarmManager = this.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
 
@@ -159,7 +168,7 @@ class  MainActivity : ComponentActivity() {
 
                                 composable(route = "oracoespage") {
                                     OracoesPage(
-                                        navController, prayViewModel, songViewModel, commonViewModel
+                                        navController, prayViewModel, commonViewModel
                                     )
                                 }
 
@@ -170,7 +179,6 @@ class  MainActivity : ComponentActivity() {
                                     SongsPage(
                                         navController, value, readbleValue, songViewModel, commonViewModel
                                     )
-
                                 }
                                 //
                                 composable(route = "eachCantico/{songid}") { aC ->
@@ -195,7 +203,7 @@ class  MainActivity : ComponentActivity() {
                                     LovedDataPage(
                                         navController,
                                         prayViewModel,
-                                        songViewModel, commonViewModel
+                                        songViewModel
                                     )
                                 }
 
@@ -222,6 +230,10 @@ class  MainActivity : ComponentActivity() {
                                         prayViewModel,
                                         reminderViewModel
                                     )
+                                }
+
+                                composable("about") {
+                                    About(navController)
                                 }
 
                                 composable("configurereminder/{id}/{table}/{rdate}/{rtime}/{reminderid}"){ cR ->

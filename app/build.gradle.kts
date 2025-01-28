@@ -5,8 +5,9 @@ import java.util.Properties
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-
     id("io.realm.kotlin")
+//    id("kotlinx-serialization")
+//    id("org.jetbrains.kotlin.plugin.serialization") version "1.9.10"
 }
 
 val keystorePropertiesFile = rootProject.file("local.properties")
@@ -30,14 +31,14 @@ android {
         minSdk = 21
         targetSdk = 34
         versionCode = 3
-        versionName = "3.0"
+        versionName = "3.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
         }
 //        signingConfig = signingConfigs.getByName("release")
-        resourceConfigurations.addAll(listOf("pt", "en"))
+//        resourceConfigurations.addAll(listOf("pt", "en"))
         signingConfig = signingConfigs.getByName("release")
     }
 
@@ -97,13 +98,12 @@ dependencies {
     // Realm
     implementation("io.realm.kotlin:library-base:1.11.0")
 
-    //
     implementation("com.google.accompanist:accompanist-permissions:0.30.1")
 
-    //
-    implementation("androidx.work:work-runtime-ktx:2.7.1")
+//    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
 
-    //
+//    implementation("androidx.work:work-runtime-ktx:2.7.1")
+
     implementation("com.google.code.gson:gson:2.10.1")
 
 }

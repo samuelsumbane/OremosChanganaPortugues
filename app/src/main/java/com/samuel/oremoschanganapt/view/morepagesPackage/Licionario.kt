@@ -1,20 +1,17 @@
 package com.samuel.oremoschanganapt.view.morepagesPackage
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -31,24 +28,23 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.samuel.oremoschanganapt.components.SearchContainer
+import com.samuel.oremoschanganapt.components.TextIconRow
 import com.samuel.oremoschanganapt.components.buttons.ShortcutsButton
 import com.samuel.oremoschanganapt.repository.colorObject
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Licionario(navController: NavController) {
-
     val scroll = rememberScrollState()
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text="Leccionário litúrgico", color = MaterialTheme.colorScheme.onPrimary) },
+                title = { Text(text="Leccionário Litúrgico", color = MaterialTheme.colorScheme.tertiary) },
                  colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.background
                 ),
@@ -67,68 +63,54 @@ fun Licionario(navController: NavController) {
                 .verticalScroll(scroll),
             horizontalAlignment = Alignment.CenterHorizontally,
         ){
-            bookList.forEach{ book ->
-                BooksCard(book)
-            }
+            bookList.forEach{ BooksCard(it) }
         }
-
         ShortcutsButton(navController)
-
     }
 }
 
 class BooksItem(val title: String, val books: String)
 
-
 @Composable
 fun BooksCard(
     dataList: List<BooksItem>
 ){
-    val cardColor = colorObject.mainColor
-    val textColor = MaterialTheme.colorScheme.onPrimary
+    val itemBgColor = colorObject.mainColor
+    val textColor = MaterialTheme.colorScheme.tertiary
 
     dataList.forEach { item ->
         var expanded by remember { mutableStateOf(false) }
-
         Column(
             modifier = Modifier.fillMaxWidth()
-                .then(
-                    if (expanded) Modifier.wrapContentHeight()
-                    else Modifier.height(75.dp)
-                )
                 .background(MaterialTheme.colorScheme.background)
                 .padding(10.dp)
-        ){
+        ) {
+            TextIconRow(item.title, expanded, modifier = Modifier.clickable { expanded = !expanded })
 
-            Row (
-                Modifier.fillMaxWidth().height(40.dp)
-                    .background(cardColor, RoundedCornerShape(13.dp, 13.dp, 0.dp, 0.dp))
-                    .clickable { expanded = !expanded }.padding(10.dp),
-                Arrangement.SpaceBetween
-            ){
-                Text(item.title, fontWeight = FontWeight.Bold, textAlign = TextAlign.Justify,
-                    color = textColor)
-                Icon(Icons.Default.KeyboardArrowDown, contentDescription = "Open or Close",
-                    tint = textColor)
+            AnimatedVisibility(expanded) {
+                Column(
+                    Modifier.fillMaxWidth()
+                        .background(
+                            brush = Brush.horizontalGradient(
+                                colors = listOf(
+                                    itemBgColor,
+                                    lerp(itemBgColor, MaterialTheme.colorScheme.background, 0.9f)
+                                ),
+                            ), RoundedCornerShape(0.dp, 0.dp, 13.dp, 13.dp)
+                        )
+                        .padding(10.dp)
+                        .animateContentSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(item.books, color = textColor)
+                }
             }
 
-            Column(
-                Modifier.fillMaxWidth()
-                    .background(cardColor, RoundedCornerShape(0.dp, 0.dp, 13.dp, 13.dp))
-                    .padding(10.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ){
-                Text(item.books, color = textColor)
-            }
+
         }
     }
 }
 
-
-
-
-
-//1a leit.  2aleit.   4a leit.
 val bookList: List<List<BooksItem>> = listOf(
     listOf(BooksItem("1° Domingo do Advento", "A Is. 2, 1-5     Rom. 13, 11-14      Mt. 24, 37-44\nB Is. 63, 16-64,  8 I Cor, 1,3-9  Mc. 13, 33-37\nC Jer. 33, 14-16  I Thes. 3, 12-4,2   Lc, 21, 25-36")),
     listOf(BooksItem("2° Domingo do Advento", "A Is. 11,1-10   Rom. 15,4-9   Mt. 3, 1-12\nB Is. 40, 1-11    2 Ped. 3,8-14    Mc. 1, 1-8\nC Baruc 5,   1-9 Flp. 1,4-11    Lc. 3, 1-6")),
@@ -195,4 +177,3 @@ val bookList: List<List<BooksItem>> = listOf(
     listOf(BooksItem("33° Domingo do tempo comum","AProv. 31,10-13.19-31 1 Tes. 5, 1-6 Mt. 25, 14-30\nB Dan. 12, 1-3 Heb. 10, 11-18 Mc. 13, 24-32\nC Mal. 4, 1 -2 2 Tes. 3, 7-12 Lc. 21, 5-19")),
     listOf(BooksItem("34° Domingo do tempo comum (Cristo Rei)","A Ezq. 34, 11-17 1 Cor. 15, 20-28 Mt. 25, 31-46\nB Dan. 7, 13-14 Apoc, 1,5-8 Jo. 18, 33-37\nC 2 Sam. 5, 1-3 Col. 1, 12-20 Lc. 23, 35-43"))
 )
-

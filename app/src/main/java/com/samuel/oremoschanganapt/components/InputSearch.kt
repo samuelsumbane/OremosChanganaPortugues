@@ -23,7 +23,7 @@ fun InputSearch(
     modifier: Modifier,
     inputColor: Color = colorObject.inputColor,
 ) {
-    val textColor = MaterialTheme.colorScheme.onPrimary
+    val textColor = MaterialTheme.colorScheme.tertiary
     BasicTextField(
         value = value,
         onValueChange = onValueChange,
