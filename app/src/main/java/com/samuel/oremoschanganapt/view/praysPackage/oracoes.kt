@@ -95,9 +95,7 @@ fun OracoesPage(
                     ){
                         items (filteredPrays) { pray ->
                             // Each pray row --------->>
-                            PrayRow(
-                                navController, prayViewModel, pray
-                            )
+                            PrayRow(navController, prayViewModel, pray)
                         }
                     }
                 }

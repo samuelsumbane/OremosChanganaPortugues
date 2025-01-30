@@ -124,8 +124,7 @@ fun ConfigureReminder(navController: NavController,
                 horizontalArrangement = Arrangement.SpaceAround
             ){
 
-                NormalButton("Cancelar", BlueButton,
-                    textColor = BlueButton ) {
+                NormalButton("Cancelar", BlueButton ) {
                     navController.popBackStack()
                 }
 

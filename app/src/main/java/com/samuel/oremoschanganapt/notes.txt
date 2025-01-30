@@ -17,7 +17,15 @@
 * appearance (mode and color theme) - done
 
 
+// Songs:
+64
 
+
+// Songs, to organize:
+72, 77
+
+// Falta
+498
 
 
 

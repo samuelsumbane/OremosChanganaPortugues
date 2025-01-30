@@ -67,9 +67,8 @@ fun Apendice(navController: NavController){
          val bgColor = MaterialTheme.colorScheme.background
          val textColor = MaterialTheme.colorScheme.tertiary
         Column(
-            modifier = Modifier.padding(innerValues)
-                .background(bgColor)
-        ){
+            modifier = Modifier.padding(innerValues).background(bgColor)
+        ) {
             TabRow(
                 selectedTabIndex = selectedTabIndex
             ) {
@@ -310,7 +309,7 @@ fun ListWidget(
                             Modifier.fillMaxWidth().padding(5.dp),
                             horizontalArrangement = Arrangement.SpaceAround
                         ){
-                            Text(item.title, fontWeight = FontWeight.Bold, textAlign = TextAlign.Justify, color = textColor)
+                            Text(item.title, textAlign = TextAlign.Justify, color = textColor)
                             Text(item.subTitle, color = textColor)
                         }
                     }

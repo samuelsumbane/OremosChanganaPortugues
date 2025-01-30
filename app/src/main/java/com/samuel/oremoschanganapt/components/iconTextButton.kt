@@ -94,7 +94,7 @@ fun IconTextButton(
             Text(
                 text = text,
                 modifier = Modifier.padding(2.dp),
-                color = MaterialTheme.colorScheme.background, fontSize = 13.sp
+                color = MaterialTheme.colorScheme.tertiary, fontSize = 13.sp
             )
         }
     }

@@ -44,6 +44,7 @@ import com.samuel.oremoschanganapt.R
 import com.samuel.oremoschanganapt.components.DefTabButton
 import com.samuel.oremoschanganapt.components.buttons.ExpandContentTabBtn
 import com.samuel.oremoschanganapt.components.buttons.NormalButton
+import com.samuel.oremoschanganapt.repository.colorObject
 
 // AppearanceWidget ============>
 @Composable
@@ -212,14 +213,15 @@ fun RowBackup(
         ) { isThisTabVisible = !isThisTabVisible }
 
         AnimatedVisibility(isThisTabVisible) {
+
             Column() {
                 Text("Pode salvar (Backup) a lista de orações ou/e cânticos favoritos no dispositivo e carregar (Restorar) quando quiser actualizar a lista actual.", modifier = Modifier.padding(10.dp))
                 Row(
                     modifier = Modifier.fillMaxWidth().padding(10.dp),
                     horizontalArrangement = Arrangement.SpaceAround
                 ) {
-                    NormalButton("Backup", Color.DarkGray) { onBackupClick() }
-                    NormalButton("Restorar", Color.DarkGray) { onRestoreClick() }
+                    NormalButton("Backup") { onBackupClick() }
+                    NormalButton("Restorar") { onRestoreClick() }
                 }
             }
         }

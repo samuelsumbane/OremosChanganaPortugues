@@ -7,6 +7,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -24,10 +25,13 @@ import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.Star
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -63,11 +67,14 @@ fun toastAlert(context: Context, text: String, duration: Int = Toast.LENGTH_SHOR
 
 @Composable
 fun LoadingScreen() {
+
     Column(Modifier.fillMaxSize(), Arrangement.Center, Alignment.CenterHorizontally) {
+        val iconDefaultColor = if (isSystemInDarkTheme()) Color.LightGray else Color.DarkGray
+
         CircularProgressIndicator(
             modifier = Modifier.width(54.dp),
-            color = MaterialTheme.colorScheme.tertiary,
-            trackColor = colorObject.mainColor,
+            color = colorObject.mainColor,
+            trackColor = iconDefaultColor,
         )
         Spacer(Modifier.height(20.dp))
         Text("Carregando...")
@@ -190,8 +197,9 @@ fun StarButton(
 ) {
     // Icon size animation ------->>
     val scale = remember { androidx.compose.animation.core.Animatable(1f) }
+    val iconDefaultColor = if (isSystemInDarkTheme()) Color.LightGray else Color.DarkGray
     val iconColor by animateColorAsState(
-        targetValue = if (lovedState) Orange else White,
+        targetValue = if (lovedState) Orange else iconDefaultColor,
         animationSpec = tween(durationMillis = 300)
     )
 
@@ -277,19 +285,22 @@ fun PrayRow(
 
 @Composable
 fun DefTabButton(content: @Composable () -> Unit){
-    Column(
+    Card(
         Modifier.fillMaxWidth()
-            .border(1.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(10.dp))
             .background(Color.Transparent, RoundedCornerShape(10.dp)),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.SpaceBetween
-    ) { content() }
+        elevation = CardDefaults.elevatedCardElevation(3.dp)
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceBetween
+        ) { content() }
+    }
+
 }
 
 @Composable
 fun TextIconRow(title: String, showContent: Boolean, modifier: Modifier) {
     val mainColor = colorObject.mainColor
-    val textColor = MaterialTheme.colorScheme.background
     val rS = 9.dp // rowShape ---------->>
 
     Row (
@@ -302,7 +313,7 @@ fun TextIconRow(title: String, showContent: Boolean, modifier: Modifier) {
             .padding(10.dp),
         Arrangement.SpaceBetween
     ) {
-        Text(title, color = textColor)
+        Text(title, color = Color.White)
         if (showContent)
             Icon(Icons.Default.KeyboardArrowUp, contentDescription = "Open or Close", tint = Color.White)
         else

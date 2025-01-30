@@ -184,7 +184,7 @@ class  MainActivity : ComponentActivity() {
                                 composable(route = "eachCantico/{songid}") { aC ->
                                     val songid = aC.arguments?.getString("songid") ?: ""
                                     val songId = songid.toInt()
-                                    EachCantico(navController, songId, songViewModel, reminderViewModel, defViewModel, commonViewModel)
+                                    EachCantico(navController, songId, songViewModel, reminderViewModel, defViewModel)
                                 }
 
                                 composable(route = "eachOracao/{prayid}") { eO ->

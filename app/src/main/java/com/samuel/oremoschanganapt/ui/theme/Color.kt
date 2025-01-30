@@ -1,14 +1,12 @@
 package com.samuel.oremoschanganapt.ui.theme
 import androidx.compose.ui.graphics.Color
 
-val LightSecondary = Color(0xFFA7AEB4)
-val LightTertiary = Color(0xFF283239) // inverse of secondary
+val LightSecondary = Color(0xFF242F32)
+var DarkSecondary = Color(0xFFE0F2F1)
 
-//val DarkSecondary = Color(0xFF4A4B4C)
-var DarkSecondary = Color(0xFF444B50)
-val DarkTertiary = Color(0xFFEEF0F1) // inserv of secondary
+val White = Color(0xFFFFFFFF)
+val Black = Color(0xFF000000)
 
-val White = Color(0xFFB4C5C7)
 val HomeColor = Color(0x6B31C3E3)
 val Dodgerblue = Color(0xFF2AB5F3)
 val splashColor = Color(0xFFC2C2C2)

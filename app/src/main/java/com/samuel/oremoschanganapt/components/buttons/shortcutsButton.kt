@@ -32,8 +32,10 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import com.samuel.oremoschanganapt.R
@@ -222,9 +224,15 @@ fun ShortcutsButton(navController: NavController) {
                             }
                         },
                     colors = IconButtonDefaults.iconButtonColors(containerColor = MaterialTheme.colorScheme.tertiary),
-//                    colors = IconButtonDefaults.iconButtonColors(containerColor = Color.Red),
                     onClick = { isActive = !isActive }
-                ){}
+                ) {
+                    Icon(
+                        imageVector = ImageVector.vectorResource(R.drawable.adjust_24),
+                        contentDescription = "Shortcuts",
+                        tint = MaterialTheme.colorScheme.background,
+                        modifier = Modifier.size(48.dp)
+                    )
+                }
 
                 AnimatedVisibility(isActive) {
                     ShortcutButtonChild(

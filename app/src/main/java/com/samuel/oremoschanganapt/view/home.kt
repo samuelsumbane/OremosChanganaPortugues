@@ -2,7 +2,6 @@ package com.samuel.oremoschanganapt.view
 
 import android.annotation.SuppressLint
 import android.os.Build
-import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
@@ -20,6 +19,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.layout.ContentScale
@@ -68,7 +68,7 @@ fun Home( navController: NavController, songViewModel: SongViewModel,
     var showModal by remember { mutableStateOf(false) }
     val context = LocalContext.current
     val commonViewModel = TablesViewModels.commonViewModel!!
-    val tertiaryColor = MaterialTheme.colorScheme.tertiary
+    val secondaryColor = MaterialTheme.colorScheme.secondary
 
     val configuration = LocalConfiguration.current
     val isPortrait = configuration.orientation == android.content.res.Configuration.ORIENTATION_PORTRAIT
@@ -170,24 +170,22 @@ fun Home( navController: NavController, songViewModel: SongViewModel,
             }
         }
     ) {
-
+    val mc = colorObject.mainColor
         if (defs.isNotEmpty()){
             Scaffold(
                 bottomBar = { if (isPortrait) BottomAppBarPrincipal(navController, "home") }
             ) {
                 Box(Modifier.fillMaxSize()) {
-
                     Image(
                         painter = painterResource(id = R.drawable.homepic),
                         contentDescription = null,
                         modifier = Modifier.fillMaxSize(),
                         contentScale = ContentScale.Crop
                     )
-
-//                    allR.forEach {
-//                        Log.d("Reminder", "ex: ${it.reminderDate} || ${it.reminderTime}")
-//                    }
-//                    scheduleReminderCheck(context)
+                    Box(modifier = Modifier
+                        .fillMaxSize()
+                        .background(Brush.verticalGradient(colors = listOf(Color.Black.copy(alpha = 0.5f), Color.Transparent)))
+                    )
 
                     if (!isPortrait) {
                         SidebarNav(navController, "home", modifier = Modifier.fillMaxHeight().width(80.dp).padding(top=30.dp))
@@ -195,7 +193,6 @@ fun Home( navController: NavController, songViewModel: SongViewModel,
 
                     Column(
                         modifier = Modifier.fillMaxWidth()
-                            .fillMaxHeight(.3f)
                             .background(color = Color.Transparent),
                         verticalArrangement = Arrangement.SpaceAround,
                         horizontalAlignment = Alignment.CenterHorizontally
@@ -213,12 +210,12 @@ fun Home( navController: NavController, songViewModel: SongViewModel,
                                 textInputValue = it
                                 showModal = textInputValue != ""
                             },
-                            label = { Text(text = "Pesquisar Cântico / Oração", color = MaterialTheme.colorScheme.background, modifier = Modifier.background(tertiaryColor)) },
+                            label = { Text(text = "Pesquisar Cântico / Oração", color = MaterialTheme.colorScheme.background, modifier = Modifier.background(secondaryColor)) },
                             maxLines = 1,
                             shape = RoundedCornerShape(30.dp),
                             colors = TextFieldDefaults.colors(
-                                focusedContainerColor =  tertiaryColor,
-                                unfocusedContainerColor = tertiaryColor,
+                                focusedContainerColor =  secondaryColor,
+                                unfocusedContainerColor = secondaryColor,
                                 focusedIndicatorColor = Color.Transparent,
                                 unfocusedIndicatorColor = Color.Transparent
                             ),
@@ -226,10 +223,13 @@ fun Home( navController: NavController, songViewModel: SongViewModel,
                             modifier = Modifier.height(55.dp)
                         )
 
-                        Column {
+                        Spacer(Modifier.height(20.dp))
+                        Column(
+//                            Modifier.background(Color.Red)
+                        ) {
                             HomeTexts(text = "Oremos", fontSize = 45)
-                            Spacer(modifier = Modifier.height(4.dp))
-                            HomeTexts(text = "A HI KHONGELENI", fontSize = 30)
+                            Spacer(modifier = Modifier.height(9.dp))
+                            HomeTexts(text = "A HI KHONGELENI", fontSize = 23)
                         }
                     }
 
