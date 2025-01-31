@@ -3,8 +3,11 @@ package com.samuel.oremoschanganapt
 
 import android.app.AlarmManager
 import android.content.Context
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -50,6 +53,8 @@ import com.samuel.oremoschanganapt.view.morepagesPackage.remindersPages.Configur
 import com.samuel.oremoschanganapt.view.morepagesPackage.remindersPages.RemindersPage
 import com.samuel.oremoschanganapt.view.sideBar.About
 import com.samuel.oremoschanganapt.db.CommonViewModel
+import com.samuel.oremoschanganapt.functionsKotlin.generateTimestamp
+import com.samuel.oremoschanganapt.functionsKotlin.scheduleNotificationForSongOrPray
 import com.samuelsumbane.oremoschanganapt.db.DefViewModel
 //import com.samuel.oremoschanganapt.view.OracoesPage
 import com.samuelsumbane.oremoschanganapt.db.PrayViewModel
@@ -63,9 +68,6 @@ class  MainActivity : ComponentActivity() {
     private val defViewModel: DefViewModel by viewModels()
     private val reminderViewModel: ReminderViewModel by viewModels()
     private val commonViewModel: CommonViewModel by viewModels()
-
-//    val allViews = TablesViewModels(prayViewModel, songViewModel)
-//    val x = TablesViewModels.songViewModel
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -99,8 +101,6 @@ class  MainActivity : ComponentActivity() {
 
                 colorObject.mainColor = stringToColor(def.themeColor)
                 val rThemeColor = colorObject.mainColor
-//                colorObject.menuContainerColor = lerp(rThemeColor, Color.Black, 0.3f)
-                colorObject.inputColor = rThemeColor.copy(alpha = 0.75f)
 
                 val localContext = LocalContext.current
 
@@ -131,14 +131,18 @@ class  MainActivity : ComponentActivity() {
                             }
 
 
-                            val alarmManager = this.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+//                            val lastTimestamp = generateTimestamp("2025-01-31", "21:15")
+//                            Log.d("hora", "$lastTimestamp")
+
+//                            val alarmManager = this.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
 
 //                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
 //                                if (alarmManager.canScheduleExactAlarms()) {
 //                                    if (lastTimestamp != null) {
-//                                        scheduleNotificationForSongOrPray(this, "faskdf", "fdsafa", lastTimestamp)
-//                                        Log.d("future", "$lastTimestamp")
+//                                        scheduleNotificationForSongOrPray(this, lastTimestamp)
+//                                        scheduleNotificationForSongOrPray(this, lastTimestamp)
+////                                        Log.d("future", "$lastTimestamp")
 //                                    }
 //                                } else {
 //                                    val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM)
@@ -151,8 +155,8 @@ class  MainActivity : ComponentActivity() {
 //                                }
 //                            }
 
-                            val navController = rememberNavController()
 
+                            val navController = rememberNavController()
                             NavHost(navController = navController, startDestination = "home") {
                                 // define rotas
                                 //     composable("splash") {

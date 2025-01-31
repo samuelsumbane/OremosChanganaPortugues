@@ -99,7 +99,7 @@ fun EachCantico(navController: NavController, songId: Int,
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text(text="Cântico: ${songData.number}", color = MaterialTheme.colorScheme.tertiary) },
+                    title = { Text(text="Cântico", color = MaterialTheme.colorScheme.tertiary) },
                     colors = TopAppBarDefaults.topAppBarColors(
                         containerColor = MaterialTheme.colorScheme.background
                     ),
@@ -195,11 +195,6 @@ fun EachCantico(navController: NavController, songId: Int,
                             scale = newScale.coerceIn(1.0f, 2.0f) // intervalo do zoom.
                             defViewModel.updateDef("textScale", scale.toDouble())
                         }
-
-                        detectHorizontalDragGestures { _, dragAmount ->
-                            if (dragAmount > 100) navigateToPrevious()
-                            else if (dragAmount < -100) navigateToNext()
-                        }
                     }
                 ) {
                     Column(
@@ -211,13 +206,23 @@ fun EachCantico(navController: NavController, songId: Int,
                     ) {
                         Spacer(modifier = Modifier.height(50.dp))
 
-                        Text(
-                            text = (songData.title).uppercase(),
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 17.sp * scale,
-                            lineHeight = (24.sp * scale),
-                            softWrap = true
-                        )
+                        Row {
+                            Text(
+                                "${songData.number}  -",
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 20.sp * scale,
+                                modifier = Modifier.padding(end = 10.dp, bottom = 5.dp)
+                            )
+
+                            Text(
+                                text = (songData.title).uppercase(),
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 17.sp * scale,
+                                lineHeight = (24.sp * scale),
+                                softWrap = true
+                            )
+                        }
+
 
                         Spacer(modifier = Modifier.height(12.dp))
 

@@ -23,7 +23,10 @@ class ReminderReceiver : BroadcastReceiver() {
             appNotificationService.showBasicNotication()
         }
 
-        Log.d("ReminderReceiver", "Notificação enviada: $title | $message")
+//            val appNotificationService = AppNotificationService(context, title, message)
+//            appNotificationService.showBasicNotication()
+
+//        Log.d("ReminderReceiver", "Notificação enviada: $title | $message")
 
     }
 }

@@ -1,7 +1,8 @@
 package com.samuel.oremoschanganapt.ui.theme
 import androidx.compose.ui.graphics.Color
 
-val LightSecondary = Color(0xFF242F32)
+//val LightSecondary = Color(0xFF232931)
+val LightSecondary = Color(0xFF2D73CE)
 var DarkSecondary = Color(0xFFE0F2F1)
 
 val White = Color(0xFFFFFFFF)

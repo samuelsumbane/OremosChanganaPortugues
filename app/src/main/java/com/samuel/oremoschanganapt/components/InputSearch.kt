@@ -1,7 +1,6 @@
 package com.samuel.oremoschanganapt.components
 
 import androidx.compose.foundation.background
-//import androidx.compose.foundation.layout.FlowColumnScopeInstance.align
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -14,14 +13,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.samuel.oremoschanganapt.repository.colorObject
 
 @Composable
 fun InputSearch(
     value: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier,
-    inputColor: Color = colorObject.inputColor,
+    inputColor: Color = MaterialTheme.colorScheme.tertiary,
 ) {
     val textColor = MaterialTheme.colorScheme.tertiary
     BasicTextField(
@@ -34,4 +32,3 @@ fun InputSearch(
         textStyle = TextStyle(color = textColor, fontSize = 17.sp),
     )
 }
-

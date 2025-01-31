@@ -21,7 +21,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
@@ -29,12 +28,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.*
 import androidx.navigation.NavController
-//import com.samuel.oremoschanganapt.NotificationWorker
 import com.samuel.oremoschanganapt.R
 import com.samuel.oremoschanganapt.components.*
 import com.samuel.oremoschanganapt.db.ReminderViewModel
 import com.samuel.oremoschanganapt.functionsKotlin.isNumber
-//import com.samuel.oremoschanganapt.functionsKotlin.scheduleReminderCheck
 import com.samuel.oremoschanganapt.functionsKotlin.stringToColor
 import com.samuel.oremoschanganapt.repository.TablesViewModels
 import com.samuel.oremoschanganapt.repository.colorObject
@@ -55,7 +52,6 @@ import kotlinx.coroutines.launch
 fun Home( navController: NavController, songViewModel: SongViewModel,
           prayViewModel: PrayViewModel, defViewModel: DefViewModel,
           reminderViewModel: ReminderViewModel
-
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -102,6 +98,9 @@ fun Home( navController: NavController, songViewModel: SongViewModel,
         derivedStateOf { screenHeight }
     }
 
+    var iconColorState by remember { mutableStateOf("Keep")}
+
+
     ModalNavigationDrawer(
         drawerState = drawerState,
         gesturesEnabled = true,
@@ -111,14 +110,12 @@ fun Home( navController: NavController, songViewModel: SongViewModel,
                     .padding(end = 10.dp)
             ) {
                 Spacer(modifier = Modifier.height(30.dp))
-                var mainColor = colorObject.mainColor
 
                 Column (
                     Modifier.fillMaxWidth(0.95f)
                         .fillMaxHeight()
                         .padding(start=10.dp)
                         .verticalScroll(scrollState),
-//                    verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally,
 
                 ) {
@@ -137,9 +134,8 @@ fun Home( navController: NavController, songViewModel: SongViewModel,
                                 coroutineScope {
                                     if (def.themeColor != themeColor){
                                         defViewModel.updateDef("themeColor", themeColor)
-                                        mainColor = stringToColor(themeColor)
-                                        colorObject.menuContainerColor = lerp(mainColor, Color.Black, 0.3f)
-                                        colorObject.inputColor = mainColor.copy(alpha = 0.75f)
+                                        colorObject.mainColor = stringToColor(themeColor)
+                                        iconColorState = "Reload"
                                     }
                                 }
                             }
@@ -170,10 +166,9 @@ fun Home( navController: NavController, songViewModel: SongViewModel,
             }
         }
     ) {
-    val mc = colorObject.mainColor
         if (defs.isNotEmpty()){
             Scaffold(
-                bottomBar = { if (isPortrait) BottomAppBarPrincipal(navController, "home") }
+                bottomBar = { if (isPortrait) BottomAppBarPrincipal(navController, "home", iconColorState) }
             ) {
                 Box(Modifier.fillMaxSize()) {
                     Image(
@@ -224,9 +219,7 @@ fun Home( navController: NavController, songViewModel: SongViewModel,
                         )
 
                         Spacer(Modifier.height(20.dp))
-                        Column(
-//                            Modifier.background(Color.Red)
-                        ) {
+                        Column {
                             HomeTexts(text = "Oremos", fontSize = 45)
                             Spacer(modifier = Modifier.height(9.dp))
                             HomeTexts(text = "A HI KHONGELENI", fontSize = 23)
