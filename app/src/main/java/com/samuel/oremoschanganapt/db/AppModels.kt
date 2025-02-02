@@ -32,9 +32,9 @@ class Song: RealmObject {
 class Reminder: RealmObject {
     var reminderData: Int = 0
     var reminderTable: String = ""
-    var reminderDate: Long? = null
-    var reminderTime: Long? = null
+    var reminderDateTime: Long = 0L
     var reminderRepeat: String = ""
+
 
     @PrimaryKey
     var reminderId: Int = 0

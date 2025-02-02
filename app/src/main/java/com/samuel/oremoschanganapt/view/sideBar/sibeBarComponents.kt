@@ -65,20 +65,7 @@ fun AppearanceWidget(
         }
 
         AnimatedVisibility(visibleAppearanceTab){
-            Column(
-                Modifier
-                    .fillMaxWidth()
-                    .background(
-                        MaterialTheme.colorScheme.onSecondary,
-                        RoundedCornerShape(
-                            topStart = 0.dp,
-                            topEnd = 0.dp,
-                            bottomEnd = 10.dp,
-                            bottomStart = 10.dp
-                        )
-                    ),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
+            Column {
                 Spacer(modifier = Modifier.height(10.dp))
 
                 Column(Modifier.fillMaxWidth()) {
@@ -89,7 +76,6 @@ fun AppearanceWidget(
                 }
                 Spacer(modifier = Modifier.height(10.dp))
                 themeColor = RowColors(rowText = "Cor de tema", themeColor)
-
             }
         }
     }
@@ -213,8 +199,7 @@ fun RowBackup(
         ) { isThisTabVisible = !isThisTabVisible }
 
         AnimatedVisibility(isThisTabVisible) {
-
-            Column() {
+            Column {
                 Text("Pode salvar (Backup) a lista de orações ou/e cânticos favoritos no dispositivo e carregar (Restorar) quando quiser actualizar a lista actual.", modifier = Modifier.padding(10.dp))
                 Row(
                     modifier = Modifier.fillMaxWidth().padding(10.dp),

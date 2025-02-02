@@ -16,7 +16,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -32,29 +31,22 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import com.samuel.oremoschanganapt.R
 import com.samuel.oremoschanganapt.components.PrayRow
-import com.samuel.oremoschanganapt.components.SearchContainer
+import com.samuel.oremoschanganapt.components.searchContainer
 import com.samuel.oremoschanganapt.components.SongRow
 import com.samuel.oremoschanganapt.functionsKotlin.isNumber
 import com.samuel.oremoschanganapt.repository.TablesViewModels
-import com.samuel.oremoschanganapt.db.CommonViewModel
+import com.samuel.oremoschanganapt.ui.theme.DarkSecondary
+import com.samuel.oremoschanganapt.ui.theme.LightSecondary
 import com.samuelsumbane.oremoschanganapt.db.PrayViewModel
 import com.samuelsumbane.oremoschanganapt.db.SongViewModel
 import kotlinx.coroutines.coroutineScope
 import kotlin.math.roundToInt
-
-class params(
-    val prayViewModel: PrayViewModel,
-    val songViewModel: SongViewModel,
-    val commonViewModel: CommonViewModel
-)
 
 
 @Composable
@@ -64,7 +56,6 @@ fun ShortcutsButton(navController: NavController) {
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp.toDouble()
     val screenPercent = 10 * screenHeight / 100
-    val searchStateActive by remember { mutableStateOf(true) }
     var searchValue by remember { mutableStateOf("") }
 
     val prayViewModel = PrayViewModel()
@@ -94,7 +85,6 @@ fun ShortcutsButton(navController: NavController) {
         } else { emptyList() }
     }
 
-
     Box(Modifier.fillMaxSize().background(Color.Transparent)) {
 
         var offsetY by remember { mutableStateOf(screenHeight) }
@@ -110,13 +100,13 @@ fun ShortcutsButton(navController: NavController) {
                 }
             }
         }
-//
+
         if (showSearchModal) {
             Column(
                 Modifier
                     .fillMaxHeight(0.88f)
-                    .fillMaxWidth(0.85f)
-                    .padding(start=12.dp, top=80.dp)
+                    .fillMaxWidth()
+                    .padding(start=12.dp, top=80.dp, end = 12.dp)
                     .zIndex(4.0f)
                     .background(Color.Black.copy(alpha=0.97f), RoundedCornerShape(5)),
                 verticalArrangement = Arrangement.Top,
@@ -124,18 +114,17 @@ fun ShortcutsButton(navController: NavController) {
             ){
 
                 Row {
-                    Column {
-                        Text("Pesquisar Cântico / Oração", style = MaterialTheme.typography.bodySmall,
-                            modifier = Modifier.align(Alignment.CenterHorizontally))
-                        searchValue = SearchContainer(
+                    Column(Modifier.padding(top = 10.dp)) {
+                        searchValue = searchContainer(
                             searchString = searchValue,
-                            searchInputLabel = "Pesquisar cantico / oracao",
+                            searchInputLabel = "Cântico / Oração",
                             isContainerActive = true,
                             showIcon = false
                         )
                     }
 
                     IconButton(
+                        modifier = Modifier.padding(top = 6.dp),
                         onClick = {showSearchModal = !showSearchModal}
                     ) {
                         Icon(Icons.Default.Clear, contentDescription = "close",
@@ -150,12 +139,11 @@ fun ShortcutsButton(navController: NavController) {
                         .fillMaxWidth(0.95f),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    items ( filteredPrays ) { PrayRow(navController, prayViewModel, it) }
-                    items ( filteredSongs ) { SongRow(navController, songViewModel, it) }
+                    items (filteredPrays) { PrayRow(navController, prayViewModel, it) }
+                    items (filteredSongs) { SongRow(navController, songViewModel, it) }
                 }
             }
         }
-
 
         Row(
             Modifier.align(Alignment.TopEnd)
@@ -168,9 +156,7 @@ fun ShortcutsButton(navController: NavController) {
                 Column(
                     Modifier.width(80.dp)
                         .height(childColumnHeight.dp)
-//                        .background(Color.Red)
-                        .padding(end = 5.dp)
-                    ,
+                        .padding(end = 5.dp),
                     verticalArrangement = Arrangement.Center
                 ){
                     // Songs
@@ -185,7 +171,7 @@ fun ShortcutsButton(navController: NavController) {
 
                     // Prays
                     ShortcutButtonChild(
-                        icon = ImageVector.vectorResource(id = R.drawable.ic_pray),
+                        icon = ImageVector.vectorResource(id = R.drawable.prayicon),
                         description = "Oracoes",
                         iconModifier = Modifier.size(26.dp)
                     ){ navController.navigate("oracoespage") }
@@ -213,6 +199,7 @@ fun ShortcutsButton(navController: NavController) {
                         description = "Search"
                     ) {showSearchModal = !showSearchModal; isActive = !isActive}
                 }
+                val bgColor = if (!isSystemInDarkTheme()) LightSecondary else DarkSecondary
 
                 IconButton(
                     modifier = Modifier
@@ -223,7 +210,7 @@ fun ShortcutsButton(navController: NavController) {
                                 offsetY += dragAmount.y
                             }
                         },
-                    colors = IconButtonDefaults.iconButtonColors(containerColor = MaterialTheme.colorScheme.tertiary),
+                    colors = IconButtonDefaults.iconButtonColors(containerColor = bgColor),
                     onClick = { isActive = !isActive }
                 ) {
                     Icon(

@@ -34,21 +34,26 @@ import com.samuel.oremoschanganapt.components.TimePickerDialog
 import com.samuel.oremoschanganapt.components.buttons.NormalButton
 import com.samuel.oremoschanganapt.components.toastAlert
 import com.samuel.oremoschanganapt.db.ReminderViewModel
+import com.samuel.oremoschanganapt.functionsKotlin.combineTimestamps
 import com.samuel.oremoschanganapt.functionsKotlin.convertLongToTimeString
 import com.samuel.oremoschanganapt.functionsKotlin.convertTimePickerStateToLong
-import com.samuel.oremoschanganapt.functionsKotlin.longToRealDate
+import com.samuel.oremoschanganapt.functionsKotlin.getCurrentTimestamp
+import com.samuel.oremoschanganapt.functionsKotlin.convertLongToDateString
+import com.samuel.oremoschanganapt.functionsKotlin.scheduleNotificationForSongOrPray
 import com.samuel.oremoschanganapt.repository.colorObject
 import com.samuel.oremoschanganapt.ui.theme.BlueButton
+import com.samuel.oremoschanganapt.ui.theme.RedButton
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ConfigureReminder(navController: NavController,
-                      id: Int, table: String,
-                      rdate: Long, rtime: Long,
-                      rId: Int? = null,
-                      reminderViewModel: ReminderViewModel
-){
+fun ConfigureReminder(
+    navController: NavController,
+    id: Int, table: String,
+    rdatetime: Long,
+    rId: Int? = null,
+    reminderViewModel: ReminderViewModel
+) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -65,9 +70,10 @@ fun ConfigureReminder(navController: NavController,
         }
     ) { paddingVales ->
 
-        var reminderdate by remember { mutableStateOf<Long?>(rdate) }
-        var remindertime by remember { mutableStateOf<Long?>(rtime) }
-        var reminderrepeat = "no-repeat"
+        var reminderdate by remember { mutableStateOf(getCurrentTimestamp()) }
+        var remindertime by remember { mutableStateOf(0L) }
+
+        val reminderrepeat = "no-repeat"
         val context = LocalContext.current
 
         var showDatePicker by remember { mutableStateOf(false)}
@@ -84,11 +90,11 @@ fun ConfigureReminder(navController: NavController,
         ) {
             Row( Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceAround) {
 
-                BigTextButton(text = "${reminderdate?.let { longToRealDate(it) }}") {
+                DateTimeButtonLabel(text = convertLongToDateString(reminderdate)) {
                     showDatePicker = true
                 }
 
-                BigTextButton(text = "${ remindertime?.let { convertLongToTimeString(it) }}") {
+                DateTimeButtonLabel(text = convertLongToTimeString(remindertime)) {
                     showTimePicker = true
                 }
 
@@ -110,7 +116,9 @@ fun ConfigureReminder(navController: NavController,
             if (showDatePicker) {
                 DatePickerModalInput(
                     onDateSelected = {timestamp ->
-                        reminderdate = timestamp
+                        if (timestamp != null) {
+                            reminderdate = timestamp
+                        }
                         showDatePicker = false
                     }
                 ) { showDatePicker = false }
@@ -124,29 +132,39 @@ fun ConfigureReminder(navController: NavController,
                 horizontalArrangement = Arrangement.SpaceAround
             ){
 
-                NormalButton("Cancelar", BlueButton ) {
-                    navController.popBackStack()
-                }
+                NormalButton("Cancelar", RedButton) { navController.popBackStack() }
 
-                NormalButton("Concluir", BlueButton) {
-                    if (reminderdate == null ) {
+                NormalButton("Concluir") {
+                    if (reminderdate == 0L ) {
                         toastAlert(context, "Por favor, selecione a data")
-                    } else if (remindertime == null){
+                    } else if (remindertime == 0L){
                         toastAlert(context, "Por favor, selecione a hora")
                     } else {
+                        val reminderDateTime = combineTimestamps(reminderdate, remindertime)
+
                         if (rId != 0){
                             // Edit reminder --------->>
-                            reminderViewModel.updateReminder( reminderdate, remindertime, rId)
+                            reminderViewModel.updateReminder( reminderDateTime, rId)
+                            toastAlert(context, "Lembrete actualizado com sucesso.")
+
                         } else {
                             // Create reminder ---------->>
                             reminderViewModel.addReminder(
                                 id, table,
-                                reminderdate,
-                                remindertime,
+                                reminderDateTime,
                                 reminderrepeat
                             )
                             toastAlert(context, "Lembrete adicionado com sucesso.")
                         }
+
+//                        val title = when(table) {
+//                            "Pray" -> "Oração"
+//                            "Songs" -> "Cântico"
+//                            else -> ""
+//                        }
+
+//                        scheduleNotificationForSongOrPray(context, title, "bava ha hin", reminderDateTime)
+
                         navController.popBackStack()
                     }
                 }
@@ -157,8 +175,8 @@ fun ConfigureReminder(navController: NavController,
 }
 
 @Composable
-fun BigTextButton(text: String, onClick: () -> Unit) {
-    val color = MaterialTheme.colorScheme.primary
+fun DateTimeButtonLabel(text: String, onClick: () -> Unit) {
+    val color = MaterialTheme.colorScheme.tertiary
     TextButton(onClick) {
         Text(text, color = color, fontSize = 32.sp, fontWeight = FontWeight.Bold)
     }

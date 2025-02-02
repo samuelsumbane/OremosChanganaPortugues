@@ -19,7 +19,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun SearchContainer(
+fun searchContainer(
     searchString: String,
     searchInputLabel: String = "Pesquisar oração",
     isContainerActive: Boolean = false,
@@ -53,6 +53,7 @@ fun SearchContainer(
                 InputSearch(
                     value = pesquisaTexto,
                     onValueChange = { pesquisaTexto = it },
+                    placeholder = searchInputLabel,
                     modifier = Modifier.align(Alignment.CenterVertically),
                 )
 

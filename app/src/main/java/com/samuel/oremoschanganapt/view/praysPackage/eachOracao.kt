@@ -10,12 +10,18 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.outlined.ArrowBack
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -42,11 +48,15 @@ import com.samuelsumbane.oremoschanganapt.db.DefViewModel
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.window.PopupProperties
 import com.samuel.oremoschanganapt.components.StarButton
 import com.samuel.oremoschanganapt.components.buttons.ShortcutsButton
 //import com.samuel.oremoschanganapt.components.buttons.StarButton
 import com.samuel.oremoschanganapt.db.ReminderViewModel
 import com.samuel.oremoschanganapt.db.CommonViewModel
+import com.samuel.oremoschanganapt.functionsKotlin.shareText
+import com.samuel.oremoschanganapt.ui.theme.Orange
 import com.samuelsumbane.oremoschanganapt.db.PrayViewModel
 
 
@@ -57,14 +67,17 @@ fun EachOracao(navController: NavController, prayId: Int,
                prayViewModel: PrayViewModel,
                defViewModel: DefViewModel,
                reminderViewModel: ReminderViewModel,
-               commonViewModel: CommonViewModel
-){
+) {
 
     val allDef by defViewModel.defs.collectAsState()
     val prayData = prayViewModel.getPrayById(prayId)
+    val menuBtns = listOf("Lembrete", "Partilhar")
+//    val btnsIcons = mapOf("Lembrete" to Icons.Default.Notifications, "Partilhar" to Icons.Default.Share)
+    val btnsIcons = mutableMapOf("Lembrete" to Icons.Default.Notifications, "Partilhar" to Icons.Default.Share)
+
+    var expanded by remember { mutableStateOf(false) }
 
     if (prayData != null){
-
         val reminderes by reminderViewModel.reminders.collectAsState()
 
         Scaffold(
@@ -81,39 +94,6 @@ fun EachOracao(navController: NavController, prayId: Int,
                     },
                     actions = {
                         val context = LocalContext.current
-
-                        var hasReminder = false
-
-                        if (reminderes.isNotEmpty()){
-                            for(reminder in reminderes){
-                                if (reminder.reminderTable == "Pray"){
-                                    if (reminder.reminderId == prayId){
-                                        hasReminder = true
-                                    }
-                                }
-                            }
-                        } else { hasReminder = false }
-
-                        if (hasReminder) {
-                            IconButton(
-                                // by now the fun is delete reminder ----->>
-                                onClick = {
-                                    reminderViewModel.deleteReminder(prayId)
-                                }
-                            ) {
-                                Icon(Icons.Default.CheckCircle, contentDescription = "reminder set")
-                            }
-                        } else {
-                            IconButton(
-                                // by now fun is add reminder ------>>
-                                onClick = {
-                                    navController.navigate("configurereminder/$prayId/Pray/0/0/0")
-                                }
-                            ) {
-                                Icon(Icons.Default.Call, contentDescription = "no reminder set")
-                            }
-                        }
-
                         // The star icon ------>>
                         var lovedState by remember { mutableStateOf(prayData.loved) }
                         StarButton(lovedState) {
@@ -125,8 +105,51 @@ fun EachOracao(navController: NavController, prayId: Int,
                             lovedState = !lovedState
                         }
 
+                        IconButton(onClick = { expanded = !expanded }) {
+                            Icon(Icons.Default.MoreVert, contentDescription = "Opcoes")
+                            DropdownMenu(
+                                expanded = expanded,
+                                onDismissRequest = { expanded = false },
+                                properties = PopupProperties(focusable = true)
+                            ) {
+                                menuBtns.forEach {
+                                    DropdownMenuItem(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        text = { Text(it) },
+                                        trailingIcon = { Icon(btnsIcons[it]!!, contentDescription = "l", Modifier.size(18.dp)) },
+                                        onClick = {
+                                            when(it) {
+                                                "Lembrete" -> {
+                                                    var hasReminder = false
+                                                    if (reminderes.isNotEmpty()){
+                                                        for(reminder in reminderes){
+                                                            if (reminder.reminderTable == "Pray"){
+                                                                if (reminder.reminderId == prayId){
+                                                                    hasReminder = true
+                                                                }
+                                                            }
+                                                        }
+                                                    } else { hasReminder = false }
 
-                        ShareIconButton(context,  text = "${prayData.title} \n ${prayData.body}")
+
+                                                    if (hasReminder) {
+                                                        // by now the fun is delete reminder ----->>
+                                                         reminderViewModel.deleteReminder(prayId)
+    //                                                   Icon(Icons.Default.CheckCircle, contentDescription = "reminder set")
+                                                    } else {
+                                                            // by now fun is add reminder ------>>
+                                                        navController.navigate("configurereminder/$prayId/Pray/0/0")
+                                                    }
+                                                }
+                                                "Partilhar" -> {
+                                                    shareText(context, "${prayData.title} \n ${prayData.body}")
+                                                }
+                                            }
+                                        }
+                                    )
+                                }
+                            }
+                        }
                     }
                 )
             },

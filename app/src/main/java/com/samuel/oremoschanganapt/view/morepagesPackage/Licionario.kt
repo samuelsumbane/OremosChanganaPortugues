@@ -29,12 +29,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.samuel.oremoschanganapt.components.TextIconRow
 import com.samuel.oremoschanganapt.components.buttons.ShortcutsButton
 import com.samuel.oremoschanganapt.repository.colorObject
+import com.samuel.oremoschanganapt.ui.theme.DarkColor
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -72,11 +74,9 @@ fun Licionario(navController: NavController) {
 class BooksItem(val title: String, val books: String)
 
 @Composable
-fun BooksCard(
-    dataList: List<BooksItem>
-){
+fun BooksCard(dataList: List<BooksItem>) {
     val itemBgColor = colorObject.mainColor
-    val textColor = MaterialTheme.colorScheme.tertiary
+    val textColor = Color.White
 
     dataList.forEach { item ->
         var expanded by remember { mutableStateOf(false) }
@@ -94,7 +94,7 @@ fun BooksCard(
                             brush = Brush.horizontalGradient(
                                 colors = listOf(
                                     itemBgColor,
-                                    lerp(itemBgColor, MaterialTheme.colorScheme.background, 0.9f)
+                                    lerp(itemBgColor, DarkColor, 0.9f)
                                 ),
                             ), RoundedCornerShape(0.dp, 0.dp, 13.dp, 13.dp)
                         )

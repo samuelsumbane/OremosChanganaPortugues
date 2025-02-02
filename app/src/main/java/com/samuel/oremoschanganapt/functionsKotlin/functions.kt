@@ -11,19 +11,14 @@ import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import android.app.Activity
 import android.app.AlarmManager
 import android.app.PendingIntent
-import android.graphics.Bitmap
 import androidx.compose.ui.graphics.Color
 import androidx.annotation.RequiresApi
-import java.io.ByteArrayOutputStream
-import java.io.File
 import java.time.ZoneId
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
-import android.content.res.Configuration
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.TimePickerState
 import com.samuel.oremoschanganapt.ReminderReceiver
@@ -38,23 +33,18 @@ import com.samuel.oremoschanganapt.ui.theme.Tomato
 import com.samuel.oremoschanganapt.ui.theme.Turquoise
 import java.time.Instant
 import java.time.LocalDate
-import java.util.Locale
 import java.time.ZoneOffset
-import java.util.Calendar
-
 
 
 @SuppressLint("ScheduleExactAlarm")
 @RequiresApi(Build.VERSION_CODES.M)
-//fun scheduleNotificationForSongOrPray(context: Context, title: String, message: String, timestamp: Long) {
-fun scheduleNotificationForSongOrPray(context: Context, timestamp: Long) {
+fun scheduleNotificationForSongOrPray(context: Context, title: String, message: String, timestamp: Long) {
     val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
-//    val intent = Intent(context, ReminderReceiver::class.java).apply {
-//        putExtra("NOTIFICATION_TITLE", title)
-//        putExtra("NOTIFICATION_MESSAGE", message)
-//    }
-    val intent = Intent(context, ReminderReceiver::class.java)
+    val intent = Intent(context, ReminderReceiver::class.java).apply {
+        putExtra("NOTIFICATION_TITLE", title)
+        putExtra("NOTIFICATION_MESSAGE", message)
+    }
 
     val pendingIntent = PendingIntent.getBroadcast(
         context,
@@ -70,9 +60,9 @@ fun scheduleNotificationForSongOrPray(context: Context, timestamp: Long) {
     )
 }
 
+fun getCurrentTimestamp(): Long = System.currentTimeMillis()
 
-
-// verifica se é um numero ou nao
+// Verify if is number or not --------->>
 fun isNumber(valor: Any): Boolean {
     return try {
         // Tenta converter o valor para um tipo numérico
@@ -90,7 +80,6 @@ fun isNumber(valor: Any): Boolean {
         false
     }
 }
-
 
 
 fun shareText(context: Context, text: String) {
@@ -113,52 +102,6 @@ fun ShareIconButton(context: Context, text: String) {
     }
 }
 
-
-
-@RequiresApi(Build.VERSION_CODES.O)
-fun dateTime(): String{
-    val now = LocalDateTime.now()
-    val dateFormat = DateTimeFormatter.ofPattern("HH:mm, dd.MM.yyyy")
-    return now.format(dateFormat)
-}
-
-@RequiresApi(Build.VERSION_CODES.O)
-fun localTime(): String{
-    val now = LocalTime.now()
-    val timeFormat = DateTimeFormatter.ofPattern("HH:mm")
-    return now.format(timeFormat)
-}
-
-@RequiresApi(Build.VERSION_CODES.O)
-fun americanFormat(): String{
-    val now = LocalDateTime.now()
-    val dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-    return now.format(dateFormat)
-}
-
-@RequiresApi(Build.VERSION_CODES.O)
-fun nextMonth(): String{
-
-    val now = LocalDate.now().toString()
-    val parts = now.split("-")
-    var year = parts[0].toInt()
-    var month = parts[1].toInt()
-    var day = parts[2].toInt() + 30
-
-    if( day > 30){
-        month += 1
-        day -= 30
-    }
-
-    if (month > 12){
-        year += 1
-        month -= 12
-    }
-
-    val rDay = if(day < 10) "0$day" else day
-    val rMoth = if(month < 10) "0$month" else month
-    return "$year-$rMoth-$rDay"
-}
 
 // This function returns the string of  Color -------->>
 fun colorToString(color: Color): String{
@@ -193,15 +136,8 @@ fun stringToColor(value: String): Color{
 }
 
 
-
-fun updateLocale(context: Context, locale: Locale) {
-    val config = Configuration(context.resources.configuration)
-    config.setLocale(locale)
-    context.resources.updateConfiguration(config, context.resources.displayMetrics)
-}
-
 @RequiresApi(Build.VERSION_CODES.O)
-fun longToRealDate(long: Long): String{
+fun convertLongToDateString(long: Long): String{
     val instant = Instant.ofEpochMilli(long)
     val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
         .withZone(ZoneId.systemDefault())
@@ -212,18 +148,15 @@ fun longToRealDate(long: Long): String{
 @OptIn(ExperimentalMaterial3Api::class)
 fun convertTimePickerStateToLong(timePickerState: TimePickerState): Long {
     val selectedTime = LocalTime.of(timePickerState.hour, timePickerState.minute)
-    // Usa UTC para garantir que não haja deslocamento de fuso horário
     return selectedTime.toSecondOfDay() * 1000L
 }
-
 
 
 @RequiresApi(Build.VERSION_CODES.O)
 fun convertLongToTimeString(timeInMillis: Long): String {
     val time = Instant.ofEpochMilli(timeInMillis)
-        .atOffset(ZoneOffset.UTC) // Usa UTC para garantir que não haja deslocamento de fuso horário
+        .atOffset(ZoneOffset.UTC)
         .toLocalTime()
-
     val formatter = DateTimeFormatter.ofPattern("HH:mm")
     return time.format(formatter)
 }
@@ -258,37 +191,39 @@ fun timeStringToLong(timeOfDay: String): Long {
         .toEpochMilli()
 }
 
-
-fun getCurrentTimeInMillis(): Long {
-    val calendar = Calendar.getInstance()
-    val hoursInMillis = calendar.get(Calendar.HOUR_OF_DAY) * 60 * 60 * 1000L
-    val minutesInMillis = calendar.get(Calendar.MINUTE) * 60 * 1000L
-
-    // Retorna somente hora e minuto em milissegundos
-    return hoursInMillis + minutesInMillis
+@RequiresApi(Build.VERSION_CODES.O)
+fun combineTimestamps(dateMillis: Long, timeMillis: Long): Long {
+    val data = Instant.ofEpochMilli(dateMillis).atZone(ZoneId.of("Africa/Maputo")).toLocalDate()
+    val hora = LocalTime.ofSecondOfDay(timeMillis / 1000)
+    val dataHora = LocalDateTime.of(data, hora)
+    return dataHora.atZone(ZoneId.of("Africa/Maputo")).toInstant().toEpochMilli()
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
-fun generateTimestamp(date: String, time: String): Long {
-    val dateTimeString = "$date $time"
-    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
-    val localDateTime = LocalDateTime.parse(dateTimeString, formatter)
-    return localDateTime.toEpochSecond(ZoneOffset.UTC)
+fun splitTimestamp(timestamp: Long): Pair<Long, Long> {
+    val zoneId = ZoneId.of("Africa/Maputo")
+    val dateTime = Instant.ofEpochMilli(timestamp).atZone(zoneId).toLocalDateTime()
+
+    // Extrair a data em milissegundos
+    val dateMillis = dateTime.toLocalDate()
+        .atStartOfDay(zoneId)
+        .toInstant()
+        .toEpochMilli()
+
+    // Extrair o tempo em milissegundos
+    val timeMillis = dateTime.toLocalTime().toSecondOfDay() * 1000L
+    return Pair(dateMillis, timeMillis)
 }
 
-fun getCurrentDateInMillis(): Long {
-    val calendar = Calendar.getInstance()
-    calendar.set(Calendar.HOUR_OF_DAY, 0)
-    calendar.set(Calendar.MINUTE, 0)
-    calendar.set(Calendar.SECOND, 0)
-    calendar.set(Calendar.MILLISECOND, 0)
+//fun compareWithCurrentTime(targetMillis: Long): String {
+//    val currentMillis = System.currentTimeMillis() // Obtém a hora atual em milissegundos
+//
+//    return when {
+//        targetMillis < currentMillis -> "Passado" // A hora está no passado
+//        targetMillis - currentMillis <= 1000 -> "Presente" // Está próximo da hora atual (até 1 segundo de diferença)
+//        else -> "Futuro" // A hora está no futuro
+//    }
+//}
 
-    // Retorna a data em milissegundos
-    return calendar.timeInMillis
-}
+fun compareWithCurrentTime(targetMillis: Long): Boolean = System.currentTimeMillis() < targetMillis
 
-
-fun restartActivity(context: Context) {
-    val activity = context as? Activity
-    activity?.recreate()
-}

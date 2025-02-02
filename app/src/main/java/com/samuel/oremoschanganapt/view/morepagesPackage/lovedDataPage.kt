@@ -36,7 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.samuel.oremoschanganapt.components.BottomAppBarPrincipal
 import com.samuel.oremoschanganapt.components.PrayRow
-import com.samuel.oremoschanganapt.components.SearchContainer
+import com.samuel.oremoschanganapt.components.searchContainer
 import com.samuel.oremoschanganapt.components.SidebarNav
 import com.samuel.oremoschanganapt.components.SongRow
 import com.samuel.oremoschanganapt.components.buttons.ShortcutsButton
@@ -104,7 +104,7 @@ fun LovedDataPage(
                     }
                 },
                 actions = {
-                    searchValue = SearchContainer(searchValue, "Pesquisar favoritos")
+                    searchValue = searchContainer(searchValue, "Pesquisar favoritos")
                 }
             )
         },

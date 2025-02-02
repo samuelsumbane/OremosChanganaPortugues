@@ -2,6 +2,7 @@ package com.samuel.oremoschanganapt.view.morepagesPackage.remindersPages
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -9,8 +10,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.*
@@ -22,18 +21,23 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.samuel.oremoschanganapt.components.TextIconRow
 import com.samuel.oremoschanganapt.components.buttons.NormalButton
 import com.samuel.oremoschanganapt.components.buttons.ShortcutsButton
 import com.samuel.oremoschanganapt.components.toastAlert
 import com.samuel.oremoschanganapt.db.ReminderViewModel
 import com.samuel.oremoschanganapt.functionsKotlin.convertLongToTimeString
-import com.samuel.oremoschanganapt.functionsKotlin.longToRealDate
+import com.samuel.oremoschanganapt.functionsKotlin.convertLongToDateString
+import com.samuel.oremoschanganapt.functionsKotlin.splitTimestamp
 import com.samuel.oremoschanganapt.repository.colorObject
+import com.samuel.oremoschanganapt.ui.theme.DarkColor
 import com.samuel.oremoschanganapt.ui.theme.RedButton
 import com.samuelsumbane.oremoschanganapt.db.PrayViewModel
 import com.samuelsumbane.oremoschanganapt.db.SongViewModel
@@ -61,9 +65,10 @@ fun RemindersPage(navController: NavController,
                     }
                 }
             )
-        },
-        ) { paddingValues ->
-        val textColor = MaterialTheme.colorScheme.tertiary
+        }) { paddingValues ->
+
+        val mainColor = colorObject.mainColor
+        val textColor = Color.White
         val context = LocalContext.current
 
         if (allReminders.isEmpty()) {
@@ -89,17 +94,19 @@ fun RemindersPage(navController: NavController,
                         }
                     }
 
+                    val (reminderdate, remindertime) = splitTimestamp(reminder.reminderDateTime)
+
                     val reminderTitleValue by remember { mutableStateOf(if (reminder.reminderTable == "Pray") {
-                        prayViewModel.getPrayById(reminder.reminderData)?.title!!
+                        "Oração: ${prayViewModel.getPrayById(reminder.reminderData)?.title!!}"
                     } else {
-                        "${songViewModel.getSongById(reminder.reminderData)?.title!!} | Número: ${songViewModel.getSongById(reminder.reminderData)?.number!!}"
+                        "Cântico: ${songViewModel.getSongById(reminder.reminderData)?.number!!} - ${songViewModel.getSongById(reminder.reminderData)?.title!!}"
                     }) }
 
                     var reminderTitle by remember { mutableStateOf(reminderTitleValue) }
                     var reminderTitleText by remember { mutableStateOf("") }
 
                     Column(
-                        Modifier.background(colorObject.mainColor, RoundedCornerShape(10.dp)),
+                        Modifier.fillMaxWidth(0.95f).background(colorObject.mainColor, RoundedCornerShape(10.dp)),
                     ) {
                         var showDetails by remember { mutableStateOf(false) }
 
@@ -114,38 +121,25 @@ fun RemindersPage(navController: NavController,
                             showDetails = !showDetails
                         }
 
-                        Row(
-                            Modifier.fillMaxWidth(0.95f).height(40.dp).clickable { showContent() },
-                            horizontalArrangement = Arrangement.SpaceAround,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(reminderTitle, color = textColor, softWrap = false,
-                                modifier = Modifier.fillMaxWidth(0.70f))
+                        TextIconRow(reminderTitle, showDetails, modifier = Modifier.clickable { showContent() })
 
-                            IconButton( onClick = { showContent() } ) {
-                                if (showDetails) {
-                                    Icon(Icons.Default.KeyboardArrowUp, contentDescription = "Close", tint = Color.White)
-                                } else {
-                                    Icon(Icons.Default.KeyboardArrowDown, contentDescription = "Expand", tint = Color.White)
-                                }
-                            }
-                        }
-
-                        if (showDetails){
+                        AnimatedVisibility(showDetails){
                             Column(
-                                Modifier.fillMaxWidth(0.95f).clickable {
-                                    seeReminderContent()
-                                }
+                                Modifier.fillMaxWidth().background(brush = Brush.horizontalGradient(
+                                    colors = listOf(mainColor, lerp(mainColor, DarkColor, 0.9f)
+                                    )), RoundedCornerShape(0.dp, 0.dp, 14.dp, 14.dp))
+                                    .clickable { seeReminderContent() }
+
                             ) {
-                                Row(modifier = Modifier.padding(10.dp)) {
+                                Row(Modifier.padding(10.dp)) {
                                     Text(reminderTitleText, color = textColor, softWrap = true)
                                 }
 
                                 Spacer(Modifier.height(15.dp))
 
                                 Row(modifier = Modifier.padding(10.dp)) {
-                                    Text("${longToRealDate(reminder.reminderDate!!)}  |", color = textColor)
-                                    Text(" ${convertLongToTimeString(reminder.reminderTime!!)}", color = textColor)
+                                    Text("${convertLongToDateString(reminderdate)}  |", color = textColor)
+                                    Text(" ${convertLongToTimeString(remindertime)}", color = textColor)
                                 }
 
                                 Spacer(Modifier.height(15.dp))
@@ -155,14 +149,13 @@ fun RemindersPage(navController: NavController,
                                         .align(Alignment.CenterHorizontally),
                                     horizontalArrangement = Arrangement.SpaceAround){
 
-                                    NormalButton("Ver", Color.DarkGray) {
+                                    NormalButton("Ver", MaterialTheme.colorScheme.tertiary) {
                                         seeReminderContent()
                                     }
 
-                                    NormalButton("Editar", Color.DarkGray){
+                                    NormalButton("Editar", MaterialTheme.colorScheme.tertiary){
                                         val r = reminder
-                                        navController.navigate("configurereminder/${r.reminderData}/" +
-                                                "${r.reminderTable}/${r.reminderDate}/${r.reminderTime}/${r.reminderId}")
+                                        navController.navigate("configurereminder/${r.reminderData}/${r.reminderTable}/${r.reminderDateTime}/${r.reminderId}")
                                     }
 
                                     NormalButton("Remover", RedButton) {

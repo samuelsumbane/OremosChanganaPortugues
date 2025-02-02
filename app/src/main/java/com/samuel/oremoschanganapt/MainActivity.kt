@@ -19,6 +19,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -53,16 +54,14 @@ import com.samuel.oremoschanganapt.view.morepagesPackage.remindersPages.Configur
 import com.samuel.oremoschanganapt.view.morepagesPackage.remindersPages.RemindersPage
 import com.samuel.oremoschanganapt.view.sideBar.About
 import com.samuel.oremoschanganapt.db.CommonViewModel
-import com.samuel.oremoschanganapt.functionsKotlin.generateTimestamp
+import com.samuel.oremoschanganapt.functionsKotlin.compareWithCurrentTime
 import com.samuel.oremoschanganapt.functionsKotlin.scheduleNotificationForSongOrPray
 import com.samuelsumbane.oremoschanganapt.db.DefViewModel
-//import com.samuel.oremoschanganapt.view.OracoesPage
 import com.samuelsumbane.oremoschanganapt.db.PrayViewModel
 import com.samuelsumbane.oremoschanganapt.db.SongViewModel
 
 
 class  MainActivity : ComponentActivity() {
-
     private val songViewModel: SongViewModel by viewModels()
     private val prayViewModel: PrayViewModel by viewModels()
     private val defViewModel: DefViewModel by viewModels()
@@ -74,21 +73,15 @@ class  MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
 
-//            val viewModel = ViewModelProvider(this).get(CommonViewModel::class.java)
-
-//            val sucesso = viewModel.exportarFavoritos(context)
             val allSongs by songViewModel.songs.collectAsState()
             val allPrays by prayViewModel.prays.collectAsState()
             val defs by defViewModel.defs.collectAsState()
-//            val lovedData by commonViewModel.lovedData.collectAsState()
-
+            val reminders by reminderViewModel.reminders.collectAsState()
 
             TablesViewModels.songViewModel = songViewModel
             TablesViewModels.prayViewModel = prayViewModel
             TablesViewModels.commonViewModel = commonViewModel
 
-//            updateLocale(this, Locale(settings.language))
-////                val mode by remember { mutableStateOf(settings.mode) }
             if (defs.isNotEmpty()){
                 val def = defs.first()
 
@@ -100,8 +93,6 @@ class  MainActivity : ComponentActivity() {
                 val mutableAppMode by remember { mutableStateOf(appMode) }
 
                 colorObject.mainColor = stringToColor(def.themeColor)
-                val rThemeColor = colorObject.mainColor
-
                 val localContext = LocalContext.current
 
                 if (allPrays.isNotEmpty()) {
@@ -130,31 +121,40 @@ class  MainActivity : ComponentActivity() {
                                 }
                             }
 
+                            reminders.forEach { reminder ->
+                                var reminderTitle = ""
+                                var reminderContent = ""
+                                when(reminder.reminderTable) {
+                                    "Song" -> {
+                                        songViewModel.getSongById(reminder.reminderData)?.let {
+                                            reminderTitle = "Cântico: Um Cântico para o Espírito"
+                                            reminderContent = "${it.number} - ${it.title}"
+                                        }
+                                    }
+                                    "Pray" -> {
+                                        prayViewModel.getPrayById(reminder.reminderData)?.let {
+                                            reminderTitle = "Oração: Um Momento de Oração"
+                                            reminderContent = it.title
+                                        }
+                                    }
+                                }
 
-//                            val lastTimestamp = generateTimestamp("2025-01-31", "21:15")
-//                            Log.d("hora", "$lastTimestamp")
+                                val alarmManager = this.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
-//                            val alarmManager = this.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+                                if (compareWithCurrentTime(reminder.reminderDateTime)) {
 
-
-//                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-//                                if (alarmManager.canScheduleExactAlarms()) {
-//                                    if (lastTimestamp != null) {
-//                                        scheduleNotificationForSongOrPray(this, lastTimestamp)
-//                                        scheduleNotificationForSongOrPray(this, lastTimestamp)
-////                                        Log.d("future", "$lastTimestamp")
-//                                    }
-//                                } else {
-//                                    val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM)
-//                                    this.startActivity(intent)
-//                                }
-//                            } else {
-//                                if (lastTimestamp != null) {
-//                                    scheduleNotificationForSongOrPray(this, lastTimestamp)
-//                                    Log.d("future", "$lastTimestamp")
-//                                }
-//                            }
-
+                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                                        if (alarmManager.canScheduleExactAlarms()) {
+                                            scheduleNotificationForSongOrPray(this, reminderTitle, reminderContent, reminder.reminderDateTime)
+                                        } else {
+                                            val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM)
+                                            this.startActivity(intent)
+                                        }
+                                    } else {
+                                        scheduleNotificationForSongOrPray(this, reminderTitle, reminderContent, reminder.reminderDateTime)
+                                    }
+                                }
+                            }
 
                             val navController = rememberNavController()
                             NavHost(navController = navController, startDestination = "home") {
@@ -179,9 +179,8 @@ class  MainActivity : ComponentActivity() {
                                 composable(route = "canticospage/{value}/{readbleValue}") { backStackEntry ->
                                     val value = backStackEntry.arguments?.getString("value") ?: ""
                                     val readbleValue = backStackEntry.arguments?.getString("readbleValue") ?: ""
-
                                     SongsPage(
-                                        navController, value, readbleValue, songViewModel, commonViewModel
+                                        navController, value, readbleValue, songViewModel
                                     )
                                 }
                                 //
@@ -194,7 +193,7 @@ class  MainActivity : ComponentActivity() {
                                 composable(route = "eachOracao/{prayid}") { eO ->
                                     val prayid = eO.arguments?.getString("prayid") ?: ""
                                     val prayId = prayid.toInt()
-                                    EachOracao(navController, prayId, prayViewModel, defViewModel, reminderViewModel, commonViewModel)
+                                    EachOracao(navController, prayId, prayViewModel, defViewModel, reminderViewModel)
                                 }
 //                            //
                                 composable(route = "canticosAgrupados") {
@@ -240,17 +239,15 @@ class  MainActivity : ComponentActivity() {
                                     About(navController)
                                 }
 
-                                composable("configurereminder/{id}/{table}/{rdate}/{rtime}/{reminderid}"){ cR ->
+                                composable("configurereminder/{id}/{table}/{rdatetime}/{reminderid}"){ cR ->
                                     val stringId = cR.arguments?.getString("id") ?: ""
                                     val id = stringId.toInt()
                                     val table = cR.arguments?.getString("table") ?: ""
-                                    val rdate = cR.arguments?.getString("rdate") ?: ""
-                                    val rDate = rdate.toLong()
-                                    val rtime = cR.arguments?.getString("rtime") ?: ""
-                                    val rTime = rtime.toLong()
+                                    val rdatetime = cR.arguments?.getString("rdatetime") ?: ""
+                                    val rDateTime = rdatetime.toLong()
                                     val rid = cR.arguments?.getString("reminderid") ?: ""
                                     val rId = rid.toInt()
-                                    ConfigureReminder(navController, id, table, rDate, rTime, rId, reminderViewModel)
+                                    ConfigureReminder(navController, id, table, rDateTime, rId, reminderViewModel)
                                 }
                             }
                         }

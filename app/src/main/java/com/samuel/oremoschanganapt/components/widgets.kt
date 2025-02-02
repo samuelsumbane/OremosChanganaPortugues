@@ -30,8 +30,8 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -45,6 +45,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -53,7 +54,6 @@ import androidx.navigation.NavController
 import com.samuel.oremoschanganapt.repository.colorObject
 import com.samuel.oremoschanganapt.ui.theme.DarkColor
 import com.samuel.oremoschanganapt.ui.theme.Orange
-import com.samuel.oremoschanganapt.ui.theme.White
 import com.samuelsumbane.oremoschanganapt.db.Pray
 import com.samuelsumbane.oremoschanganapt.db.PrayViewModel
 import com.samuelsumbane.oremoschanganapt.db.Song
@@ -127,14 +127,12 @@ fun CommonRow(
 }
 
 
-
 @Composable
 fun SongRow(
     navController: NavController,
     songViewModel: SongViewModel,
     song: Song,
     reloadIcon: Boolean = true
-
 ) {
     val mainColor = colorObject.mainColor
     var lovedState by remember { mutableStateOf(song.loved) }
@@ -154,7 +152,7 @@ fun SongRow(
                 .align(Alignment.CenterVertically),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
-        ){
+        ) {
             Text(
                 text = song.number,
                 fontSize = 16.sp,
@@ -174,17 +172,19 @@ fun SongRow(
                         colors = listOf(mainColor, lerp(mainColor, DarkColor, 0.9f)),
                     ),
                     shape = RoundedCornerShape(16.dp)
-                )
+                ),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             CommonRow(song.title, song.subTitle, Modifier.weight(1f))
-
-            StarButton(lovedState) {
-                if (lovedState) {
-                    songViewModel.setLovedSong(song.songId, false)
-                } else {
-                    songViewModel.setLovedSong(song.songId, true)
+            Row(Modifier.padding(end = 10.dp)) {
+                StarButton(lovedState) {
+                    if (lovedState) {
+                        songViewModel.setLovedSong(song.songId, false)
+                    } else {
+                        songViewModel.setLovedSong(song.songId, true)
+                    }
+                    if (reloadIcon) lovedState = !lovedState
                 }
-                if (reloadIcon) lovedState = !lovedState
             }
         }
     }
@@ -221,8 +221,11 @@ fun StarButton(
     }
 
     IconButton(
-        modifier = Modifier.size(50.dp),
-        onClick = { onClick() }
+        modifier = Modifier.size(35.dp),
+        onClick = { onClick() },
+        colors = IconButtonDefaults.iconButtonColors(
+            containerColor = MaterialTheme.colorScheme.background
+        )
     ) {
         Icon(
             imageVector = if (lovedState) Icons.Default.Star else Icons.Outlined.Star,
@@ -261,7 +264,8 @@ fun PrayRow(
             .padding(8.dp, 0.dp, 0.dp, 0.dp)
             .clickable {
                 navController.navigate("eachOracao/${pray.prayId}")
-            }
+            },
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Row(
             modifier = Modifier
@@ -272,13 +276,17 @@ fun PrayRow(
             CommonRow(pray.title, pray.subTitle, Modifier.weight(1f))
         }
 
-        StarButton(lovedState) {
-            if (lovedState) {
-                prayViewModel.setLovedPray(pray.prayId, false)
-            } else {
-                prayViewModel.setLovedPray(pray.prayId, true)
+        Row(
+            Modifier.padding(end = 10.dp)
+        ) {
+            StarButton(lovedState) {
+                if (lovedState) {
+                    prayViewModel.setLovedPray(pray.prayId, false)
+                } else {
+                    prayViewModel.setLovedPray(pray.prayId, true)
+                }
+                if (reloadIcon) lovedState = !lovedState
             }
-            if (reloadIcon) lovedState = !lovedState
         }
     }
 }
@@ -302,6 +310,7 @@ fun DefTabButton(content: @Composable () -> Unit){
 fun TextIconRow(title: String, showContent: Boolean, modifier: Modifier) {
     val mainColor = colorObject.mainColor
     val rS = 9.dp // rowShape ---------->>
+    val color = Color.White
 
     Row (
         modifier = modifier.fillMaxSize().height(45.dp)
@@ -313,7 +322,7 @@ fun TextIconRow(title: String, showContent: Boolean, modifier: Modifier) {
             .padding(10.dp),
         Arrangement.SpaceBetween
     ) {
-        Text(title, color = Color.White)
+        Text(title, color = color, fontSize = 17.sp)
         if (showContent)
             Icon(Icons.Default.KeyboardArrowUp, contentDescription = "Open or Close", tint = Color.White)
         else

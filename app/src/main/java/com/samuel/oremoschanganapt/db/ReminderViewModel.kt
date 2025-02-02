@@ -10,11 +10,7 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.samuel.oremoschanganapt.MyApp
-import com.samuel.oremoschanganapt.MyApp.Companion.realm
-import com.samuel.oremoschanganapt.functionsKotlin.americanFormat
-import com.samuel.oremoschanganapt.functionsKotlin.localTime
 //import com.samuelsumbane.oremoschanganapt.MyApp
-import com.samuelsumbane.oremoschanganapt.db.data.prayData
 import io.realm.kotlin.UpdatePolicy
 import io.realm.kotlin.ext.query
 import io.realm.kotlin.query.Sort
@@ -40,7 +36,7 @@ class ReminderViewModel : ViewModel() {
     @RequiresApi(Build.VERSION_CODES.O)
     fun addReminder(
         reminderdata: Int, remindertable: String,
-        reminderdate: Long? = null, remindertime: Long? = null,
+        reminderdatetime: Long,
         reminderrepeat: String
     ) {
         viewModelScope.launch {
@@ -49,8 +45,7 @@ class ReminderViewModel : ViewModel() {
                     reminderId = getNextId()
                     reminderData = reminderdata
                     reminderTable = remindertable
-                    reminderDate = reminderdate
-                    reminderTime = remindertime
+                    reminderDateTime = reminderdatetime
                     reminderRepeat = reminderrepeat
                 }
                 copyToRealm(reminder, updatePolicy = UpdatePolicy.ALL)
@@ -58,17 +53,13 @@ class ReminderViewModel : ViewModel() {
         }
     }
 
-    fun updateReminder(
-        reminderdate: Long? = null, remindertime: Long? = null,
-        reminderid: Int? = null
-    ){
+    fun updateReminder(reminderdatetime: Long, reminderid: Int? = null) {
         viewModelScope.launch {
            realm.write {
                 val foundReminder = this.query<Reminder>(query = "reminderId == $0", reminderid).find().firstOrNull()
                 try {
                     foundReminder?.let {
-                        foundReminder.reminderDate = reminderdate
-                        foundReminder.reminderTime = remindertime
+                        foundReminder.reminderDateTime = reminderdatetime
 
                         copyToRealm(foundReminder, updatePolicy = UpdatePolicy.ALL)
                     }
@@ -83,14 +74,13 @@ class ReminderViewModel : ViewModel() {
         return realm.query<Reminder>("reminderId == $0", reminderId).first().find()
     }
 
+
     fun deleteReminder(reminderid: Int){
         viewModelScope.launch {
             realm.write {
                 val reminder = this.query<Reminder>(query = "reminderId == $0", reminderid).find().firstOrNull()
                 try {
-                    reminder?.let {
-                        delete(it)
-                    }
+                    reminder?.let { delete(it) }
                 } catch (e: Exception){
                     Log.d("Error deleting reminder", "${e.message}")
                 }

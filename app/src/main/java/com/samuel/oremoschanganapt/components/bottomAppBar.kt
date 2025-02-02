@@ -82,7 +82,6 @@ fun BottomAppBarPrincipal(navController: NavController, activePage: String, icon
         modifier = Modifier.height(75.dp).fillMaxWidth()
     ) {
         val bottomBgColor = if (isSystemInDarkTheme()) LightSecondary else DarkSecondary
-
         Card(
             modifier = Modifier
                 .fillMaxSize().height(60.dp)
@@ -114,7 +113,8 @@ fun MenuContent(navController: NavController, activePage: String, iconColorState
     val btnText = mapOf("home" to "Ínicio", "oracoespage" to "Orações", "canticosAgrupados" to "Cânticos", "morepages" to "Mais")
     val btnIcons = mapOf(
         "home" to Icons.Filled.Home,
-        "oracoespage" to ImageVector.vectorResource(id = R.drawable.ic_pray),
+//        "oracoespage" to ImageVector.vectorResource(id = R.drawable.ic_pray),
+        "oracoespage" to ImageVector.vectorResource(id = R.drawable.prayicon),
         "canticosAgrupados" to ImageVector.vectorResource(id = R.drawable.ic_music),
         "morepages" to Icons.Outlined.Add
     )

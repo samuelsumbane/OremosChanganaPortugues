@@ -33,7 +33,7 @@ class MyApp: Application() {
 
         val notificationChannel = NotificationChannel(
             "oremos_reminder",
-            "oremos reminder channel",
+            "oremos reminder",
             NotificationManager.IMPORTANCE_HIGH
         )
 
@@ -43,5 +43,4 @@ class MyApp: Application() {
         notificationManager.createNotificationChannel(notificationChannel)
 
     }
-
 }

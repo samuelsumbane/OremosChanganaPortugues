@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -37,9 +38,7 @@ fun MorePages(navController: NavController) {
        }
     ) { paddingValues ->
         Row(Modifier.fillMaxSize().padding(paddingValues)) {
-            if (!isPortrait) {
-                SidebarNav(navController, "canticosAgrupados")
-            }
+            if (!isPortrait) SidebarNav(navController, "canticosAgrupados")
 
             Column(
                 Modifier.fillMaxSize()
@@ -48,7 +47,7 @@ fun MorePages(navController: NavController) {
                 verticalArrangement = Arrangement.SpaceEvenly,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text("Mais Paginas", style = Typography.displaySmall, fontWeight = FontWeight.Bold)
+                Text("Mais Paginas", style = Typography.titleLarge, fontStyle = FontStyle.Italic)
                 Column(Modifier.fillMaxWidth(0.80f)) {
                     Row(
                         Modifier.fillMaxWidth(),

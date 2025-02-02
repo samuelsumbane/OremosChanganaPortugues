@@ -7,6 +7,7 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -26,6 +27,8 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.*
 import androidx.navigation.NavController
 import com.samuel.oremoschanganapt.R
@@ -35,7 +38,9 @@ import com.samuel.oremoschanganapt.functionsKotlin.isNumber
 import com.samuel.oremoschanganapt.functionsKotlin.stringToColor
 import com.samuel.oremoschanganapt.repository.TablesViewModels
 import com.samuel.oremoschanganapt.repository.colorObject
+import com.samuel.oremoschanganapt.ui.theme.DarkSecondary
 import com.samuel.oremoschanganapt.ui.theme.Dodgerblue
+import com.samuel.oremoschanganapt.ui.theme.LightSecondary
 import com.samuel.oremoschanganapt.view.sideBar.AppearanceWidget
 import com.samuel.oremoschanganapt.view.sideBar.RowBackup
 import com.samuel.oremoschanganapt.view.sideBar.RowAbout
@@ -82,10 +87,14 @@ fun Home( navController: NavController, songViewModel: SongViewModel,
                 allSongs.filter { it.number == textInputValue }
             } else {
                 allSongs.filter {
-                    it.title.contains(textInputValue,ignoreCase = true)
+                    it.title.contains(textInputValue, ignoreCase = true)
                 }
             }
         } else emptyList()
+    }
+
+    LaunchedEffect(textInputValue) {
+        showModal = textInputValue != ""
     }
 
     val screenWidth = configuration.screenWidthDp
@@ -99,7 +108,6 @@ fun Home( navController: NavController, songViewModel: SongViewModel,
     }
 
     var iconColorState by remember { mutableStateOf("Keep")}
-
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -119,7 +127,7 @@ fun Home( navController: NavController, songViewModel: SongViewModel,
                     horizontalAlignment = Alignment.CenterHorizontally,
 
                 ) {
-                    Text("Configurações", style = MaterialTheme.typography.titleLarge)
+                    Text("Configurações".uppercase(), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold, fontStyle = FontStyle.Italic)
                     Spacer(Modifier.height(75.dp))
 
                     Column(
@@ -199,23 +207,17 @@ fun Home( navController: NavController, songViewModel: SongViewModel,
                             }
                         }
 
-                        OutlinedTextField(
-                            value = textInputValue,
-                            onValueChange = {
-                                textInputValue = it
-                                showModal = textInputValue != ""
-                            },
-                            label = { Text(text = "Pesquisar Cântico / Oração", color = MaterialTheme.colorScheme.background, modifier = Modifier.background(secondaryColor)) },
-                            maxLines = 1,
-                            shape = RoundedCornerShape(30.dp),
-                            colors = TextFieldDefaults.colors(
-                                focusedContainerColor =  secondaryColor,
-                                unfocusedContainerColor = secondaryColor,
-                                focusedIndicatorColor = Color.Transparent,
-                                unfocusedIndicatorColor = Color.Transparent
-                            ),
-                            textStyle = TextStyle(color = MaterialTheme.colorScheme.background),
-                            modifier = Modifier.height(55.dp)
+                        Spacer(Modifier.height(20.dp))
+
+                        val searchBgColor = if (isSystemInDarkTheme()) Color(0xFF4A4F50) else Color(0xFF9DA0A1)
+
+                        InputSearch(value = textInputValue, onValueChange = { textInputValue = it },
+                            placeholder = "Pesquisar Cântico / Oração",
+                            modifier = Modifier
+                            .height(45.dp)
+                            .background(color = searchBgColor, shape = RoundedCornerShape(30.dp)),
+                            inputColor = searchBgColor,
+                            textColor = MaterialTheme.colorScheme.tertiary
                         )
 
                         Spacer(Modifier.height(20.dp))
@@ -232,7 +234,6 @@ fun Home( navController: NavController, songViewModel: SongViewModel,
                                 .fillMaxWidth(0.90f)
                                 .heightIn(min = 90.dp, max = 500.dp)
                                 .background(Color.Black.copy(alpha = 0.8f), RoundedCornerShape(15.dp))
-                                .border(0.7.dp, Dodgerblue, RoundedCornerShape(15.dp))
                                 .align(Alignment.CenterEnd),
                             verticalArrangement = Arrangement.Center,
                             horizontalAlignment = Alignment.CenterHorizontally
@@ -243,11 +244,11 @@ fun Home( navController: NavController, songViewModel: SongViewModel,
                                     .padding(8.dp),
                                 verticalArrangement = Arrangement.spacedBy(16.dp)
                             ) {
-                                items (filteredPrays, key={ it.prayId }) { pray ->
+                                items (filteredPrays) { pray ->
                                     PrayRow(navController, prayViewModel, pray)
                                 }
 
-                                items (filteredSongs, key={ it.songId }) { song ->
+                                items (filteredSongs) { song ->
                                     SongRow(navController, songViewModel, song)
                                 }
                             }

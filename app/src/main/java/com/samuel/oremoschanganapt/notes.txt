@@ -1,25 +1,7 @@
 
-// new features
-* remember the scrollstate - pedding (
-* shortcut button - done
-
-* Temas personalizados - done
-* notificacoes personalizadas  - a little a bit
-* conteudo exclusivo - done
-
-* sincronizacao. - not yet
-
-
-
-
-// Definicoes
-* font-size - done
-* appearance (mode and color theme) - done
-
 
 // Songs:
 64
-
 
 // Songs, to organize:
 72, 77

@@ -2,6 +2,7 @@ package com.samuel.oremoschanganapt.components.buttons
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -28,12 +30,13 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.font.FontWeight
 
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.samuel.oremoschanganapt.repository.colorObject
 import com.samuel.oremoschanganapt.ui.theme.DarkColor
+import com.samuel.oremoschanganapt.ui.theme.DarkSecondary
+import com.samuel.oremoschanganapt.ui.theme.LightSecondary
 
 @Composable
 fun MorePagesBtn(icon: String, text: String, modifier: Modifier = Modifier, onClick: () -> Unit) {
@@ -67,10 +70,12 @@ fun ShortcutButtonChild(
     description: String,
     iconModifier: Modifier = Modifier,
     onClick: () -> Unit
-){
+) {
+    val bgColor = if (!isSystemInDarkTheme()) LightSecondary else DarkSecondary
+
     IconButton(
         modifier = modifier.then(Modifier.size(45.dp)),
-        colors = IconButtonDefaults.iconButtonColors(containerColor = MaterialTheme.colorScheme.tertiary,
+        colors = IconButtonDefaults.iconButtonColors(containerColor = bgColor,
             contentColor = MaterialTheme.colorScheme.primary),
         onClick = onClick
     ) {
@@ -82,23 +87,21 @@ fun ShortcutButtonChild(
 @Composable
 fun NormalButton(
     text: String,
-    btnColor: Color = colorObject.mainColor.copy(0.5f),
+    btnColor: Color = colorObject.mainColor.copy(0.85f),
     onClick: () -> Unit
 ) {
+    val bgColor = btnColor.copy(0.2f)
+
     Button(
         onClick = onClick,
-        modifier = Modifier.width(95.dp)
-
-            .height(40.dp),
+        modifier = Modifier.width(95.dp).height(40.dp),
         colors = ButtonDefaults.buttonColors(
-            containerColor = Color.Transparent,
+            containerColor = bgColor,
             contentColor = btnColor
         ),
-        border = BorderStroke(1.dp, btnColor),
         contentPadding = PaddingValues(0.dp),
         shape = RoundedCornerShape(10.dp)
     ) {
-
         Text(text, color = btnColor)
     }
 }
@@ -121,17 +124,25 @@ fun ExpandContentTabBtn(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Icon(
-                icon,
-//                imageVector = ImageVector.vectorResource(R.drawable.grid_view_24),
-                contentDescription = "language icon"
-            )
-            Text(text = title, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+            Icon(icon, contentDescription = "language icon")
+            Text(text = title, fontSize = 16.sp)
             Icon(
                 Icons.Default.KeyboardArrowDown,
                 contentDescription = "Open appearance"
             )
         }
     }
+}
 
+@Composable
+fun ScrollToFirstItemBtn(modifier: Modifier, onClick: () -> Unit) {
+    IconButton(
+        modifier = modifier,
+        onClick = onClick,
+        colors = IconButtonDefaults.iconButtonColors(
+            containerColor = MaterialTheme.colorScheme.tertiary,
+        )
+    ) {
+        Icon(Icons.Default.KeyboardArrowUp, contentDescription = "Scroll para cima", tint = MaterialTheme.colorScheme.background, modifier = Modifier.size(35.dp))
+    }
 }

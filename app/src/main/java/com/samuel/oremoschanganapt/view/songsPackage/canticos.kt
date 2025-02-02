@@ -1,6 +1,7 @@
 package com.samuel.oremoschanganapt.view.songsPackage
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 //import androidx.compose.foundation.layout.FlowColumnScopeInstance.weight
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.outlined.ArrowBack
@@ -23,11 +25,14 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -41,24 +46,27 @@ import com.samuel.oremoschanganapt.R
 import com.samuel.oremoschanganapt.components.BottomAppBarPrincipal
 import com.samuel.oremoschanganapt.components.LoadingScreen
 import com.samuel.oremoschanganapt.components.OkAlertDialog
-import com.samuel.oremoschanganapt.components.SearchContainer
+import com.samuel.oremoschanganapt.components.searchContainer
 import com.samuel.oremoschanganapt.components.SidebarNav
 import com.samuel.oremoschanganapt.components.SongRow
+import com.samuel.oremoschanganapt.components.buttons.ScrollToFirstItemBtn
 import com.samuel.oremoschanganapt.components.buttons.ShortcutsButton
 import com.samuel.oremoschanganapt.functionsKotlin.isNumber
 import com.samuel.oremoschanganapt.db.CommonViewModel
 import com.samuelsumbane.oremoschanganapt.db.SongViewModel
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SongsPage(navController: NavController, value: String, readbleValue: String, songViewModel: SongViewModel,
-              commonViewModel: CommonViewModel
+
 ) {
 
     var searchValue by remember { mutableStateOf("") }
     var advancedSearchString by remember { mutableStateOf("") }
     val allSongs by songViewModel.songs.collectAsState()
     var activeInput by remember { mutableIntStateOf(0) }
+    var searchInputActive by remember { mutableStateOf(false) }
     var showDialog by remember { mutableStateOf(false) }
 
     val configuration = LocalConfiguration.current
@@ -79,7 +87,7 @@ fun SongsPage(navController: NavController, value: String, readbleValue: String,
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = readbleValue.replaceFirstChar{char -> char.uppercase()}, color = MaterialTheme.colorScheme.tertiary) },
+                title = { Text(text = readbleValue.replaceFirstChar { e -> e.uppercase() }, color = MaterialTheme.colorScheme.tertiary, ) },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color.Transparent
                 ),
@@ -92,20 +100,23 @@ fun SongsPage(navController: NavController, value: String, readbleValue: String,
                     Row ( modifier = Modifier.padding(50.dp, 0.dp, 0.dp, 0.dp) ) {
 
                         if (activeInput == 0) {
-                            searchValue = SearchContainer(searchString = searchValue)
+                            searchValue = searchContainer(searchString = searchValue, searchInputLabel = "Pesquisar Cântico")
                         } else {
-                            advancedSearchString = SearchContainer(searchString = advancedSearchString)
+                            advancedSearchString = searchContainer(searchString = advancedSearchString, searchInputLabel = "Pesquisa Avançada", searchInputActive)
                         }
 
                         Row (
-                            modifier = Modifier.width(50.dp).padding(0.dp, 7.dp, 0.dp, 0.dp)
+                            modifier = Modifier.width(40.dp).padding(0.dp, 7.dp, 0.dp, 0.dp)
                         ) {
                             IconButton(
+                                modifier = Modifier,
                                 onClick = {
                                    if (activeInput == 0){
-                                       activeInput = 1
                                        showDialog = true
-                                   } else activeInput = 0
+                                   } else {
+                                       activeInput = 0
+                                       searchInputActive = true
+                                   }
                                 }
                             ) {
                                 Icon(
@@ -126,9 +137,16 @@ fun SongsPage(navController: NavController, value: String, readbleValue: String,
         }
     ) { paddingVales ->
 
+        val coroutineScope = rememberCoroutineScope()
+        val listState = rememberLazyListState()
+        val showUpButton by remember {
+            derivedStateOf {
+                listState.firstVisibleItemIndex > 0
+            }
+        }
+
         when{
             allSongs.isEmpty() -> LoadingScreen()
-
             else -> {
                 val filteredSongs = remember(data, searchValue, advancedSearchString) {
                     if (searchValue.isNotBlank()) {
@@ -153,15 +171,16 @@ fun SongsPage(navController: NavController, value: String, readbleValue: String,
                     } else data
                 }
 
-                // widget
-//                Column( modifier = Modifier.fillMaxSize().padding(paddingVales) ){
-                    //
                     if (showDialog) {
                         OkAlertDialog(
                             onDismissRequest = {showDialog = false},
-                            onConfirmation = {showDialog = false},
+                            onConfirmation = {
+                                showDialog = false
+                                activeInput = 1
+                                searchInputActive = true
+                                             },
                             dialogTitle = "Pesquisa avançada activda",
-                            dialogText = "Pode pesquisar o cântico por conteúdo\n dentro do cântico (corpo do cântico).",
+                            dialogText = "Pode pesquisar o cântico por conteúdo\n dentro do cântico (estrofe ou coro).",
                             Icons.Default.Info
                         )
                     }
@@ -170,11 +189,23 @@ fun SongsPage(navController: NavController, value: String, readbleValue: String,
                         if (!isPortrait) {
                             SidebarNav(navController, "canticosAgrupados")
                         }
-                        LazyColumn(
-                            modifier = Modifier.weight(1f).padding(5.dp),
-                            verticalArrangement = Arrangement.spacedBy(16.dp)
-                        ){
-                            items( filteredSongs ) { SongRow(navController, songViewModel, it) }
+
+                        Box(modifier = Modifier.weight(1f)) {
+                            LazyColumn(
+                                state = listState,
+                                modifier = Modifier.fillMaxSize().padding(5.dp),
+                                verticalArrangement = Arrangement.spacedBy(16.dp)
+                            ) {
+                                items(filteredSongs) { SongRow(navController, songViewModel, it) }
+                            }
+
+                            if (showUpButton) {
+                                ScrollToFirstItemBtn(modifier = Modifier.align(alignment = Alignment.BottomEnd)){
+                                    coroutineScope.launch {
+                                        listState.scrollToItem(0)
+                                    }
+                                }
+                            }
                         }
                     }
 

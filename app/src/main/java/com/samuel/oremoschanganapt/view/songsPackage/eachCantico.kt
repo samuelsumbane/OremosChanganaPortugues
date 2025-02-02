@@ -160,7 +160,7 @@ fun EachCantico(navController: NavController, songId: Int,
                                                         reminderViewModel.deleteReminder(songId)
                                                         reminderColor = Orange
                                                     } else {
-                                                        navController.navigate("configurereminder/$songId/Song/0/0/0")
+                                                        navController.navigate("configurereminder/$songId/Song/0/0")
                                                         reminderColor = Color.Gray
                                                     }
                                                 }
@@ -173,8 +173,6 @@ fun EachCantico(navController: NavController, songId: Int,
                                 }
                             }
                         }
-
-
                     }
                 )
             },

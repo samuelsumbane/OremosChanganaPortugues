@@ -1,6 +1,15 @@
 package com.samuel.oremoschanganapt.view.morepagesPackage
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection.Companion.Down
+import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection.Companion.Up
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.EaseIn
+import androidx.compose.animation.core.EaseOut
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.togetherWith
+import androidx.compose.animation.with
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -41,9 +50,10 @@ import androidx.navigation.NavController
 import com.samuel.oremoschanganapt.components.TextIconRow
 import com.samuel.oremoschanganapt.components.buttons.ShortcutsButton
 import com.samuel.oremoschanganapt.repository.colorObject
+import com.samuel.oremoschanganapt.ui.theme.DarkColor
 
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
 @Composable
 fun Apendice(navController: NavController){
     var selectedTabIndex by remember { mutableIntStateOf(0) }
@@ -80,10 +90,26 @@ fun Apendice(navController: NavController){
                     )
                 }
             }
-            when (selectedTabIndex) {
-                0 -> ChanganaTabContent(bgColor)
-                1 -> PtTabContent(bgColor)
+            AnimatedContent(
+                targetState = selectedTabIndex,
+                transitionSpec = {
+                    slideIntoContainer(
+                        animationSpec = tween(400, easing = EaseIn),
+                        towards = Up
+                    ).togetherWith(
+                        slideOutOfContainer(
+                            animationSpec = tween(450, easing = EaseOut),
+                            towards = Down
+                        )
+                    )
+                },
+            ) { selectedTabIndex ->
+                when (selectedTabIndex) {
+                    0 -> ChanganaTabContent(bgColor)
+                    1 -> PtTabContent(bgColor)
+                }
             }
+
         }
         ShortcutsButton(navController)
     }
@@ -291,7 +317,7 @@ fun ListWidget(
     dataList: List<List<Item>>
 ){
     val mainColor = colorObject.mainColor
-    val textColor = MaterialTheme.colorScheme.tertiary
+    val textColor = Color.White
 
     Column(modifier = Modifier.fillMaxSize()) {
         var showContent by remember { mutableStateOf(false) }
@@ -300,7 +326,7 @@ fun ListWidget(
         AnimatedVisibility(showContent) {
             Column(
                 Modifier.background(brush = Brush.horizontalGradient(
-                    colors = listOf(mainColor, lerp(mainColor, MaterialTheme.colorScheme.background, 0.9f)),
+                    colors = listOf(mainColor, lerp(mainColor, DarkColor, 0.9f)),
                 ), RoundedCornerShape(0.dp, 0.dp, 14.dp, 14.dp)).fillMaxWidth()
             ) {
                 dataList.forEach { list ->

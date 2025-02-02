@@ -26,12 +26,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.samuel.oremoschanganapt.components.buttons.ShortcutsButton
 import com.samuel.oremoschanganapt.repository.colorObject
+import com.samuel.oremoschanganapt.ui.theme.DarkColor
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -73,6 +75,7 @@ fun FestasMoveis(navController: NavController) {
         },
     ) { innerValues ->
         val itemBgColor = colorObject.mainColor
+        val textColor = Color.White
         Column(
             modifier = Modifier.fillMaxSize()
                 .padding(innerValues)
@@ -83,7 +86,7 @@ fun FestasMoveis(navController: NavController) {
                 Column(
                     Modifier.fillMaxWidth(0.9f)
                         .background(brush = Brush.horizontalGradient(
-                            colors = listOf(itemBgColor, lerp(itemBgColor, MaterialTheme.colorScheme.background, 0.9f)),
+                            colors = listOf(itemBgColor, lerp(itemBgColor, DarkColor, 0.9f)),
                         ), RoundedCornerShape(10.dp))
                 ) {
                     Column(
@@ -92,15 +95,15 @@ fun FestasMoveis(navController: NavController) {
                         Row(
                             Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceAround
-                        ){
-                            Text(text = row[0], fontWeight = FontWeight.Bold)
-                            Text(text = row[1], fontWeight = FontWeight.Bold)
+                        ) {
+                            Text(text = row[0], fontWeight = FontWeight.Bold, color = textColor)
+                            Text(text = row[1], fontWeight = FontWeight.Bold, color = textColor)
                         }
-                        Text(text = "Cinzas :  ----------------------------------- ${row[2]}")
-                        Text(text = "Pascoa :  ---------------------------------- ${row[3]}")
-                        Text(text = "Pentecostes :  -------------------------- ${row[4]}")
-                        Text(text = "C. Cristo :  -------------------------------- ${row[5]}")
-                        Text(text = "Advento :  --------------------------------- ${row[6]}")
+                        Text(text = "Cinzas :  ----------------------------------- ${row[2]}", color = textColor)
+                        Text(text = "Pascoa :  ---------------------------------- ${row[3]}", color = textColor)
+                        Text(text = "Pentecostes :  -------------------------- ${row[4]}", color = textColor)
+                        Text(text = "C. Cristo :  -------------------------------- ${row[5]}", color = textColor)
+                        Text(text = "Advento :  --------------------------------- ${row[6]}", color = textColor)
                     }
                 }
                 Spacer(Modifier.height(10.dp))
