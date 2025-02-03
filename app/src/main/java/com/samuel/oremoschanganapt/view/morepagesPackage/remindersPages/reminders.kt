@@ -14,8 +14,11 @@ import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -24,10 +27,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.graphics.luminance
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.samuel.oremoschanganapt.R
+import com.samuel.oremoschanganapt.components.OkAlertDialog
 import com.samuel.oremoschanganapt.components.TextIconRow
 import com.samuel.oremoschanganapt.components.buttons.NormalButton
 import com.samuel.oremoschanganapt.components.buttons.ShortcutsButton
@@ -51,7 +59,15 @@ fun RemindersPage(navController: NavController,
                   prayViewModel: PrayViewModel,
                   reminderViewModel: ReminderViewModel
 ) {
-    val allReminders by reminderViewModel.reminders.collectAsState()
+    val reminders by reminderViewModel.reminders.collectAsState()
+//    var allReminders by remember { dri (reminders) }
+    val allReminders by remember { derivedStateOf { reminders } }
+    var showModal by remember { mutableStateOf(false) }
+
+//    LaunchedEffect(reminders) {
+//
+//    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -63,6 +79,11 @@ fun RemindersPage(navController: NavController,
                     IconButton(onClick={  navController.popBackStack()  } ){
                         Icon(imageVector = Icons.Outlined.ArrowBack, contentDescription = "Voltar")
                     }
+                },
+                actions = {
+                    IconButton(onClick = {
+                        showModal = !showModal
+                    }) { HelpIcon() }
                 }
             )
         }) { paddingValues ->
@@ -80,12 +101,22 @@ fun RemindersPage(navController: NavController,
                 Text("Nenhum lembrete encontrado.", color = textColor, fontWeight = FontWeight.SemiBold)
             }
         } else {
+            AnimatedVisibility (showModal) {
+                OkAlertDialog(
+                    onDismissRequest = { showModal = false },
+                    onConfirmation = { showModal = false },
+                    dialogTitle = "Como adicionar lembrete",
+                    dialogText = " 1. Navegar até o cântico ou oração;\n 2. Clicar no icone de 3 pontinhos no canto superior direito;\n 3. Clicar no botão 'Lembrete';\n 4. Na nova janela (Definir lembrete);\n 5. Selecionar data e hora;\n 6. Finalizar.",
+                    icon = ImageVector.vectorResource(R.drawable.help_24)
+                )
+            }
+
             LazyColumn(
                 Modifier.fillMaxSize().padding(paddingValues)
                     .background(MaterialTheme.colorScheme.background),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                items(allReminders){ reminder ->
+                items(allReminders) { reminder ->
                     fun seeReminderContent(){
                         if (reminder.reminderTable == "Pray"){
                             navController.navigate("eachOracao/${reminder.reminderData}")
@@ -158,8 +189,13 @@ fun RemindersPage(navController: NavController,
                                         navController.navigate("configurereminder/${r.reminderData}/${r.reminderTable}/${r.reminderDateTime}/${r.reminderId}")
                                     }
 
-                                    NormalButton("Remover", RedButton) {
+                                    val deleteButtonColor = if (RedButton.luminance() > 0.5f) RedButton else Color(
+                                        0xFFDB0801
+                                    )
+                                    NormalButton("Remover", deleteButtonColor) {
                                         reminderViewModel.deleteReminder(reminder.reminderId)
+                                        showContent()
+
                                         toastAlert(context, "Lembrente removido com sucesso.")
                                     }
                                 }
@@ -174,4 +210,10 @@ fun RemindersPage(navController: NavController,
 
         ShortcutsButton(navController)
     }
+}
+
+
+@Composable
+fun HelpIcon() {
+    Icon(imageVector = ImageVector.vectorResource(R.drawable.help_24), contentDescription = "Ajuda sobre lembretes", modifier = Modifier.size(25.dp))
 }

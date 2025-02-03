@@ -41,9 +41,12 @@ import androidx.navigation.NavController
 import com.samuel.oremoschanganapt.components.colorPickerDemo
 import com.samuel.oremoschanganapt.functionsKotlin.stringToColor
 import com.samuel.oremoschanganapt.R
+import com.samuel.oremoschanganapt.components.BackupPickerScreen
 import com.samuel.oremoschanganapt.components.DefTabButton
+import com.samuel.oremoschanganapt.components.FilePickerScreen
 import com.samuel.oremoschanganapt.components.buttons.ExpandContentTabBtn
 import com.samuel.oremoschanganapt.components.buttons.NormalButton
+import com.samuel.oremoschanganapt.db.CommonViewModel
 import com.samuel.oremoschanganapt.repository.colorObject
 
 // AppearanceWidget ============>
@@ -186,27 +189,24 @@ fun RowAbout (navController: NavController) {
 
 
 @Composable
-fun RowBackup(
-    onBackupClick: () -> Unit,
-    onRestoreClick: () -> Unit
-) {
+fun RowBackup(commonViewModel: CommonViewModel) {
     var isThisTabVisible by remember { mutableStateOf(false) }
 
     DefTabButton {
         ExpandContentTabBtn(
             Icons.Default.Refresh,
-            "Backup / Restorar"
+            "Backup / Restourar"
         ) { isThisTabVisible = !isThisTabVisible }
 
         AnimatedVisibility(isThisTabVisible) {
             Column {
-                Text("Pode salvar (Backup) a lista de orações ou/e cânticos favoritos no dispositivo e carregar (Restorar) quando quiser actualizar a lista actual.", modifier = Modifier.padding(10.dp))
+                Text("Pode salvar (Backup) a lista de orações ou/e cânticos favoritos no dispositivo e carregar (Restourar) quando quiser actualizar a lista actual.", modifier = Modifier.padding(10.dp))
                 Row(
                     modifier = Modifier.fillMaxWidth().padding(10.dp),
                     horizontalArrangement = Arrangement.SpaceAround
                 ) {
-                    NormalButton("Backup") { onBackupClick() }
-                    NormalButton("Restorar") { onRestoreClick() }
+                    BackupPickerScreen(commonViewModel)
+                    FilePickerScreen(commonViewModel)
                 }
             }
         }

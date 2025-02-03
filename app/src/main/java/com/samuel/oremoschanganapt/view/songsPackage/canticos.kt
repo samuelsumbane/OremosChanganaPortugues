@@ -1,5 +1,14 @@
 package com.samuel.oremoschanganapt.view.songsPackage
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection.Companion.Down
+import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection.Companion.Left
+import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection.Companion.Right
+import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection.Companion.Up
+import androidx.compose.animation.core.EaseIn
+import androidx.compose.animation.core.EaseOut
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 //import androidx.compose.foundation.layout.FlowColumnScopeInstance.weight
@@ -53,6 +62,8 @@ import com.samuel.oremoschanganapt.components.buttons.ScrollToFirstItemBtn
 import com.samuel.oremoschanganapt.components.buttons.ShortcutsButton
 import com.samuel.oremoschanganapt.functionsKotlin.isNumber
 import com.samuel.oremoschanganapt.db.CommonViewModel
+import com.samuel.oremoschanganapt.view.morepagesPackage.ChanganaTabContent
+import com.samuel.oremoschanganapt.view.morepagesPackage.PtTabContent
 import com.samuelsumbane.oremoschanganapt.db.SongViewModel
 import kotlinx.coroutines.launch
 
@@ -99,10 +110,25 @@ fun SongsPage(navController: NavController, value: String, readbleValue: String,
                 actions = {
                     Row ( modifier = Modifier.padding(50.dp, 0.dp, 0.dp, 0.dp) ) {
 
-                        if (activeInput == 0) {
-                            searchValue = searchContainer(searchString = searchValue, searchInputLabel = "Pesquisar Cântico")
-                        } else {
-                            advancedSearchString = searchContainer(searchString = advancedSearchString, searchInputLabel = "Pesquisa Avançada", searchInputActive)
+
+                        AnimatedContent(
+                            targetState = activeInput,
+                            transitionSpec = {
+                                slideIntoContainer(
+                                    animationSpec = tween(400, easing = EaseIn),
+                                    towards = Left
+                                ).togetherWith(
+                                    slideOutOfContainer(
+                                        animationSpec = tween(450, easing = EaseOut),
+                                        towards = Right
+                                    )
+                                )
+                            },
+                        ) { activeInput ->
+                            when (activeInput) {
+                                0 -> searchValue = searchContainer(searchString = searchValue, searchInputLabel = "Pesquisar Cântico", searchInputActive)
+                                1 -> advancedSearchString = searchContainer(searchString = advancedSearchString, searchInputLabel = "Pesquisa Avançada", searchInputActive)
+                            }
                         }
 
                         Row (
@@ -111,12 +137,8 @@ fun SongsPage(navController: NavController, value: String, readbleValue: String,
                             IconButton(
                                 modifier = Modifier,
                                 onClick = {
-                                   if (activeInput == 0){
-                                       showDialog = true
-                                   } else {
-                                       activeInput = 0
-                                       searchInputActive = true
-                                   }
+                                   activeInput = if (activeInput == 0) 1 else 0
+                                   searchInputActive = true
                                 }
                             ) {
                                 Icon(
@@ -171,44 +193,29 @@ fun SongsPage(navController: NavController, value: String, readbleValue: String,
                     } else data
                 }
 
-                    if (showDialog) {
-                        OkAlertDialog(
-                            onDismissRequest = {showDialog = false},
-                            onConfirmation = {
-                                showDialog = false
-                                activeInput = 1
-                                searchInputActive = true
-                                             },
-                            dialogTitle = "Pesquisa avançada activda",
-                            dialogText = "Pode pesquisar o cântico por conteúdo\n dentro do cântico (estrofe ou coro).",
-                            Icons.Default.Info
-                        )
+                Row(Modifier.fillMaxSize().padding(paddingVales)) {
+                    if (!isPortrait) {
+                        SidebarNav(navController, "canticosAgrupados")
                     }
-                    //
-                    Row(Modifier.fillMaxSize().padding(paddingVales)) {
-                        if (!isPortrait) {
-                            SidebarNav(navController, "canticosAgrupados")
+
+                    Box(modifier = Modifier.weight(1f)) {
+                        LazyColumn(
+                            state = listState,
+                            modifier = Modifier.fillMaxSize().padding(5.dp),
+                            verticalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
+                            items(filteredSongs) { SongRow(navController, songViewModel, it) }
                         }
 
-                        Box(modifier = Modifier.weight(1f)) {
-                            LazyColumn(
-                                state = listState,
-                                modifier = Modifier.fillMaxSize().padding(5.dp),
-                                verticalArrangement = Arrangement.spacedBy(16.dp)
-                            ) {
-                                items(filteredSongs) { SongRow(navController, songViewModel, it) }
-                            }
-
-                            if (showUpButton) {
-                                ScrollToFirstItemBtn(modifier = Modifier.align(alignment = Alignment.BottomEnd)){
-                                    coroutineScope.launch {
-                                        listState.scrollToItem(0)
-                                    }
+                        if (showUpButton) {
+                            ScrollToFirstItemBtn(modifier = Modifier.align(alignment = Alignment.BottomEnd)){
+                                coroutineScope.launch {
+                                    listState.scrollToItem(0)
                                 }
                             }
                         }
                     }
-
+                }
                 ShortcutsButton(navController)
             }
         }

@@ -41,6 +41,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
@@ -104,7 +105,7 @@ fun EachCantico(navController: NavController, songId: Int,
                         containerColor = MaterialTheme.colorScheme.background
                     ),
                     navigationIcon = {
-                        IconButton(onClick={  navController.navigate("canticosAgrupados")  } ){
+                        IconButton(onClick = { navController.navigate("canticospage/todos/todos cânticos")  } ){
                             Icon(imageVector = Icons.Outlined.ArrowBack, contentDescription = "Voltar")
                         }
                     },
@@ -135,7 +136,8 @@ fun EachCantico(navController: NavController, songId: Int,
                             DropdownMenu(
                                 expanded = expanded,
                                 onDismissRequest = { expanded = false },
-                                properties = PopupProperties(focusable = true)
+                                properties = PopupProperties(focusable = true),
+                                modifier = Modifier.shadow(elevation = 3.dp, spotColor = Color.DarkGray)
                             ) {
                                 menuBtns.forEach {
                                     DropdownMenuItem(
@@ -176,7 +178,6 @@ fun EachCantico(navController: NavController, songId: Int,
                     }
                 )
             },
-
             ) { paddingValues ->
 
             val scrollState = rememberScrollState()

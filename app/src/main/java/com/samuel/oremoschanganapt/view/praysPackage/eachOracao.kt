@@ -48,6 +48,7 @@ import com.samuelsumbane.oremoschanganapt.db.DefViewModel
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.window.PopupProperties
 import com.samuel.oremoschanganapt.components.StarButton
@@ -110,7 +111,9 @@ fun EachOracao(navController: NavController, prayId: Int,
                             DropdownMenu(
                                 expanded = expanded,
                                 onDismissRequest = { expanded = false },
-                                properties = PopupProperties(focusable = true)
+                                properties = PopupProperties(focusable = true),
+                                modifier = Modifier.shadow(elevation = 3.dp, spotColor = Color.DarkGray)
+
                             ) {
                                 menuBtns.forEach {
                                     DropdownMenuItem(

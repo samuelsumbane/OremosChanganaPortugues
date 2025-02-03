@@ -6,8 +6,6 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("io.realm.kotlin")
-//    id("kotlinx-serialization")
-//    id("org.jetbrains.kotlin.plugin.serialization") version "1.9.10"
 }
 
 val keystorePropertiesFile = rootProject.file("local.properties")
@@ -30,14 +28,13 @@ android {
         applicationId = "com.samuel.oremoschanganapt"
         minSdk = 21
         targetSdk = 34
-        versionCode = 3
-        versionName = "3.1"
+        versionCode = 4
+        versionName = "4.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
         }
-//        signingConfig = signingConfigs.getByName("release")
 //        resourceConfigurations.addAll(listOf("pt", "en"))
         signingConfig = signingConfigs.getByName("release")
     }

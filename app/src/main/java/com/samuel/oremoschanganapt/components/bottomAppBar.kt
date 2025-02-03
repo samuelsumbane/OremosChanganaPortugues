@@ -85,10 +85,13 @@ fun BottomAppBarPrincipal(navController: NavController, activePage: String, icon
         Card(
             modifier = Modifier
                 .fillMaxSize().height(60.dp)
-                .padding(10.dp, 0.dp, 10.dp, 7.dp)
-                .background(bottomBgColor,
-                    shape = RoundedCornerShape(15.dp)),
-            elevation = CardDefaults.elevatedCardElevation(3.dp)
+                .background(Color.Transparent)
+                .padding(10.dp, 0.dp, 10.dp, 7.dp),
+            elevation = CardDefaults.elevatedCardElevation(3.dp),
+            shape = RoundedCornerShape(16.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = bottomBgColor
+            )
         ) {
             Row(modifier = Modifier.fillMaxSize(),
                 horizontalArrangement = Arrangement.SpaceEvenly
@@ -113,7 +116,6 @@ fun MenuContent(navController: NavController, activePage: String, iconColorState
     val btnText = mapOf("home" to "Ínicio", "oracoespage" to "Orações", "canticosAgrupados" to "Cânticos", "morepages" to "Mais")
     val btnIcons = mapOf(
         "home" to Icons.Filled.Home,
-//        "oracoespage" to ImageVector.vectorResource(id = R.drawable.ic_pray),
         "oracoespage" to ImageVector.vectorResource(id = R.drawable.prayicon),
         "canticosAgrupados" to ImageVector.vectorResource(id = R.drawable.ic_music),
         "morepages" to Icons.Outlined.Add

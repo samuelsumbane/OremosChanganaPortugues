@@ -29,45 +29,11 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import com.samuel.oremoschanganapt.functionsKotlin.dateStringToLong
 import com.samuel.oremoschanganapt.functionsKotlin.timeStringToLong
+import com.samuel.oremoschanganapt.repository.colorObject
 
 import java.util.Calendar
 
-//@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun AlertDialogApp(
-    onDismissRequest: () -> Unit,
-    onConfirmation: () -> Unit,
-    dialogTitle: String,
-    dialogText: String,
-    textColor: Color,
-    icon: ImageVector? = null,
-) {
-    AlertDialog(
-        icon = {
-            icon?.let{
-                Icon(icon, contentDescription = "icon", tint = MaterialTheme.colorScheme.tertiary)
-            }
-        },
-        title = { Text(text = dialogTitle) },
 
-        text = { Text(text = dialogText) },
-        onDismissRequest = { onDismissRequest() },
-        confirmButton = {
-            TextButton(
-                onClick = { onConfirmation() }
-            ) {
-                Text("Confirm", color = textColor)
-            }
-        },
-        dismissButton = {
-            TextButton(
-                onClick = { onDismissRequest() }
-            ) {
-                Text("Cancel", color = textColor)
-            }
-        }
-    )
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -220,45 +186,6 @@ fun TimePickerDialog(
     )
 }
 
-@Composable
-fun AlertDialog(
-    onDismissRequest: () -> Unit,
-    onConfirmation: () -> Unit,
-    dialogTitle: String,
-    dialogText: String,
-    icon: ImageVector,
-) {
-    AlertDialog(
-        icon = {
-            Icon(icon, contentDescription = "Example Icon")
-        },
-        title = {
-            Text(text = dialogTitle)
-        },
-        text = {
-            Text(text = dialogText)
-        },
-        onDismissRequest = { onDismissRequest() },
-        confirmButton = {
-            TextButton(
-                onClick = {
-                    onConfirmation()
-                }
-            ) {
-                Text("Confirm")
-            }
-        },
-        dismissButton = {
-            TextButton(
-                onClick = {
-                    onDismissRequest()
-                }
-            ) {
-                Text("Dismiss")
-            }
-        }
-    )
-}
 
 @Composable
 fun OkAlertDialog(
@@ -269,21 +196,13 @@ fun OkAlertDialog(
     icon: ImageVector,
 ) {
     AlertDialog(
-        icon = {
-            Icon(icon, contentDescription = "Alert Dialog Icon")
-        },
-        title = {
-            Text(text = dialogTitle)
-        },
-        text = {
-            Text(text = dialogText)
-        },
+        icon = { Icon(icon, contentDescription = "Alert Dialog Icon", tint = colorObject.mainColor) },
+        title = { Text(text = dialogTitle) },
+        text = { Text(text = dialogText) },
         onDismissRequest = { onDismissRequest() },
         confirmButton = {
-            TextButton(
-                onClick = { onConfirmation() }
-            ) {
-                Text("Confirm")
+            TextButton(onClick = { onConfirmation() }) {
+                Text("Confirm", color = colorObject.mainColor)
             }
         }
     )

@@ -6,7 +6,6 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -26,21 +25,17 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.*
 import androidx.navigation.NavController
 import com.samuel.oremoschanganapt.R
 import com.samuel.oremoschanganapt.components.*
-import com.samuel.oremoschanganapt.db.ReminderViewModel
+import com.samuel.oremoschanganapt.db.CommonViewModel
 import com.samuel.oremoschanganapt.functionsKotlin.isNumber
 import com.samuel.oremoschanganapt.functionsKotlin.stringToColor
 import com.samuel.oremoschanganapt.repository.TablesViewModels
 import com.samuel.oremoschanganapt.repository.colorObject
-import com.samuel.oremoschanganapt.ui.theme.DarkSecondary
-import com.samuel.oremoschanganapt.ui.theme.Dodgerblue
-import com.samuel.oremoschanganapt.ui.theme.LightSecondary
 import com.samuel.oremoschanganapt.view.sideBar.AppearanceWidget
 import com.samuel.oremoschanganapt.view.sideBar.RowBackup
 import com.samuel.oremoschanganapt.view.sideBar.RowAbout
@@ -52,11 +47,10 @@ import kotlinx.coroutines.launch
 
 
 @RequiresApi(Build.VERSION_CODES.O)
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "NewApi")
 @Composable
 fun Home( navController: NavController, songViewModel: SongViewModel,
           prayViewModel: PrayViewModel, defViewModel: DefViewModel,
-          reminderViewModel: ReminderViewModel
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -65,11 +59,9 @@ fun Home( navController: NavController, songViewModel: SongViewModel,
     val allSongs by songViewModel.songs.collectAsState()
     val allPrays by prayViewModel.prays.collectAsState()
     val defs by defViewModel.defs.collectAsState()
-    val allR by reminderViewModel.reminders.collectAsState()
     var showModal by remember { mutableStateOf(false) }
     val context = LocalContext.current
     val commonViewModel = TablesViewModels.commonViewModel!!
-    val secondaryColor = MaterialTheme.colorScheme.secondary
 
     val configuration = LocalConfiguration.current
     val isPortrait = configuration.orientation == android.content.res.Configuration.ORIENTATION_PORTRAIT
@@ -130,9 +122,7 @@ fun Home( navController: NavController, songViewModel: SongViewModel,
                     Text("Configurações".uppercase(), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold, fontStyle = FontStyle.Italic)
                     Spacer(Modifier.height(75.dp))
 
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(30.dp),
-                    ) {
+                    Column(verticalArrangement = Arrangement.spacedBy(30.dp)) {
                         if (defs.isNotEmpty()) {
                             val def = defs.first()
                             var themeColor by remember { mutableStateOf(def.themeColor)}
@@ -162,10 +152,7 @@ fun Home( navController: NavController, songViewModel: SongViewModel,
 
                         } else LoadingScreen()
 
-                        RowBackup(
-                            onBackupClick = { commonViewModel.exportBackupToExternalStorage(context) },
-                            onRestoreClick = { commonViewModel.restoreBackupFromExternalStorage(context) }
-                        )
+                        RowBackup(commonViewModel = CommonViewModel())
 
                         // About --------->>
                         RowAbout(navController)
@@ -176,7 +163,9 @@ fun Home( navController: NavController, songViewModel: SongViewModel,
     ) {
         if (defs.isNotEmpty()){
             Scaffold(
-                bottomBar = { if (isPortrait) BottomAppBarPrincipal(navController, "home", iconColorState) }
+                bottomBar = {
+                    if (isPortrait) BottomAppBarPrincipal(navController, "home", iconColorState)
+                }
             ) {
                 Box(Modifier.fillMaxSize()) {
                     Image(
@@ -190,9 +179,7 @@ fun Home( navController: NavController, songViewModel: SongViewModel,
                         .background(Brush.verticalGradient(colors = listOf(Color.Black.copy(alpha = 0.5f), Color.Transparent)))
                     )
 
-                    if (!isPortrait) {
-                        SidebarNav(navController, "home", modifier = Modifier.fillMaxHeight().width(80.dp).padding(top=30.dp))
-                    }
+                    if (!isPortrait) SidebarNav(navController, "home", modifier = Modifier.fillMaxHeight().width(80.dp).padding(top=30.dp))
 
                     Column(
                         modifier = Modifier.fillMaxWidth()
@@ -214,10 +201,9 @@ fun Home( navController: NavController, songViewModel: SongViewModel,
                         InputSearch(value = textInputValue, onValueChange = { textInputValue = it },
                             placeholder = "Pesquisar Cântico / Oração",
                             modifier = Modifier
-                            .height(45.dp)
-                            .background(color = searchBgColor, shape = RoundedCornerShape(30.dp)),
-                            inputColor = searchBgColor,
-                            textColor = MaterialTheme.colorScheme.tertiary
+                                .fillMaxWidth(0.75f)
+                                .height(45.dp)
+                                .background(color = searchBgColor, shape = RoundedCornerShape(35.dp)),
                         )
 
                         Spacer(Modifier.height(20.dp))

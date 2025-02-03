@@ -2,6 +2,8 @@ package com.samuel.oremoschanganapt.components
 
 import android.content.Context
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -25,6 +27,7 @@ import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.Star
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -46,14 +49,20 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.luminance
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.google.gson.Gson
+import com.samuel.oremoschanganapt.components.buttons.NormalButton
+import com.samuel.oremoschanganapt.db.CommonViewModel
+import com.samuel.oremoschanganapt.db.LovedDataPojo
 import com.samuel.oremoschanganapt.repository.colorObject
 import com.samuel.oremoschanganapt.ui.theme.DarkColor
 import com.samuel.oremoschanganapt.ui.theme.Orange
+import com.samuel.oremoschanganapt.view.sideBar.NormalText
 import com.samuelsumbane.oremoschanganapt.db.Pray
 import com.samuelsumbane.oremoschanganapt.db.PrayViewModel
 import com.samuelsumbane.oremoschanganapt.db.Song
@@ -276,9 +285,7 @@ fun PrayRow(
             CommonRow(pray.title, pray.subTitle, Modifier.weight(1f))
         }
 
-        Row(
-            Modifier.padding(end = 10.dp)
-        ) {
+        Row(Modifier.padding(end = 10.dp)) {
             StarButton(lovedState) {
                 if (lovedState) {
                     prayViewModel.setLovedPray(pray.prayId, false)
@@ -328,5 +335,63 @@ fun TextIconRow(title: String, showContent: Boolean, modifier: Modifier) {
         else
             Icon(Icons.Default.KeyboardArrowDown, contentDescription = "Open or Close", tint = Color.White)
 
+    }
+}
+
+@Composable
+fun FilePickerScreen(viewModel: CommonViewModel) {
+    val context = LocalContext.current
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.OpenDocument(),
+        onResult = { uri ->
+            uri?.let {
+                context.contentResolver.openInputStream(it)?.use { inputStream ->
+                    val json = inputStream.bufferedReader().use { it.readText() }
+                    viewModel.restoreBackup(json, context) // Send data to ViewModel ------->>
+                }
+            } ?: run {
+                Toast.makeText(context, "Nenhum arquivo selecionado.", Toast.LENGTH_SHORT).show()
+            }
+        }
+    )
+
+    NormalButton("Restourar\nDados") { launcher.launch(arrayOf("application/json")) }
+}
+
+@Composable
+fun BackupPickerScreen(viewModel: CommonViewModel) {
+    val context = LocalContext.current
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.CreateDocument("application/json"),
+        onResult = { uri ->
+            uri?.let {
+                val lovedPrays = viewModel.getLovedPrays()
+                val lovedSongs = viewModel.getLovedSongs()
+
+                val lovedDataList = mutableListOf<LovedDataPojo>().apply {
+                    lovedPrays.forEach { add(LovedDataPojo(it.prayId, "Pray")) }
+                    lovedSongs.forEach { add(LovedDataPojo(it.songId, "Song")) }
+                }
+
+                if (lovedDataList.isEmpty()) {
+                    Toast.makeText(context, "Nenhum dado encontrado para exportar.", Toast.LENGTH_SHORT).show()
+                    return@let
+                }
+
+                val json = Gson().toJson(lovedDataList)
+
+                context.contentResolver.openOutputStream(it)?.use { outputStream ->
+                    outputStream.write(json.toByteArray())
+                    outputStream.flush()
+                    Toast.makeText(context, "Backup salvo com sucesso!", Toast.LENGTH_SHORT).show()
+                }
+            } ?: run {
+                Toast.makeText(context, "Nenhum local selecionado para salvar.", Toast.LENGTH_SHORT).show()
+            }
+        }
+    )
+
+    NormalButton ("Fazer\nBackup", ) {
+        launcher.launch("lovedItems_backup.json")
     }
 }

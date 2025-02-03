@@ -57,7 +57,7 @@ fun ConfigureReminder(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text="Definir lembrente", color = MaterialTheme.colorScheme.tertiary) },
+                title = { Text(text="Definir lembrete", color = MaterialTheme.colorScheme.tertiary) },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color.Transparent
                 ),
@@ -134,7 +134,7 @@ fun ConfigureReminder(
 
                 NormalButton("Cancelar", RedButton) { navController.popBackStack() }
 
-                NormalButton("Concluir") {
+                NormalButton("Finalizar") {
                     if (reminderdate == 0L ) {
                         toastAlert(context, "Por favor, selecione a data")
                     } else if (remindertime == 0L){

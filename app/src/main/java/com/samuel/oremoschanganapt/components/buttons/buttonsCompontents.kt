@@ -2,6 +2,7 @@ package com.samuel.oremoschanganapt.components.buttons
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -105,6 +106,28 @@ fun NormalButton(
         Text(text, color = btnColor)
     }
 }
+
+//@Composable
+//fun NormalButtonComp(
+//    text: String,
+//    btnColor: Color = colorObject.mainColor.copy(0.85f),
+//    onClick: @Composable () -> Unit
+//) {
+//    val bgColor = btnColor.copy(0.2f)
+//
+//    Button(
+////        onClick =  ,
+//        modifier = Modifier.width(95.dp).height(40.dp),
+//        colors = ButtonDefaults.buttonColors(
+//            containerColor = bgColor,
+//            contentColor = btnColor
+//        ),
+//        contentPadding = PaddingValues(0.dp),
+//        shape = RoundedCornerShape(10.dp)
+//    ) {
+//        Text(text, color = btnColor)
+//    }
+//}
 
 @Composable
 fun ExpandContentTabBtn(
