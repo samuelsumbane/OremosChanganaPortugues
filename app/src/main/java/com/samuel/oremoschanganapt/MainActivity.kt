@@ -162,8 +162,8 @@ class  MainActivity : ComponentActivity() {
                             }
 
                             val navController = rememberNavController()
-                            NavHost(navController = navController, startDestination = "home") {
-//                                 define rotas ------->>
+                            NavHost(navController = navController, startDestination = "splash") {
+//                                 define routes ------->>
                                  composable("splash") {
                                       SplashWindow(navController)
                                  }

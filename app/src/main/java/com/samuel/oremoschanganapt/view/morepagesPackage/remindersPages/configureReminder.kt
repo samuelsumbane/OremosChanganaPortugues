@@ -41,7 +41,6 @@ import com.samuel.oremoschanganapt.functionsKotlin.getCurrentTimestamp
 import com.samuel.oremoschanganapt.functionsKotlin.convertLongToDateString
 import com.samuel.oremoschanganapt.functionsKotlin.scheduleNotificationForSongOrPray
 import com.samuel.oremoschanganapt.repository.colorObject
-import com.samuel.oremoschanganapt.ui.theme.BlueButton
 import com.samuel.oremoschanganapt.ui.theme.RedButton
 
 @RequiresApi(Build.VERSION_CODES.O)

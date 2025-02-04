@@ -25,6 +25,6 @@ val Tomato = Color(0xFFFF6347)
 val Turquoise = Color(0xFF40E0D0)   // Turquesa
 
 val RedButton = Color(0xFF970B05)
-val BlueButton = Color(0xFF14BCFF)
+val BlueColor = Color(0xFF02101E)
 val DarkColor = Color(0xFF191C1E)
 //#191C1E

@@ -1,13 +1,11 @@
 package com.samuel.oremoschanganapt.view
 
-
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -22,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.samuel.oremoschanganapt.R
+import com.samuel.oremoschanganapt.ui.theme.BlueColor
 import com.samuel.oremoschanganapt.ui.theme.splashColor
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -49,12 +48,11 @@ fun SplashWindow(navController: NavController) {
             painter = painterResource(id = R.drawable.oremospic),
             contentDescription = null,
             modifier = Modifier
-//                .fillMaxSize()
                 .padding(16.dp),
             contentScale = ContentScale.Fit
         )
 
-        Text(text="Oremos ", color = MaterialTheme.colorScheme.tertiary, fontSize = 27.sp, fontWeight = FontWeight.Bold, fontStyle = FontStyle.Italic)
-        Text(text="Changana - Português", color = MaterialTheme.colorScheme.tertiary, fontSize = 25.sp, fontStyle = FontStyle.Italic)
+        Text(text="Oremos ", color = BlueColor, fontSize = 27.sp, fontWeight = FontWeight.Bold, fontStyle = FontStyle.Italic)
+        Text(text="Changana - Português", color = BlueColor, fontSize = 25.sp, fontStyle = FontStyle.Italic)
     }
 }

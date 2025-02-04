@@ -81,9 +81,7 @@ fun RemindersPage(navController: NavController,
                     }
                 },
                 actions = {
-                    IconButton(onClick = {
-                        showModal = !showModal
-                    }) { HelpIcon() }
+                    IconButton(onClick = { showModal = true }) { HelpIcon() }
                 }
             )
         }) { paddingValues ->
@@ -91,6 +89,16 @@ fun RemindersPage(navController: NavController,
         val mainColor = colorObject.mainColor
         val textColor = Color.White
         val context = LocalContext.current
+
+        AnimatedVisibility(showModal) {
+            OkAlertDialog(
+                onDismissRequest = { showModal = false },
+                onConfirmation = { showModal = false },
+                dialogTitle = "Como adicionar lembrete",
+                dialogText = " 1. Navegar até o cântico ou oração;\n 2. Clicar no icone de 3 pontinhos no canto superior direito;\n 3. Clicar no botão 'Lembrete';\n 4. Na nova janela (Definir lembrete);\n 5. Selecionar data e hora;\n 6. Finalizar.",
+                icon = ImageVector.vectorResource(R.drawable.help_24)
+            )
+        }
 
         if (allReminders.isEmpty()) {
             Row(
@@ -101,15 +109,6 @@ fun RemindersPage(navController: NavController,
                 Text("Nenhum lembrete encontrado.", color = textColor, fontWeight = FontWeight.SemiBold)
             }
         } else {
-            AnimatedVisibility (showModal) {
-                OkAlertDialog(
-                    onDismissRequest = { showModal = false },
-                    onConfirmation = { showModal = false },
-                    dialogTitle = "Como adicionar lembrete",
-                    dialogText = " 1. Navegar até o cântico ou oração;\n 2. Clicar no icone de 3 pontinhos no canto superior direito;\n 3. Clicar no botão 'Lembrete';\n 4. Na nova janela (Definir lembrete);\n 5. Selecionar data e hora;\n 6. Finalizar.",
-                    icon = ImageVector.vectorResource(R.drawable.help_24)
-                )
-            }
 
             LazyColumn(
                 Modifier.fillMaxSize().padding(paddingValues)
