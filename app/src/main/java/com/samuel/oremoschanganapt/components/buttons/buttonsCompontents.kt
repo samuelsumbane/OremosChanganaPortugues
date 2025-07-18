@@ -1,8 +1,6 @@
 package com.samuel.oremoschanganapt.components.buttons
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -34,14 +32,22 @@ import androidx.compose.ui.graphics.vector.ImageVector
 
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.samuel.oremoschanganapt.repository.colorObject
+import com.samuel.oremoschanganapt.repository.ColorObject
 import com.samuel.oremoschanganapt.ui.theme.DarkColor
 import com.samuel.oremoschanganapt.ui.theme.DarkSecondary
 import com.samuel.oremoschanganapt.ui.theme.LightSecondary
 
 @Composable
-fun MorePagesBtn(icon: String, text: String, modifier: Modifier = Modifier, onClick: () -> Unit) {
-    val mainColor = colorObject.mainColor
+fun MorePagesBtn(
+    icon: ImageVector,
+    description: String,
+    text: String,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+) {
+    val mainColor = ColorObject.mainColor
+    val secondColor = ColorObject.secondColor
+
     Button(
         onClick = onClick,
         colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
@@ -49,7 +55,14 @@ fun MorePagesBtn(icon: String, text: String, modifier: Modifier = Modifier, onCl
             .fillMaxWidth()
             .background(
                 brush = Brush.horizontalGradient(
-                    colors = listOf(mainColor, lerp(mainColor, DarkColor, 0.9f)),
+                    colors = listOf(
+                        mainColor,
+                        lerp(
+                            start = mainColor,
+                            stop = if (secondColor == Color.Unspecified) mainColor else secondColor,
+                            fraction = 0.9f
+                        )
+                    ),
                 ),
                 shape = RoundedCornerShape(16.dp)
             )
@@ -57,8 +70,13 @@ fun MorePagesBtn(icon: String, text: String, modifier: Modifier = Modifier, onCl
         contentPadding = PaddingValues(15.dp),
         ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(icon, fontSize = 25.sp)
-            Spacer(modifier = Modifier.height(4.dp))
+            Icon(
+                imageVector = icon,
+                contentDescription = description,
+                modifier = Modifier.size(30.dp),
+                tint = Color.White
+            )
+            Spacer(modifier = Modifier.height(8.dp))
             Text(text = text, color = Color.White, fontSize = 16.sp)
         }
     }
@@ -76,8 +94,10 @@ fun ShortcutButtonChild(
 
     IconButton(
         modifier = modifier.then(Modifier.size(45.dp)),
-        colors = IconButtonDefaults.iconButtonColors(containerColor = bgColor,
-            contentColor = MaterialTheme.colorScheme.primary),
+        colors = IconButtonDefaults.iconButtonColors(
+            containerColor = bgColor,
+            contentColor = MaterialTheme.colorScheme.primary
+        ),
         onClick = onClick
     ) {
         Icon(icon, contentDescription = description, modifier = iconModifier, tint = MaterialTheme.colorScheme.background)
@@ -88,7 +108,7 @@ fun ShortcutButtonChild(
 @Composable
 fun NormalButton(
     text: String,
-    btnColor: Color = colorObject.mainColor.copy(0.85f),
+    btnColor: Color = ColorObject.mainColor.copy(0.85f),
     onClick: () -> Unit
 ) {
     val bgColor = btnColor.copy(0.2f)

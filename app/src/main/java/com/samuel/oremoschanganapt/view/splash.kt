@@ -47,8 +47,7 @@ fun SplashWindow(navController: NavController) {
         Image(
             painter = painterResource(id = R.drawable.oremospic),
             contentDescription = null,
-            modifier = Modifier
-                .padding(16.dp),
+            modifier = Modifier.padding(16.dp),
             contentScale = ContentScale.Fit
         )
 

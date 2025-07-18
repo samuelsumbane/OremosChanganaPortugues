@@ -1,25 +1,22 @@
 package com.samuel.oremoschanganapt.view.sideBar
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,118 +29,170 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.PopupProperties
 import androidx.navigation.NavController
 import com.samuel.oremoschanganapt.components.colorPickerDemo
 import com.samuel.oremoschanganapt.functionsKotlin.stringToColor
 import com.samuel.oremoschanganapt.R
-import com.samuel.oremoschanganapt.components.BackupPickerScreen
+//import com.samuel.oremoschanganapt.components.BackupPickerScreen
 import com.samuel.oremoschanganapt.components.DefTabButton
-import com.samuel.oremoschanganapt.components.FilePickerScreen
+import com.samuel.oremoschanganapt.components.RadioButtonDialog
+//import com.samuel.oremoschanganapt.components.FilePickerScreen
 import com.samuel.oremoschanganapt.components.buttons.ExpandContentTabBtn
-import com.samuel.oremoschanganapt.components.buttons.NormalButton
-import com.samuel.oremoschanganapt.db.CommonViewModel
-import com.samuel.oremoschanganapt.repository.colorObject
+import com.samuel.oremoschanganapt.components.KeyValueTextRow
+import com.samuel.oremoschanganapt.repository.ColorObject
+import com.samuel.oremoschanganapt.saveThemeMode
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
-// AppearanceWidget ============>
+//import com.samuel.oremoschanganapt.db.CommonViewModel
+
+// AppearanceWidget --------->>
 @Composable
 fun AppearanceWidget(
+    navController: NavController,
     modeSetting: String,
-    themeColorSetting: String,
-): Pair<String, String>{
+) {
+
     var visibleAppearanceTab by remember { mutableStateOf(false) }
     var mode by remember { mutableStateOf(modeSetting) }
-    var themeColor by remember { mutableStateOf(themeColorSetting) }
+    var showModeDialog by remember { mutableStateOf(false) }
+    val modeOptions = mapOf(
+        "Claro" to "Light",
+        "Escuro" to "Dark",
+        "Sistema" to "System"
+    )
+
+    var selectedModeOption by remember { mutableStateOf(mode) }
+    val context = LocalContext.current
 
     DefTabButton {
         ExpandContentTabBtn(
             ImageVector.vectorResource(R.drawable.grid_view_24),
             "Aparência"
-        ) {
-            visibleAppearanceTab = !visibleAppearanceTab
-        }
+        ) { visibleAppearanceTab = !visibleAppearanceTab }
 
         AnimatedVisibility(visibleAppearanceTab){
             Column {
                 Spacer(modifier = Modifier.height(10.dp))
 
                 Column(Modifier.fillMaxWidth()) {
-                    Row(Modifier.padding(start = 15.dp, top = 10.dp)) {
-                        SidebarText( text = "Modo", fontSize = 15 )
+                    KeyValueTextRow(key = "Modo", value = modeOptions[modeSetting] ?: "Escuro") {
+                        showModeDialog = true
                     }
-                    mode = ModeSwitcher(mode)
+
+                    Row (
+                        modifier = Modifier
+                            .padding(10.dp)
+                            .fillMaxSize()
+                            .clickable { navController.navigate("appearancePage") },
+                        Arrangement.SpaceBetween
+                    ) {
+                        Text("Cor do app", fontSize = 17.sp)
+                        Row(
+                            Modifier
+                                .size(24.dp)
+                                .background(
+                                    color = ColorObject.mainColor,
+                                    shape = RoundedCornerShape(50)
+                                )
+                        ) {}
+                    }
+
                 }
                 Spacer(modifier = Modifier.height(10.dp))
-                themeColor = RowColors(rowText = "Cor de tema", themeColor)
+
             }
-        }
-    }
-    return Pair(mode, themeColor)
-}
 
+            if (showModeDialog) {
+                RadioButtonDialog(
+                    showDialog = showModeDialog,
+                    title = "Modo",
+                    options = modeOptions.keys.toList(),
+                    selectedOption = selectedModeOption,
+                    onOptionSelected = { option ->
+                        selectedModeOption = option
+                        showModeDialog = false
+                        CoroutineScope(Dispatchers.IO).launch {
+                            modeOptions[option]?.let {
+                                saveThemeMode(context, it)
+                            Log.d("themeMode", "thememode from save: $it")
+                            }
 
-
-@Composable
-fun ModeSwitcher(currentMode: String): String {
-    var expanded by remember { mutableStateOf(false) }
-    var mode by remember { mutableStateOf(currentMode) }
-    val modes = listOf("Dark", "Light", "System")
-
-    val modesTranslations = mapOf(
-        "Dark" to "Escuro",
-        "Light" to "Claro",
-        "System" to "Sistema",
-    )
-
-    Column(
-        modifier = Modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-//
-        Button(
-            onClick = { expanded = true },
-            modifier = Modifier.fillMaxWidth(0.95f),
-            shape = RoundedCornerShape(9.dp),
-            border = BorderStroke(1.dp, Color.Black),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color.Transparent,
-                contentColor = MaterialTheme.colorScheme.tertiary
-            ),
-        ) {
-            Row(
-                Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ){
-                val currentModeName = modesTranslations[currentMode]!!
-                Text(text = currentModeName)
-                Icon(Icons.Default.KeyboardArrowDown, contentDescription = null)
-            }
-        }
-
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false },
-            properties = PopupProperties(focusable = true)
-        ) {
-            modes.forEach { thismode ->
-                val modeName = modesTranslations[thismode]!!
-                DropdownMenuItem(
-                    text = { Text(text = modeName) },
-                    onClick = {
-                        mode = thismode
-                        expanded = false
-                    }
+                        }
+                    },
+                    onDismiss = { showModeDialog = false }
                 )
             }
+
         }
     }
-    return mode
 }
+
+
+
+//@Composable
+//fun ModeSwitcher(currentMode: String): String {
+//    var expanded by remember { mutableStateOf(false) }
+//    var mode by remember { mutableStateOf(currentMode) }
+////    val modes = listOf("Dark", "Light", "System")
+//
+//    val modesTranslations = mapOf(
+//        "Dark" to "Escuro",
+//        "Light" to "Claro",
+//        "System" to "Sistema",
+//    )
+//
+//    Column(
+//        modifier = Modifier.fillMaxWidth(),
+//        verticalArrangement = Arrangement.Center,
+//        horizontalAlignment = Alignment.CenterHorizontally
+//    ) {
+////
+//        Button(
+//            onClick = { expanded = true },
+//            modifier = Modifier.fillMaxWidth(0.95f),
+//            shape = RoundedCornerShape(9.dp),
+//            border = BorderStroke(1.dp, Color.Black),
+//            colors = ButtonDefaults.buttonColors(
+//                containerColor = Color.Transparent,
+//                contentColor = MaterialTheme.colorScheme.tertiary
+//            ),
+//        ) {
+//            Row(
+//                Modifier.fillMaxWidth(),
+//                horizontalArrangement = Arrangement.SpaceBetween
+//            ){
+//                val currentModeName = modesTranslations[currentMode]!!
+//                Text(text = currentModeName)
+//                Icon(Icons.Default.KeyboardArrowDown, contentDescription = null)
+//            }
+//        }
+//
+//        DropdownMenu(
+//            expanded = expanded,
+//            onDismissRequest = { expanded = false },
+//            properties = PopupProperties(focusable = true)
+//        ) {
+//            modes.forEach { thismode ->
+//                val modeName = modesTranslations[thismode]!!
+//                DropdownMenuItem(
+//                    text = { Text(text = modeName) },
+//                    onClick = {
+//                        mode = thismode
+//                        expanded = false
+//                    }
+//                )
+//            }
+//        }
+//    }
+//    return mode
+//}
 
 
 
@@ -188,28 +237,28 @@ fun RowAbout (navController: NavController) {
 }
 
 
-@Composable
-fun RowBackup(commonViewModel: CommonViewModel) {
-    var isThisTabVisible by remember { mutableStateOf(false) }
-
-    DefTabButton {
-        ExpandContentTabBtn(
-            Icons.Default.Refresh,
-            "Backup / Restourar"
-        ) { isThisTabVisible = !isThisTabVisible }
-
-        AnimatedVisibility(isThisTabVisible) {
-            Column {
-                Text("Pode salvar (Backup) a lista de orações ou/e cânticos favoritos no dispositivo e carregar (Restourar) quando quiser actualizar a lista actual.", modifier = Modifier.padding(10.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth().padding(10.dp),
-                    horizontalArrangement = Arrangement.SpaceAround
-                ) {
-                    BackupPickerScreen(commonViewModel)
-                    FilePickerScreen(commonViewModel)
-                }
-            }
-        }
-    }
-}
+//@Composable
+//fun RowBackup(commonViewModel: CommonViewModel) {
+//    var isThisTabVisible by remember { mutableStateOf(false) }
+//
+//    DefTabButton {
+//        ExpandContentTabBtn(
+//            Icons.Default.Refresh,
+//            "Backup / Restourar"
+//        ) { isThisTabVisible = !isThisTabVisible }
+//
+//        AnimatedVisibility(isThisTabVisible) {
+//            Column {
+//                Text("Pode salvar (Backup) a lista de orações ou/e cânticos favoritos no dispositivo e carregar (Restourar) quando quiser actualizar a lista actual.", modifier = Modifier.padding(10.dp))
+//                Row(
+//                    modifier = Modifier.fillMaxWidth().padding(10.dp),
+//                    horizontalArrangement = Arrangement.SpaceAround
+//                ) {
+//                    BackupPickerScreen(commonViewModel)
+//                    FilePickerScreen(commonViewModel)
+//                }
+//            }
+//        }
+//    }
+//}
 

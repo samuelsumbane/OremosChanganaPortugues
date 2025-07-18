@@ -19,7 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,6 +30,7 @@ import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -40,36 +41,46 @@ import com.samuel.oremoschanganapt.components.searchContainer
 import com.samuel.oremoschanganapt.components.SidebarNav
 import com.samuel.oremoschanganapt.components.SongRow
 import com.samuel.oremoschanganapt.components.buttons.ShortcutsButton
+import com.samuel.oremoschanganapt.db.data.Song
+import com.samuel.oremoschanganapt.db.data.songsData
 import com.samuel.oremoschanganapt.functionsKotlin.isNumber
-import com.samuel.oremoschanganapt.repository.colorObject
-import com.samuelsumbane.oremoschanganapt.db.*
+import com.samuel.oremoschanganapt.getIdSet
+import com.samuel.oremoschanganapt.repository.ColorObject
+import com.samuelsumbane.oremoschanganapt.db.data.Pray
+import com.samuelsumbane.oremoschanganapt.db.data.praysData
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LovedDataPage(
-    navController: NavController,
-    prayViewModel: PrayViewModel,
-    songViewModel: SongViewModel,
-) {
+fun LovedDataPage(navController: NavController) {
     var searchValue by remember { mutableStateOf("") }
     val configuration = LocalConfiguration.current
     val isPortrait = configuration.orientation == android.content.res.Configuration.ORIENTATION_PORTRAIT
 
-    val lovedPraysData by prayViewModel.prays.collectAsState()
-    val lovedSongsData by songViewModel.songs.collectAsState()
-    val lPrays = mutableListOf<Pray>()
-    val lSongs = mutableListOf<Song>()
+    var lPrays by remember { mutableStateOf(mutableListOf<Pray>()) }
+    val lSongs by remember { mutableStateOf(mutableListOf<Song>()) }
+    var lovedSongsIds by remember { mutableStateOf(setOf<Int>()) }
+    var lovedPraysIds by remember { mutableStateOf(setOf<Int>()) }
 
-    lovedPraysData.forEach { pray ->
-        if (pray.loved) {
-            lPrays.add(pray)
+    val context = LocalContext.current
+
+    LaunchedEffect(lovedSongsIds) {
+        lovedSongsIds = getIdSet(context, "songs_id_set")
+        lovedSongsIds.forEach { id ->
+            songsData
+                .firstOrNull { it.id == id }
+                ?.let { song -> lSongs.add(song) }
         }
     }
 
-    lovedSongsData.forEach { song ->
-        if (song.loved) {
-            lSongs.add(song)
+    LaunchedEffect(lovedPraysIds) {
+        lovedPraysIds = getIdSet(context, "prays_id_set")
+
+        lovedPraysIds.forEach { id ->
+            praysData
+                .firstOrNull { it.id == id }
+                ?.let {  pray -> lPrays.add(pray) }
         }
+
     }
 
     val filteredPrays = remember(lPrays, searchValue){
@@ -109,16 +120,12 @@ fun LovedDataPage(
             )
         },
         bottomBar = {
-            if (isPortrait) {
-                BottomAppBarPrincipal(navController, "morepages")
-            }
+            if (isPortrait) BottomAppBarPrincipal(navController, "morepages")
         }
     ) { paddingVales ->
 
-        Row(Modifier.fillMaxSize().padding(paddingVales)) {
-            if (!isPortrait) {
-                SidebarNav(navController, "canticosAgrupados")
-            }
+        Row(Modifier.padding(paddingVales).fillMaxSize()) {
+            if (!isPortrait) SidebarNav(navController, "canticosAgrupados")
 
             if (lPrays.isEmpty() && lSongs.isEmpty()){
                 Column(
@@ -133,14 +140,14 @@ fun LovedDataPage(
                 ) {
                     if (filteredSongs.isNotEmpty()) {
                         item { ColumnDivider(if (filteredSongs.size == 1) "Cântico" else "Cânticos") }
-                        items (filteredSongs) { cancao ->
-                            SongRow(navController, songViewModel, cancao, reloadIcon = false)
+                        items (filteredSongs) { song ->
+                            SongRow(navController, song, reloadIcon = false)
                         }
                     }
                     if (filteredPrays.isNotEmpty()) {
                         item { ColumnDivider(if (filteredPrays.size == 1) "Oração" else "Orações") }
                         items (filteredPrays) { pray ->
-                            PrayRow(navController, prayViewModel, pray, reloadIcon = false)
+                            PrayRow(navController, pray = pray, reloadIcon = false)
                         }
                     }
 
@@ -154,7 +161,7 @@ fun LovedDataPage(
 
 @Composable
 fun ColumnDivider(text: String) {
-    val mainColor = colorObject.mainColor
+    val mainColor = ColorObject.mainColor
     Column(
         Modifier.fillMaxWidth()
             .drawWithContent {

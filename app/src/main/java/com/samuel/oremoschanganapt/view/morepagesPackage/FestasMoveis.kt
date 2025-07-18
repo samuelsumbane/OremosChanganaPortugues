@@ -32,7 +32,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.samuel.oremoschanganapt.components.buttons.ShortcutsButton
-import com.samuel.oremoschanganapt.repository.colorObject
+import com.samuel.oremoschanganapt.repository.ColorObject
 import com.samuel.oremoschanganapt.ui.theme.DarkColor
 
 
@@ -42,7 +42,6 @@ fun FestasMoveis(navController: NavController) {
     val scroll = rememberScrollState()
 
     val datas = listOf(
-        arrayOf("2024", "B", "14/Fev", "31/Mar", "19/Maio", "02/Junh", "01/Dez"),
         arrayOf("2025", "C", "05/Mar", "20/Abril", "08/Junho", "22/Junh", "30/Nov"),
         arrayOf("2026", "A", "18/Fev", "05/Abril", "24/Maio", "07/Junh", "29/Nov"),
         arrayOf("2027", "B", "10/Fev", "28/Mar", "16/Maio", "30/Maio", "28/Nov"),
@@ -74,7 +73,7 @@ fun FestasMoveis(navController: NavController) {
             )
         },
     ) { innerValues ->
-        val itemBgColor = colorObject.mainColor
+        val itemBgColor = ColorObject.mainColor
         val textColor = Color.White
         Column(
             modifier = Modifier.fillMaxSize()

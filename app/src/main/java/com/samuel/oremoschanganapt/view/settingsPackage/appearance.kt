@@ -1,0 +1,153 @@
+package com.samuel.oremoschanganapt.view.settingsPackage
+
+import android.util.Log
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.ArrowBack
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.core.graphics.toColorInt
+import androidx.navigation.NavController
+import com.samuel.oremoschanganapt.components.ColorPickerHSV
+import com.samuel.oremoschanganapt.components.LoadingScreen
+import com.samuel.oremoschanganapt.components.buttons.ShortcutsButton
+//import com.samuel.oremoschanganapt.functionsKotlin.ColorPickerHSV
+import com.samuel.oremoschanganapt.functionsKotlin.stringToColor
+//import com.samuel.oremoschanganapt.getInitialThemeColor
+import com.samuel.oremoschanganapt.getThemeColor
+import com.samuel.oremoschanganapt.repository.ColorObject
+import com.samuel.oremoschanganapt.saveSecondThemeColor
+import com.samuel.oremoschanganapt.saveThemeColor
+import com.samuel.oremoschanganapt.saveThemeMode
+import com.samuel.oremoschanganapt.ui.theme.DarkColor
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AppearancePage(navController: NavController) {
+    val coroutineScope = rememberCoroutineScope()
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text(text="Cor de app", color = MaterialTheme.colorScheme.tertiary) },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background
+                ),
+                navigationIcon = {
+                    IconButton(
+                        onClick = { navController.popBackStack() }
+                    ) {
+                        Icon(imageVector = Icons.Outlined.ArrowBack, contentDescription = "go back")
+                    }
+                }
+            )
+        },
+    ) { innerValues ->
+        val itemBgColor = ColorObject.mainColor
+        val textColor = Color.White
+        val scrollState = rememberScrollState()
+//        var color by remember { mutableStateOf(Color.Red) }
+        val context = LocalContext.current
+        val themeColor by remember { mutableStateOf(ColorObject.mainColor) }
+        val secondThemeColor by remember { mutableStateOf(ColorObject.secondColor) }
+//        val themeColor = Color("")
+        var color by remember { mutableStateOf<Color>(themeColor) }
+        var secondColor by remember { mutableStateOf<Color>(secondThemeColor) }
+
+
+        themeColor.let {
+            Column(
+                modifier = Modifier
+                    .padding(innerValues)
+                    .fillMaxSize()
+                    .verticalScroll(scrollState),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.SpaceBetween
+            ) {
+                ColorPickerHSV(
+                    size = 450,
+                    initialColor = it,
+                    onColorChanged = { color = it },
+                    onSecondColorChanged = { secondColor = it }
+                )
+
+                Row(
+                    modifier = Modifier.padding(bottom = 20.dp).fillMaxWidth(0.9f),
+                    horizontalArrangement = Arrangement.SpaceAround
+                ) {
+                    OutlinedButton(
+                        onClick = {
+                            navController.popBackStack()
+                        }, colors = ButtonDefaults.buttonColors(
+                            contentColor = itemBgColor
+                        )
+                    ) {
+                        Text("Cancelar")
+                    }
+
+                    Button(
+                        onClick = {
+                            coroutineScope.launch {
+                                saveThemeColor(context, color)
+                                ColorObject.mainColor = color
+                                if (secondColor != Color.Unspecified) {
+                                    ColorObject.secondColor = secondColor
+                                    saveSecondThemeColor(context, secondColor)
+                                } else {
+                                    ColorObject.secondColor = Color.Unspecified
+                                    saveSecondThemeColor(context, Color.Unspecified)
+                                }
+                            }
+                        }) {
+                        Text("Aplicar")
+                    }
+                }
+            }
+        }
+//        LoadingScreen()
+
+
+    }
+
+}

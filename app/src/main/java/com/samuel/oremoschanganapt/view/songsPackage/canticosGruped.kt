@@ -1,10 +1,8 @@
 package com.samuel.oremoschanganapt.view.songsPackage
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,8 +21,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -40,19 +36,21 @@ import androidx.navigation.NavController
 import com.samuel.oremoschanganapt.components.BottomAppBarPrincipal
 import com.samuel.oremoschanganapt.components.LoadingScreen
 import com.samuel.oremoschanganapt.components.SidebarNav
-import com.samuel.oremoschanganapt.components.buttons.ShortcutsButton
 import com.samuel.oremoschanganapt.db.data.groupValues
-import com.samuel.oremoschanganapt.repository.colorObject
+import com.samuel.oremoschanganapt.db.data.songsData
+import com.samuel.oremoschanganapt.repository.ColorObject
 import com.samuel.oremoschanganapt.ui.theme.DarkColor
-import com.samuelsumbane.oremoschanganapt.db.SongViewModel
+//import com.samuelsumbane.oremoschanganapt.db.SongViewModel
 
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CanticosAgrupados( navController: NavController, songViewModel: SongViewModel ){
+fun CanticosAgrupados( navController: NavController,
+//                       songViewModel: SongViewModel
+){
 
-    val allSongs by songViewModel.songs.collectAsState()
+    val allSongs = songsData
     val configuration = LocalConfiguration.current
     val isPortrait = configuration.orientation == android.content.res.Configuration.ORIENTATION_PORTRAIT
 
@@ -64,28 +62,25 @@ fun CanticosAgrupados( navController: NavController, songViewModel: SongViewMode
                     containerColor = Color.Transparent
                 ),
                 navigationIcon = {
-                    IconButton(onClick={navController.popBackStack()}
-                    ){
+                    IconButton(onClick={navController.popBackStack()}) {
                         Icon(imageVector = Icons.Outlined.ArrowBack, contentDescription = null)
                     }
                 },
             )
         },
         bottomBar = {
-            if (isPortrait) {
-                BottomAppBarPrincipal(navController, "canticosAgrupados")
-            }
+            if (isPortrait) BottomAppBarPrincipal(navController, "canticosAgrupados")
         }
 
         ) { paddingVales ->
 
-        val mainColor = colorObject.mainColor
+        val mainColor = ColorObject.mainColor
+        val secondColor = ColorObject.secondColor
 
             if(allSongs.isNotEmpty()){
-                Row(Modifier.fillMaxSize().padding(paddingVales)) {
-                    if (!isPortrait) {
-                        SidebarNav(navController, "canticosAgrupados")
-                    }
+                Row(Modifier.padding(paddingVales).fillMaxSize()) {
+                    if (!isPortrait) SidebarNav(navController, "canticosAgrupados")
+
                     LazyColumn(
                         modifier = Modifier.weight(1f).padding(8.dp),
                         verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -94,12 +89,19 @@ fun CanticosAgrupados( navController: NavController, songViewModel: SongViewMode
                             groupValues.forEach { group ->
                                 Row(
                                     modifier = Modifier
+                                        .padding(5.dp)
                                         .fillMaxWidth()
                                         .height(65.dp)
-                                        .padding(5.dp)
                                         .background(
                                             brush = Brush.horizontalGradient(
-                                            colors = listOf(mainColor, lerp(mainColor, DarkColor, 0.9f)),
+                                            colors = listOf(
+                                                mainColor,
+                                                lerp(
+                                                    start = mainColor,
+                                                    stop = if (secondColor == Color.Unspecified) mainColor else secondColor,
+                                                    fraction = 0.9f
+                                                )
+                                            ),
                                         ), RoundedCornerShape(14.dp))
                                         .clickable {
                                             navController.navigate("canticospage/${group.key}/${group.value}")

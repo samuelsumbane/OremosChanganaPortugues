@@ -9,8 +9,8 @@ import androidx.compose.animation.core.EaseIn
 import androidx.compose.animation.core.EaseOut
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.togetherWith
-import androidx.compose.animation.with
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -43,13 +43,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.samuel.oremoschanganapt.components.TextIconRow
 import com.samuel.oremoschanganapt.components.buttons.ShortcutsButton
-import com.samuel.oremoschanganapt.repository.colorObject
+import com.samuel.oremoschanganapt.repository.ColorObject
 import com.samuel.oremoschanganapt.ui.theme.DarkColor
 
 
@@ -80,13 +79,21 @@ fun Apendice(navController: NavController){
             modifier = Modifier.padding(innerValues).background(bgColor)
         ) {
             TabRow(
-                selectedTabIndex = selectedTabIndex
+                selectedTabIndex = selectedTabIndex,
+                modifier = Modifier.padding(10.dp)
             ) {
                 tabs.forEachIndexed { index, tab ->
                     Tab(
                         text = { Text(tab, style = MaterialTheme.typography.bodyMedium, color = textColor) },
                         selected = selectedTabIndex == index,
                         onClick = { selectedTabIndex = index },
+                        modifier = Modifier
+                            .background(
+                                color = if (selectedTabIndex == index) ColorObject.mainColor else Color.Transparent,
+                                shape = RoundedCornerShape(8.dp)
+                            ),
+                        unselectedContentColor = Color.Red
+
                     )
                 }
             }
@@ -116,6 +123,41 @@ fun Apendice(navController: NavController){
 }
 
 class Item(val title: String, val subTitle: String)
+
+
+@Composable
+fun ListWidget(
+    title: String,
+    dataList: List<List<Item>>
+){
+    val mainColor = ColorObject.mainColor
+    val textColor = Color.White
+
+    Column(modifier = Modifier.fillMaxSize()) {
+        var showContent by remember { mutableStateOf(false) }
+
+        TextIconRow(title, showContent, modifier = Modifier.clickable { showContent = !showContent })
+        AnimatedVisibility(showContent) {
+            Column(
+                Modifier.background(brush = Brush.horizontalGradient(
+                    colors = listOf(mainColor, lerp(mainColor, DarkColor, 0.9f)),
+                ), RoundedCornerShape(0.dp, 0.dp, 14.dp, 14.dp)).fillMaxWidth()
+            ) {
+                dataList.forEach { list ->
+                    list.forEach { item ->
+                        Row(
+                            Modifier.fillMaxWidth().padding(5.dp),
+                            horizontalArrangement = Arrangement.SpaceAround
+                        ){
+                            Text(item.title, textAlign = TextAlign.Justify, color = textColor)
+                            Text(item.subTitle, color = textColor)
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
 
 @Composable
 fun PtTabContent(divColor: Color) {
@@ -214,13 +256,15 @@ fun PtTabContent(divColor: Color) {
     }
 }
 
+
 @Composable
 fun ChanganaTabContent(divColor: Color) {
     Column(
-        modifier = Modifier.background(divColor)
+        modifier = Modifier
+            .padding(10.dp)
+            .background(divColor)
             .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(10.dp),
+            .verticalScroll(rememberScrollState()),
         Arrangement.spacedBy(20.dp)
     ) {
         ListWidget("Pentateuco", listOf(listOf(
@@ -307,42 +351,5 @@ fun ChanganaTabContent(divColor: Color) {
             Item("Yud.", "Yuda"),
             Item("Nhlav.", "Nhlavutelo")
         )))
-    }
-}
-
-
-@Composable
-fun ListWidget(
-    title: String,
-    dataList: List<List<Item>>
-){
-    val mainColor = colorObject.mainColor
-    val textColor = Color.White
-
-    Column(modifier = Modifier.fillMaxSize()) {
-        var showContent by remember { mutableStateOf(false) }
-
-        TextIconRow(title, showContent, modifier = Modifier.clickable { showContent = !showContent })
-        AnimatedVisibility(showContent) {
-            Column(
-                Modifier.background(brush = Brush.horizontalGradient(
-                    colors = listOf(mainColor, lerp(mainColor, DarkColor, 0.9f)),
-                ), RoundedCornerShape(0.dp, 0.dp, 14.dp, 14.dp)).fillMaxWidth()
-            ) {
-                dataList.forEach { list ->
-                    list.forEach { item ->
-                        Row(
-                            Modifier.fillMaxWidth().padding(5.dp),
-                            horizontalArrangement = Arrangement.SpaceAround
-                        ){
-                            Text(item.title, textAlign = TextAlign.Justify, color = textColor)
-                            Text(item.subTitle, color = textColor)
-                        }
-                    }
-                }
-            }
-        }
-
-
     }
 }

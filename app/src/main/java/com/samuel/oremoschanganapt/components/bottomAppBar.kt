@@ -44,7 +44,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.samuel.oremoschanganapt.R
-import com.samuel.oremoschanganapt.repository.colorObject
+import com.samuel.oremoschanganapt.repository.ColorObject
 import com.samuel.oremoschanganapt.ui.theme.DarkSecondary
 import com.samuel.oremoschanganapt.ui.theme.LightSecondary
 
@@ -87,7 +87,7 @@ fun BottomAppBarPrincipal(navController: NavController, activePage: String, icon
                 .fillMaxSize().height(60.dp)
                 .background(Color.Transparent)
                 .padding(10.dp, 0.dp, 10.dp, 7.dp),
-            elevation = CardDefaults.elevatedCardElevation(3.dp),
+            elevation = CardDefaults.elevatedCardElevation(4.dp),
             shape = RoundedCornerShape(16.dp),
             colors = CardDefaults.cardColors(
                 containerColor = bottomBgColor
@@ -106,10 +106,10 @@ fun BottomAppBarPrincipal(navController: NavController, activePage: String, icon
 @Composable
 fun MenuContent(navController: NavController, activePage: String, iconColorState: String = "Keep") {
 
-    var mainColor by remember { mutableStateOf(colorObject.mainColor) }
+    var mainColor by remember { mutableStateOf(ColorObject.mainColor) }
 
     LaunchedEffect(iconColorState) {
-        if (iconColorState == "Reload") mainColor = colorObject.mainColor // Updates icons color -------->>
+        if (iconColorState == "Reload") mainColor = ColorObject.mainColor // Updates icons color -------->>
     }
 
     val pages = listOf("home", "oracoespage", "canticosAgrupados", "morepages")
@@ -131,7 +131,7 @@ fun MenuContent(navController: NavController, activePage: String, iconColorState
                     if (activePage == it) {
                         drawLine(
                             color = lerp(
-                                colorObject.mainColor, Color.White, 0.35f
+                                ColorObject.mainColor, Color.White, 0.35f
                             ),
                             start = Offset(0f, size.height),
                             end = Offset(size.width, size.height),
@@ -151,7 +151,7 @@ fun MenuContent(navController: NavController, activePage: String, iconColorState
                 Text(
                     text = btnText[it]!!,
                     modifier = Modifier.padding(2.dp),
-                    color = MaterialTheme.colorScheme.tertiary, fontSize = 13.sp
+                    color = Color.Black, fontSize = 13.sp
                 )
             }
         }

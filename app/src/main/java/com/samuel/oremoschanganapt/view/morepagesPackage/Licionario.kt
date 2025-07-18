@@ -31,11 +31,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.samuel.oremoschanganapt.components.TextIconRow
 import com.samuel.oremoschanganapt.components.buttons.ShortcutsButton
-import com.samuel.oremoschanganapt.repository.colorObject
+import com.samuel.oremoschanganapt.repository.ColorObject
 import com.samuel.oremoschanganapt.ui.theme.DarkColor
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -59,13 +60,14 @@ fun Licionario(navController: NavController) {
         },
     ) { innerValues ->
         Column(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
                 .padding(innerValues)
+                .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
                 .verticalScroll(scroll),
             horizontalAlignment = Alignment.CenterHorizontally,
-        ){
-            bookList.forEach{ BooksCard(it) }
+        ) {
+            bookList.forEach { BooksCard(it) }
         }
         ShortcutsButton(navController)
     }
@@ -75,7 +77,7 @@ class BooksItem(val title: String, val books: String)
 
 @Composable
 fun BooksCard(dataList: List<BooksItem>) {
-    val itemBgColor = colorObject.mainColor
+    val itemBgColor = ColorObject.mainColor
     val textColor = Color.White
 
     dataList.forEach { item ->
@@ -89,7 +91,9 @@ fun BooksCard(dataList: List<BooksItem>) {
 
             AnimatedVisibility(expanded) {
                 Column(
-                    Modifier.fillMaxWidth()
+                    Modifier
+                        .padding(10.dp)
+                        .fillMaxWidth()
                         .background(
                             brush = Brush.horizontalGradient(
                                 colors = listOf(
@@ -98,11 +102,10 @@ fun BooksCard(dataList: List<BooksItem>) {
                                 ),
                             ), RoundedCornerShape(0.dp, 0.dp, 13.dp, 13.dp)
                         )
-                        .padding(10.dp)
                         .animateContentSize(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text(item.books, color = textColor)
+                    Text(item.books.replaceFirstChar{ it.uppercase() }, color = textColor)
                 }
             }
 
@@ -119,10 +122,10 @@ val bookList: List<List<BooksItem>> = listOf(
     listOf(BooksItem("Sagrada Família (Dom. na oitava do Natal)", "AEclo. 3, 3-7. 14-17  Col. 3, 12-21  Mt. 2, 13-23\nB Eclo. 3,3-7. 14-17  Col. 3, 12-21  Lc. 2, 22-40\nC Eclo. 3,3-7. 14-17  Col. 3, 12-21  Lc. 2, 41-52")),
     listOf(BooksItem("Baptismo do Senhor (10. Dom. Com.)", "AIs. 42, 1-7  Act. 10, 34-38  Mt. 3, 13-17\nB Is. 42, 1-7  Act. 20, 34-38  Mc. 1,6-11\nC Is. 42, 1-7  Act. 10, 34-38  Lc. 3, 15-22")),
     listOf(BooksItem("1° Domingo da Quaresma", "AGen. 2,7-9;3,1-7  Rom. 5, 12-19  Mt. 4, 1-11\nB Gen. 9, 8-15  I Ped. 3, 18-22  Mc. 1, 12-15\nC Deut. 26, 4-10  Rom. 10, 8-13  Lc. 4, 1-13\n")),
-    listOf(BooksItem("2o Domingo da Quaresma", "AGen. 12, 1-4  2 tim. 1,8-10  Mt. 17, 1-9\\nB Gen. 22, 1-2.9-18  Rom. 8, 31-34  Mc. 9, 1-9\nC Gen. 15, 5-18  Flp. 3, 17-4,1  Lc. 9, 28-36")),
-    listOf(BooksItem("3o Domingo da Quaresma", "AEx. 17, 3-7  Rom. 5, 1-8  Jo. 4, 5-42\nB Ex. 20, 1-17  1 Cor. 1,22-25  Jo. 2, 13-15\nC Ex. 3, 1-15  1 Cor. 1-12  Lc. 13, 1-9")),
-    listOf(BooksItem("4o Domingo da Quaresma", "AI Sam. 16, 1-13  Ef. 5,8-14  Jo. 9, 1-41\nB 2 Cron. 36, 14-23  Ef. 2,4-10  Jo. 3, 14-21\nC Jos. 5, 9-12  2 Cor. 5, 17-21  Lc. 15, 1-32")),
-    listOf(BooksItem("5o Domingo da Quaresma", "AEzeq. 37, 12-14  Rom. 8,8-11  Jo. 11,1-45\nB Jer. 31,31-44  Heb. 5,7-9  Jo. 12, 20-23\nC Is. 43, 16-21  Flp. 3,8-14  Jo. 8. 1-11")),
+    listOf(BooksItem("2° Domingo da Quaresma", "AGen. 12, 1-4  2 tim. 1,8-10  Mt. 17, 1-9\\nB Gen. 22, 1-2.9-18  Rom. 8, 31-34  Mc. 9, 1-9\nC Gen. 15, 5-18  Flp. 3, 17-4,1  Lc. 9, 28-36")),
+    listOf(BooksItem("3° Domingo da Quaresma", "AEx. 17, 3-7  Rom. 5, 1-8  Jo. 4, 5-42\nB Ex. 20, 1-17  1 Cor. 1,22-25  Jo. 2, 13-15\nC Ex. 3, 1-15  1 Cor. 1-12  Lc. 13, 1-9")),
+    listOf(BooksItem("4° Domingo da Quaresma", "AI Sam. 16, 1-13  Ef. 5,8-14  Jo. 9, 1-41\nB 2 Cron. 36, 14-23  Ef. 2,4-10  Jo. 3, 14-21\nC Jos. 5, 9-12  2 Cor. 5, 17-21  Lc. 15, 1-32")),
+    listOf(BooksItem("5° Domingo da Quaresma", "AEzeq. 37, 12-14  Rom. 8,8-11  Jo. 11,1-45\nB Jer. 31,31-44  Heb. 5,7-9  Jo. 12, 20-23\nC Is. 43, 16-21  Flp. 3,8-14  Jo. 8. 1-11")),
     listOf(BooksItem("Missa", "AIs. 50, 4-7  Flp. 2,6-11  Mt. 26, 14-27.66\nB Is. 50, 4-7  Flp. 2, 6-11  Mc. 14, 1-15.47\nC Is. 50, 4-7  Flp. 2,6-11  Lc. 22, 14-23.56")),
     listOf(BooksItem("5a Feira Santa (Missa vespertina)", "Ex. 12, 1-14\n1 Cor. 11, 23-26\nJo. 13, 1-15\n")),
     listOf(BooksItem("6a Feira Santa (Paixão do Senhor)","Is. 52, 13-53, 12\nHeb. 4, 14-16;5,7-9\nJo. 18, 1-19,42")),
@@ -134,21 +137,21 @@ val bookList: List<List<BooksItem>> = listOf(
     listOf(BooksItem("4a Feira de Cinzas", "Joel 2,12-18\nb2 Cor. 5, 20 - 6,2\nMt. 6, 1-18")),
     listOf(BooksItem("Domingo da Paixão - Ramos", "A Mt. 21, 1-11\nB Mc. 11, 1-10\nC Lc. 19, 28-40")),
     listOf(BooksItem("Domingo de Páscoa - Ressurreição", "A ct.10,34.37-43 \nCol. 3, 1-4 \nJo.20, 1-9\nou\nLc.24, 13-35")),
-    listOf(BooksItem("2o Domingo da Páscoa", "A Act. 2, 42-47  1 Ped. 1,3-9  Jo.20, 19-31\nB Act. 4, 32-35  1 Jo. 5, 1-6  Jo.20, 19-31\nC Act. 5, 12-16  Apoc. 1,9-19  Jo.20, 19-31")),
-    listOf(BooksItem("3o Domingo da Páscoa", "A Act. 2, 14.22-28  1 Ped. 1, 17-21  Lc.24, 13-35\nB Act. 3, 13-19  1 Jo. 2, 1-5  Lc.24, 35-48\nC Act 5, 27-32.40-41  Apoc. 5, 11-14  Jo.21, 1-19")),
+    listOf(BooksItem("2° Domingo da Páscoa", "A Act. 2, 42-47  1 Ped. 1,3-9  Jo.20, 19-31\nB Act. 4, 32-35  1 Jo. 5, 1-6  Jo.20, 19-31\nC Act. 5, 12-16  Apoc. 1,9-19  Jo.20, 19-31")),
+    listOf(BooksItem("3° Domingo da Páscoa", "A Act. 2, 14.22-28  1 Ped. 1, 17-21  Lc.24, 13-35\nB Act. 3, 13-19  1 Jo. 2, 1-5  Lc.24, 35-48\nC Act 5, 27-32.40-41  Apoc. 5, 11-14  Jo.21, 1-19")),
     listOf(BooksItem("4° Domingo da Páscoa", "A Act. 2, 14.36-41   1 Ped. 2, 20-25\nB Act. 4, 8-11   1 Jo. 3, 1-2\nC Act. 13, 14.43-52 Apoc. ?, 9-17")),
-    listOf(BooksItem("5o Domingo da Páscoa", "A Act. 6, 1-7  1 Ped. 2, 4-9\nB Act. 9, 26-31 1 Jo. 3, 18-24\nC Act 14, 20-26 Apoc. 21,1-5")),
+    listOf(BooksItem("5° Domingo da Páscoa", "A Act. 6, 1-7  1 Ped. 2, 4-9\nB Act. 9, 26-31 1 Jo. 3, 18-24\nC Act 14, 20-26 Apoc. 21,1-5")),
     listOf(BooksItem("6° Domingo da Páscoa", "A Act. 8, 5-17  1 Ped. 3, 15-18  Jo. 14, 15-21\\nB Act. 10, 25-35, 44-48 1   Jo. 4, 7-10  Jo. 15, 9-17\\nC Act. 15, 1-2.22-29  Apoc. 21, 10-23  Jo. 14, 23-29")),
     listOf(BooksItem("Ascensão (7. Domingo da Páscoa)", "A Act. 1,1-11  Ef. 1, 17-23  Mt. 28, 16-20\\nB Act. 1,1-11  Ef. 1, 17-23  Lc. 24, 46-53\\nC Act. 1,1-11  Ef. 1, 17-23  Lc. 24, 46-53")),
     listOf(BooksItem("Pentecostes", "Act. 2, 1-11 1 Cor. 12, 3b-7.12-13 Jo. 20, 19-23")),
     listOf(BooksItem("Santíssima Trindade", "A Ex. 34, 4-9   2 Cor. 13, 11-13   Jo. 3, 16-18\nB Deut. 4, 32-40   Rom. 8, 14-17   Mt. 28, 16-20\\nC Prov. 8, 22-31   Rom. 5, 1-5   Jo. 16, 12-15")),
     listOf(BooksItem("Corpo e Sangue de Cristo", "A Deut. 8,2-3.14-16  1 Cor. 10, 16-17  Jo. 6, 51-59\nB Ex. 24, 3-8   Heb. 9, 11-15   Mc. 14, 12-16.22-26\nC Gen. 14, 18-20   1 Cor. 11, 23-26   Lc. 9, 11-17")),
-    listOf(BooksItem("2o Domingo do tempo comum", "AIs. 49, 3-6   1 Cor. 1,1-3   Jo. 1, 29-34\nB 1 Sam. 3,3-10.19   1 Cor. 6, 13-20   Jo. 1, 35-42\\nC Is. 62, 1-5   1 Cor. 12, 4-11   Jo. 2, 1-12")),
-    listOf(BooksItem("3o Domingo do tempo comum", "A Is. 9, 1-4  1 Cor. 1,10-17  Mt. 4, 12-23\nB Jon. 3, 1-5.10  1 Cor. 7, 29-31  Mc. 1, 14-20\nC Neem. 8, 2-10  1 Cor. 12, 12-31 a  Lc. 1,1-4; 4,14-21")),
-    listOf(BooksItem("4o Domingo do tempo comum", "A Sof. 2,3;3,12-13  1 Cor. 1,26-31  Mt. 5,1-12a\\nB Deut. 18, 15-20  1 Cor. 7, 32-35  Mc, 1, 21-28\\nC Jer. 1, 4-5.17-19  1 Cor. 12,31-13,13  Lc. 4, 21-30")),
-    listOf(BooksItem("5o Domingo do tempo comum", "A Is. 58, 7-10  1 Cor. 2, 1-5  Mt. 5, 13-16\\nB Job 7, 1-7  1 Cor. 9, 16-23  Mc. 1,29-39\\nC Is. 6, 1-8  1 Cor. 15, 1-11  Lc. 5, 1-11")),
+    listOf(BooksItem("2° Domingo do tempo comum", "AIs. 49, 3-6   1 Cor. 1,1-3   Jo. 1, 29-34\nB 1 Sam. 3,3-10.19   1 Cor. 6, 13-20   Jo. 1, 35-42\\nC Is. 62, 1-5   1 Cor. 12, 4-11   Jo. 2, 1-12")),
+    listOf(BooksItem("3° Domingo do tempo comum", "A Is. 9, 1-4  1 Cor. 1,10-17  Mt. 4, 12-23\nB Jon. 3, 1-5.10  1 Cor. 7, 29-31  Mc. 1, 14-20\nC Neem. 8, 2-10  1 Cor. 12, 12-31 a  Lc. 1,1-4; 4,14-21")),
+    listOf(BooksItem("4° Domingo do tempo comum", "A Sof. 2,3;3,12-13  1 Cor. 1,26-31  Mt. 5,1-12a\\nB Deut. 18, 15-20  1 Cor. 7, 32-35  Mc, 1, 21-28\\nC Jer. 1, 4-5.17-19  1 Cor. 12,31-13,13  Lc. 4, 21-30")),
+    listOf(BooksItem("5° Domingo do tempo comum", "A Is. 58, 7-10  1 Cor. 2, 1-5  Mt. 5, 13-16\\nB Job 7, 1-7  1 Cor. 9, 16-23  Mc. 1,29-39\\nC Is. 6, 1-8  1 Cor. 15, 1-11  Lc. 5, 1-11")),
     listOf(BooksItem("6° Domingo do tempo comum", "A Eclo. 15, 16-21  1 Cor. 2, 6-10  Mt. 5, 17-37\\nB Lev. 13, 1-2.44-46  1 Cor. 10,31-11,1  Mc. 1, 40-45\\nC Jer. 17,5-8  1 Cor. 15, 12-20  Lc. 6, 17-26")),
-    listOf(BooksItem("7o Domingo do tempo comum", "A Lev. 19, 1-2.17-18  1 Cor. 3, 16-23  Mt. 5, 38-48\\nB Is. 43, 18-25  2 Cor. 1, 18-22  Mc. 2, 1 -12\\nC 1 Sam. 26,2-13.22-  1 Cor. 15, 45-49  Lc. 6, 27-38")),
+    listOf(BooksItem("7° Domingo do tempo comum", "A Lev. 19, 1-2.17-18  1 Cor. 3, 16-23  Mt. 5, 38-48\\nB Is. 43, 18-25  2 Cor. 1, 18-22  Mc. 2, 1 -12\\nC 1 Sam. 26,2-13.22-  1 Cor. 15, 45-49  Lc. 6, 27-38")),
     listOf(BooksItem("8° Domingo do tempo comum", "A Is. 49, 14-15  1 Cor. 4, 1-5  Mt. 6, 24-34\\nB Os. 2, 14-20  2 Cor. 3, 1-6  Mc. 2, 18-22\\nC Eclo. 27, 5-8  1 Cor. 15, 54-58  Lc. 6, 39-43")),
     listOf(BooksItem("9° Domingo do tempo comum", "ADeut. 11, 18-28  Rom. 3, 21-28  Mt. 7,21-27\nB Deut, 5, 12-15  2 Cor. 4, 6-11  Mc. 2, 23-3,6\nC 1Reis8,41-43  Gal. 1, 1-10  Lc. 7,1-10")),
     listOf(BooksItem("10° Domingo do tempo comum", "AOs. 6,3-6  Rom. 4, 18-25  Mt. 9,9-13\nB Gen. 3, 9-15  2 Cor. 4, 13-5,1  Mc. 3, 20-35\nC 1 Reis 17, 17-24  Gal. 1, 11-19  Lc. 11-17")),

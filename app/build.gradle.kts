@@ -5,7 +5,7 @@ import java.util.Properties
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    id("io.realm.kotlin")
+//    id("io.realm.kotlin")
 }
 
 val keystorePropertiesFile = rootProject.file("local.properties")
@@ -47,6 +47,10 @@ android {
                 getDefaultProguardFile("proguard-android.txt"),
                 "proguard-rules.pro"
             )
+
+            ndk {
+                debugSymbolLevel = "FULL" // Gera símbolos de depuração completos
+            }
         }
     }
 
@@ -90,10 +94,13 @@ dependencies {
 
 
     // Navigation
-    implementation("androidx.navigation:navigation-compose:2.7.6")
+    implementation("androidx.navigation:navigation-compose:2.8.6")
+
+    // Preferences -------->>
+    implementation("androidx.datastore:datastore-preferences:1.1.1")
 
     // Realm
-    implementation("io.realm.kotlin:library-base:1.11.0")
+//    implementation("io.realm.kotlin:library-base:1.11.0")
 
     implementation("com.google.accompanist:accompanist-permissions:0.30.1")
 
@@ -102,5 +109,7 @@ dependencies {
 //    implementation("androidx.work:work-runtime-ktx:2.7.1")
 
     implementation("com.google.code.gson:gson:2.10.1")
+
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
 
 }

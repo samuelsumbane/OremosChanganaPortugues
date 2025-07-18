@@ -15,13 +15,67 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import androidx.compose.ui.graphics.Color
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection.Companion.Down
+import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection.Companion.Up
+import androidx.compose.animation.core.EaseIn
+import androidx.compose.animation.core.EaseOut
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.Canvas
+import androidx.compose.ui.graphics.Canvas as GraphicsCanvas
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CircularProgressIndicator
 import java.time.ZoneId
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Slider
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
+import androidx.compose.material3.Text
 import androidx.compose.material3.TimePickerState
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.Paint
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import com.samuel.oremoschanganapt.ReminderReceiver
+import com.samuel.oremoschanganapt.components.colorSelectBox
+import com.samuel.oremoschanganapt.components.spaceAroundContentWidget
+import com.samuel.oremoschanganapt.repository.ColorObject
 import com.samuel.oremoschanganapt.ui.theme.Blue
 import com.samuel.oremoschanganapt.ui.theme.Green
 import com.samuel.oremoschanganapt.ui.theme.Lightblue
@@ -31,6 +85,10 @@ import com.samuel.oremoschanganapt.ui.theme.Purple
 import com.samuel.oremoschanganapt.ui.theme.Red
 import com.samuel.oremoschanganapt.ui.theme.Tomato
 import com.samuel.oremoschanganapt.ui.theme.Turquoise
+import com.samuel.oremoschanganapt.view.morepagesPackage.ChanganaTabContent
+import com.samuel.oremoschanganapt.view.morepagesPackage.PtTabContent
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneOffset
@@ -59,6 +117,7 @@ fun scheduleNotificationForSongOrPray(context: Context, title: String, message: 
         pendingIntent
     )
 }
+
 
 fun getCurrentTimestamp(): Long = System.currentTimeMillis()
 

@@ -1,7 +1,6 @@
 package com.samuel.oremoschanganapt.components
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -29,7 +28,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import com.samuel.oremoschanganapt.functionsKotlin.dateStringToLong
 import com.samuel.oremoschanganapt.functionsKotlin.timeStringToLong
-import com.samuel.oremoschanganapt.repository.colorObject
+import com.samuel.oremoschanganapt.repository.ColorObject
 
 import java.util.Calendar
 
@@ -196,13 +195,13 @@ fun OkAlertDialog(
     icon: ImageVector,
 ) {
     AlertDialog(
-        icon = { Icon(icon, contentDescription = "Alert Dialog Icon", tint = colorObject.mainColor) },
+        icon = { Icon(icon, contentDescription = "Alert Dialog Icon", tint = ColorObject.mainColor) },
         title = { Text(text = dialogTitle) },
         text = { Text(text = dialogText) },
         onDismissRequest = { onDismissRequest() },
         confirmButton = {
             TextButton(onClick = { onConfirmation() }) {
-                Text("Confirm", color = colorObject.mainColor)
+                Text("Confirm", color = ColorObject.mainColor)
             }
         }
     )

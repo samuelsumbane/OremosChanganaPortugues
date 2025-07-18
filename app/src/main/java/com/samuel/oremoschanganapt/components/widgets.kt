@@ -1,16 +1,25 @@
 package com.samuel.oremoschanganapt.components
 
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection.Companion.Down
+import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection.Companion.Up
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.EaseIn
+import androidx.compose.animation.core.EaseOut
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -21,13 +30,15 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.Star
-import androidx.compose.material3.Button
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -35,38 +46,54 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.Paint
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.lerp
-import androidx.compose.ui.graphics.luminance
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.google.gson.Gson
-import com.samuel.oremoschanganapt.components.buttons.NormalButton
-import com.samuel.oremoschanganapt.db.CommonViewModel
-import com.samuel.oremoschanganapt.db.LovedDataPojo
-import com.samuel.oremoschanganapt.repository.colorObject
+import com.samuel.oremoschanganapt.SetIdPreference
+import com.samuel.oremoschanganapt.db.data.Song
+import com.samuel.oremoschanganapt.getIdSet
+import com.samuel.oremoschanganapt.repository.ColorObject
+import com.samuel.oremoschanganapt.saveIdSet
 import com.samuel.oremoschanganapt.ui.theme.DarkColor
 import com.samuel.oremoschanganapt.ui.theme.Orange
-import com.samuel.oremoschanganapt.view.sideBar.NormalText
-import com.samuelsumbane.oremoschanganapt.db.Pray
-import com.samuelsumbane.oremoschanganapt.db.PrayViewModel
-import com.samuelsumbane.oremoschanganapt.db.Song
-import com.samuelsumbane.oremoschanganapt.db.SongViewModel
+import com.samuelsumbane.oremoschanganapt.db.data.Pray
+import kotlinx.coroutines.Dispatchers
+//import com.samuelsumbane.oremoschanganapt.db.PrayViewModel
+//import com.samuelsumbane.oremoschanganapt.db.SongViewModel
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 fun toastAlert(context: Context, text: String, duration: Int = Toast.LENGTH_SHORT){
@@ -76,13 +103,12 @@ fun toastAlert(context: Context, text: String, duration: Int = Toast.LENGTH_SHOR
 
 @Composable
 fun LoadingScreen() {
-
     Column(Modifier.fillMaxSize(), Arrangement.Center, Alignment.CenterHorizontally) {
         val iconDefaultColor = if (isSystemInDarkTheme()) Color.LightGray else Color.DarkGray
 
         CircularProgressIndicator(
             modifier = Modifier.width(54.dp),
-            color = colorObject.mainColor,
+            color = ColorObject.mainColor,
             trackColor = iconDefaultColor,
         )
         Spacer(Modifier.height(20.dp))
@@ -91,10 +117,7 @@ fun LoadingScreen() {
 }
 
 @Composable
-fun HomeTexts(
-    text: String,
-    fontSize: Int
-) {
+fun HomeTexts(text: String, fontSize: Int) {
     Text(
         text = text,
         fontWeight = FontWeight.Bold,
@@ -124,7 +147,7 @@ fun CommonRow(
             textAlign = TextAlign.Center
         )
 
-        if (subTitle != ""){
+        if (subTitle.isBlank()){
             Text(
                 text = subTitle,
                 fontSize = 16.sp,
@@ -135,22 +158,78 @@ fun CommonRow(
     }
 }
 
+@Composable
+fun RadioButtonDialog(
+    showDialog: Boolean,
+    title: String,
+    options: List<String>,
+    selectedOption: String,
+    onOptionSelected: (String) -> Unit,
+    onDismiss: () -> Unit
+) {
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = onDismiss,
+            title = { Text(title) },
+            text = {
+                Column {
+                    options.forEach { option ->
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .selectable(
+                                    selected = (option == selectedOption),
+                                    onClick = { onOptionSelected(option) },
+                                    role = Role.RadioButton
+                                )
+                                .padding(8.dp)
+                        ) {
+                            RadioButton(
+                                selected = (option == selectedOption),
+                                onClick = { onOptionSelected(option) }
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(option)
+                        }
+                    }
+                }
+            },
+            shape = RoundedCornerShape(18.dp),
+            confirmButton = {
+                TextButton(onClick = onDismiss) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
+}
 
 @Composable
 fun SongRow(
     navController: NavController,
-    songViewModel: SongViewModel,
     song: Song,
-    reloadIcon: Boolean = true
+    reloadIcon: Boolean = true,
+    blackBackground: Boolean = false
 ) {
-    val mainColor = colorObject.mainColor
-    var lovedState by remember { mutableStateOf(song.loved) }
+    val mainColor = ColorObject.mainColor
+    val secondColor = ColorObject.secondColor
+    var lovedIdSongs by remember { mutableStateOf( mutableSetOf<Int>()) }
+//    var lovedState by remember { mutableStateOf(song.id in lovedIdSongs) }
+    val context = LocalContext.current
+
+//    lovedState = song.id in lovedIdSongs
+    LaunchedEffect(lovedIdSongs) {
+        lovedIdSongs = getIdSet(context, SetIdPreference.SONGS_ID.preferenceName).toMutableSet()
+    }
+
+    val coroutineScope = rememberCoroutineScope()
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .height(55.dp)
-            .clickable { navController.navigate("eachCantico/${song.songId}") },
+            .clickable { navController.navigate("eachCantico/${song.id}") },
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Row(
@@ -162,10 +241,11 @@ fun SongRow(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
+            val songNumberColor = if (blackBackground) Color.White else MaterialTheme.colorScheme.tertiary
             Text(
                 text = song.number,
                 fontSize = 16.sp,
-                color = MaterialTheme.colorScheme.tertiary,
+                color = songNumberColor,
                 fontWeight = FontWeight.SemiBold
             )
         }
@@ -178,7 +258,14 @@ fun SongRow(
                 .weight(1f)
                 .background(
                     brush = Brush.horizontalGradient(
-                        colors = listOf(mainColor, lerp(mainColor, DarkColor, 0.9f)),
+                        colors = listOf(
+                            mainColor,
+                            lerp(
+                                start = mainColor,
+                                stop = if (secondColor == Color.Unspecified) mainColor else secondColor,
+                                fraction = 0.9f
+                            )
+                        ),
                     ),
                     shape = RoundedCornerShape(16.dp)
                 ),
@@ -186,13 +273,27 @@ fun SongRow(
         ) {
             CommonRow(song.title, song.subTitle, Modifier.weight(1f))
             Row(Modifier.padding(end = 10.dp)) {
-                StarButton(lovedState) {
-                    if (lovedState) {
-                        songViewModel.setLovedSong(song.songId, false)
-                    } else {
-                        songViewModel.setLovedSong(song.songId, true)
+                StarButton(lovedState = song.id in lovedIdSongs) {
+                    coroutineScope.launch {
+                        if (song.id in lovedIdSongs) {
+                            Log.d("songs", "before re: $lovedIdSongs")
+                            lovedIdSongs.remove(song.id)
+                            Log.d("songs", "after re: $lovedIdSongs")
+                        } else {
+                            Log.d("songs", "before add: $lovedIdSongs")
+                            lovedIdSongs.add(song.id)
+                            Log.d("songs", "after add: $lovedIdSongs")
+                        }
+                        Log.d("songs", "to save List: $lovedIdSongs")
+
+                        saveIdSet(
+                            context,
+                            lovedIdSongs.toSet(),
+                            SetIdPreference.SONGS_ID.preferenceName)
+//                        if (reloadIcon) lovedState = !lovedState
+
+                        lovedIdSongs = getIdSet(context, SetIdPreference.SONGS_ID.preferenceName).toMutableSet()
                     }
-                    if (reloadIcon) lovedState = !lovedState
                 }
             }
         }
@@ -249,53 +350,289 @@ fun StarButton(
     }
 }
 
-
 @Composable
 fun PrayRow(
     navController: NavController,
-    prayViewModel: PrayViewModel,
     pray: Pray,
     reloadIcon: Boolean = true
 ) {
-    val mainColor = colorObject.mainColor
-    var lovedState by remember { mutableStateOf(pray.loved) }
 
-    Row(
-        modifier = Modifier
-            .fillMaxSize()
-            .height(55.dp)
-            .background(
-                brush = Brush.horizontalGradient(
-                    colors = listOf(mainColor, lerp(mainColor, DarkColor, 0.9f)),
-                ),
-                shape = RoundedCornerShape(16.dp)
-            )
-            .padding(8.dp, 0.dp, 0.dp, 0.dp)
-            .clickable {
-                navController.navigate("eachOracao/${pray.prayId}")
-            },
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
+    val context = LocalContext.current
+    val mainColor = ColorObject.mainColor
+    val secondColor = ColorObject.secondColor
+//    Log.d("themeColor", "from widget theme is: $secondColor")
+    var lovedIdPrays by remember { mutableStateOf( mutableSetOf<Int>()) }
+//    var lovedState by remember { mutableStateOf(song.id in lovedIdSongs) }
+
+//    lovedState = song.id in lovedIdSongs
+    LaunchedEffect(lovedIdPrays) {
+        lovedIdPrays = getIdSet(context, SetIdPreference.PRAYS_ID.preferenceName).toMutableSet()
+    }
+
+    var coroutineScope = rememberCoroutineScope()
+
+    with (pray) {
         Row(
             modifier = Modifier
+                .padding(8.dp, 0.dp, 0.dp, 0.dp)
                 .fillMaxSize()
-                .weight(0.9f)
-                .fillMaxHeight()
+                .height(55.dp)
+                .background(
+                    brush = Brush.horizontalGradient(
+                        colors = listOf(
+                            mainColor,
+                            lerp(
+                                start = mainColor,
+                                stop = if (secondColor == Color.Unspecified) mainColor else secondColor,
+                                fraction = 0.9f
+                            )
+                        ),
+                    ),
+                    shape = RoundedCornerShape(16.dp)
+                )
+                .clickable {
+                    navController.navigate("eachOracao/${id}")
+                },
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-            CommonRow(pray.title, pray.subTitle, Modifier.weight(1f))
-        }
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .weight(0.9f)
+                    .fillMaxHeight()
+            ) {
+                CommonRow(title, subTitle, Modifier.weight(1f))
+            }
 
-        Row(Modifier.padding(end = 10.dp)) {
-            StarButton(lovedState) {
-                if (lovedState) {
-                    prayViewModel.setLovedPray(pray.prayId, false)
-                } else {
-                    prayViewModel.setLovedPray(pray.prayId, true)
+            Row(Modifier.padding(end = 10.dp)) {
+                StarButton(pray.id in lovedIdPrays) {
+                    coroutineScope.launch {
+                        if (pray.id in lovedIdPrays) {
+                            lovedIdPrays.remove(pray.id)
+                        } else {
+                            lovedIdPrays.add(pray.id)
+                        }
+                        saveIdSet(
+                            context,
+                            lovedIdPrays.toSet(),
+                            "prays_id_set"
+                        )
+//                        if (reloadIcon) lovedState = !lovedState
+                    }
                 }
-                if (reloadIcon) lovedState = !lovedState
             }
         }
     }
+}
+
+@Composable
+fun ColorPickerHSV(
+    modifier: Modifier = Modifier,
+    size: Int = 256,
+    initialColor: Color = Color.Red,
+    onColorChanged: (Color) -> Unit,
+    onSecondColorChanged: (Color) -> Unit
+) {
+    var hue by remember { mutableStateOf(0f) }
+    var hue2 by remember { mutableStateOf(0f) }
+    var saturation by remember { mutableStateOf(1f) }
+    var saturation2 by remember { mutableStateOf(1f) }
+    val value = 1f // luminosity fixed value
+
+    var selectorPosition by remember { mutableStateOf(Offset.Zero) }
+    var bitmap by remember { mutableStateOf<ImageBitmap?>(null) }
+
+    val selectedColor = Color.hsv(hue, saturation, value)
+    val secondSelectedColor = Color.hsv(hue2, saturation2, value)
+
+    val configuration = LocalConfiguration.current
+    val screenWidth = configuration.screenWidthDp
+    var setSecondColor by remember {
+        mutableStateOf(ColorObject.secondColor != Color.Unspecified)
+    }
+
+    val columnW by remember(screenWidth) {
+        derivedStateOf { screenWidth - (screenWidth * 0.35) }
+    }
+
+    var selectedTabIndex by remember { mutableIntStateOf(0) }
+    val tabs = listOf("Sólida", "Gradiente")
+    val typography = MaterialTheme.typography
+    var firstColorBoxSelected by remember { mutableStateOf(true) }
+
+
+    LaunchedEffect(Unit) {
+        val hsvArray = FloatArray(3)
+        android.graphics.Color.colorToHSV(initialColor.toArgb(), hsvArray)
+        hue = hsvArray[0]
+        saturation = hsvArray[1]
+
+        val x = (hue / 360f) * (size - 1)
+        val y = saturation * (size - 1)
+        selectorPosition = Offset(x, y)
+
+        onColorChanged(Color.hsv(hue, saturation, value))
+        onSecondColorChanged(Color.hsv(hue2, saturation2, value))
+    }
+
+    LaunchedEffect(value) {
+        withContext(Dispatchers.Default) {
+            val bmp = ImageBitmap(size, size)
+            val canvas = androidx.compose.ui.graphics.Canvas(bmp)
+            val paint = Paint()
+            for (x in 0 until size) {
+                for (y in 0 until size) {
+                    val h = (x / (size - 1f)) * 360f
+                    val s = y / (size - 1f)
+                    paint.color = Color.hsv(h, s, value)
+                    canvas.drawRect(Rect(x.toFloat(), y.toFloat(), x + 1f, y + 1f), paint)
+                }
+            }
+            bitmap = bmp
+        }
+    }
+
+    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = modifier) {
+        Spacer(Modifier.height(60.dp))
+        Box(
+            modifier = Modifier.size(200.dp).pointerInput(Unit) {
+                    detectDragGestures { change, _ ->
+                        val x = change.position.x.coerceIn(0f, size - 1f)
+                        val y = change.position.y.coerceIn(0f, size - 1f)
+
+                        selectorPosition = Offset(x, y)
+                        if (firstColorBoxSelected) {
+                            hue = (x / (size - 1f)) * 360f
+                            saturation = y / (size - 1f)
+                            onColorChanged(Color.hsv(hue, saturation, value))
+                        } else {
+                            hue2 = (x / (size - 1f)) * 360f
+                            saturation2 = y / (size - 1f)
+                            onSecondColorChanged(Color.hsv(hue2, saturation2, value))
+                        }
+                    }
+                }) {
+            if (bitmap != null) {
+                Image(bitmap = bitmap!!, contentDescription = null)
+
+                Canvas(modifier = Modifier.fillMaxSize()) {
+                    drawCircle(
+                        color = Color.White,
+                        radius = 10.dp.toPx(),
+                        center = selectorPosition,
+                        style = Stroke(width = 2.dp.toPx())
+                    )
+                }
+            } else {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
+                }
+            }
+        }
+
+        @Composable
+        fun FirstColorPreviewer() {
+            Spacer(Modifier.height(18.dp))
+            spaceAroundContentWidget {
+                Text("Cor principal")
+                colorSelectBox(
+                    color = selectedColor,
+                    selected = firstColorBoxSelected,
+                ) { firstColorBoxSelected = true }
+            }
+        }
+
+        Spacer(Modifier.height(20.dp))
+
+        TabRow(
+            selectedTabIndex = selectedTabIndex, modifier = Modifier.padding(10.dp)
+        ) {
+            tabs.forEachIndexed { index, tab ->
+                Tab(
+                    text = {
+                        Text(
+                            text = tab,
+                            style = typography.bodyMedium,
+                            fontWeight = if (selectedTabIndex == index) FontWeight.SemiBold else FontWeight.Normal,
+                            color = MaterialTheme.colorScheme.tertiary
+                        )
+                    },
+                    selected = selectedTabIndex == index,
+                    onClick = {
+                        selectedTabIndex = index
+                        if (index == 0) {
+                            onSecondColorChanged(Color.Unspecified)
+                        } else {
+                            firstColorBoxSelected = false
+                        }
+                    },
+                    selectedContentColor = ColorObject.mainColor,
+                )
+            }
+        }
+
+        AnimatedContent(
+            targetState = selectedTabIndex,
+            transitionSpec = {
+                slideIntoContainer(
+                    animationSpec = tween(400, easing = EaseIn), towards = Up
+                ).togetherWith(
+                    slideOutOfContainer(
+                        animationSpec = tween(450, easing = EaseOut), towards = Down
+                    )
+                )
+            },
+        ) { selectedTabIndex ->
+            Column(
+                modifier = Modifier.fillMaxSize(0.8f),
+                verticalArrangement = Arrangement.spacedBy(20.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                when (selectedTabIndex) {
+                    0 -> FirstColorPreviewer()
+                    1 -> {
+                        FirstColorPreviewer()
+
+                        Spacer(Modifier.height(16.dp))
+
+                        spaceAroundContentWidget {
+                            Text("Cor secundária")
+                            colorSelectBox(
+                                color = secondSelectedColor,
+                                selected = !firstColorBoxSelected,
+                            ) { firstColorBoxSelected = false }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun colorSelectBox(
+    color: Color,
+    selected: Boolean,
+    onClick: () -> Unit
+) {
+    Box(
+        modifier = Modifier.size(60.dp)
+            .background(color, shape = CircleShape)
+            .border(
+                width = if (selected) 4.dp else 1.dp,
+                color = if (selected) Color.Gray else Color.Black,
+                shape = CircleShape)
+            .clickable { onClick() }
+    )
+}
+
+@Composable
+fun spaceAroundContentWidget(content: @Composable () -> Unit) {
+    Row(
+        modifier = Modifier.fillMaxSize(0.8f),
+        horizontalArrangement = Arrangement.SpaceAround,
+        verticalAlignment = Alignment.CenterVertically
+    ) { content() }
 }
 
 @Composable
@@ -310,88 +647,111 @@ fun DefTabButton(content: @Composable () -> Unit){
             verticalArrangement = Arrangement.SpaceBetween
         ) { content() }
     }
-
 }
 
 @Composable
 fun TextIconRow(title: String, showContent: Boolean, modifier: Modifier) {
-    val mainColor = colorObject.mainColor
+    val mainColor = ColorObject.mainColor
     val rS = 9.dp // rowShape ---------->>
-    val color = Color.White
 
     Row (
-        modifier = modifier.fillMaxSize().height(45.dp)
+        modifier = modifier
+            .fillMaxSize()
+            .height(45.dp)
             .background(
                 brush = Brush.horizontalGradient(
                     colors = listOf(mainColor, lerp(mainColor, DarkColor, 0.9f)),
                 ), shape = if (showContent)
-                    RoundedCornerShape(rS, rS, 0.dp, 0.dp) else RoundedCornerShape(rS) )
-            .padding(10.dp),
+                    RoundedCornerShape(rS, rS, 0.dp, 0.dp) else RoundedCornerShape(rS)
+            ),
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(10.dp)
+                .fillMaxSize(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(title, color = MaterialTheme.colorScheme.tertiary, fontSize = 17.sp)
+            if (showContent)
+                Icon(Icons.Default.KeyboardArrowUp, contentDescription = "Close", tint = Color.White)
+            else
+                Icon(Icons.Default.KeyboardArrowDown, contentDescription = "Open", tint = Color.White)
+        }
+    }
+}
+
+@Composable
+fun KeyValueTextRow(
+    key: String,
+    value: String,
+    onClick: () -> Unit
+) {
+    Row (
+        modifier = Modifier
+            .padding(10.dp)
+            .fillMaxSize()
+            .clickable { onClick() },
         Arrangement.SpaceBetween
     ) {
-        Text(title, color = color, fontSize = 17.sp)
-        if (showContent)
-            Icon(Icons.Default.KeyboardArrowUp, contentDescription = "Open or Close", tint = Color.White)
-        else
-            Icon(Icons.Default.KeyboardArrowDown, contentDescription = "Open or Close", tint = Color.White)
-
+        Text(key, fontSize = 17.sp)
+        Text(value, fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
     }
 }
 
-@Composable
-fun FilePickerScreen(viewModel: CommonViewModel) {
-    val context = LocalContext.current
-    val launcher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.OpenDocument(),
-        onResult = { uri ->
-            uri?.let {
-                context.contentResolver.openInputStream(it)?.use { inputStream ->
-                    val json = inputStream.bufferedReader().use { it.readText() }
-                    viewModel.restoreBackup(json, context) // Send data to ViewModel ------->>
-                }
-            } ?: run {
-                Toast.makeText(context, "Nenhum arquivo selecionado.", Toast.LENGTH_SHORT).show()
-            }
-        }
-    )
+//@Composable
+//fun FilePickerScreen(viewModel: CommonViewModel) {
+//    val context = LocalContext.current
+//    val launcher = rememberLauncherForActivityResult(
+//        contract = ActivityResultContracts.OpenDocument(),
+//        onResult = { uri ->
+//            uri?.let {
+//                context.contentResolver.openInputStream(it)?.use { inputStream ->
+//                    val json = inputStream.bufferedReader().use { it.readText() }
+//                    viewModel.restoreBackup(json, context) // Send data to ViewModel ------->>
+//                }
+//            } ?: run {
+//                Toast.makeText(context, "Nenhum arquivo selecionado.", Toast.LENGTH_SHORT).show()
+//            }
+//        }
+//    )
+//
+//    NormalButton("Restourar\nDados") { launcher.launch(arrayOf("application/json")) }
+//}
 
-    NormalButton("Restourar\nDados") { launcher.launch(arrayOf("application/json")) }
-}
-
-@Composable
-fun BackupPickerScreen(viewModel: CommonViewModel) {
-    val context = LocalContext.current
-    val launcher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.CreateDocument("application/json"),
-        onResult = { uri ->
-            uri?.let {
-                val lovedPrays = viewModel.getLovedPrays()
-                val lovedSongs = viewModel.getLovedSongs()
-
-                val lovedDataList = mutableListOf<LovedDataPojo>().apply {
-                    lovedPrays.forEach { add(LovedDataPojo(it.prayId, "Pray")) }
-                    lovedSongs.forEach { add(LovedDataPojo(it.songId, "Song")) }
-                }
-
-                if (lovedDataList.isEmpty()) {
-                    Toast.makeText(context, "Nenhum dado encontrado para exportar.", Toast.LENGTH_SHORT).show()
-                    return@let
-                }
-
-                val json = Gson().toJson(lovedDataList)
-
-                context.contentResolver.openOutputStream(it)?.use { outputStream ->
-                    outputStream.write(json.toByteArray())
-                    outputStream.flush()
-                    Toast.makeText(context, "Backup salvo com sucesso!", Toast.LENGTH_SHORT).show()
-                }
-            } ?: run {
-                Toast.makeText(context, "Nenhum local selecionado para salvar.", Toast.LENGTH_SHORT).show()
-            }
-        }
-    )
-
-    NormalButton ("Fazer\nBackup", ) {
-        launcher.launch("lovedItems_backup.json")
-    }
-}
+//@Composable
+//fun BackupPickerScreen(viewModel: CommonViewModel) {
+//    val context = LocalContext.current
+//    val launcher = rememberLauncherForActivityResult(
+//        contract = ActivityResultContracts.CreateDocument("application/json"),
+//        onResult = { uri ->
+//            uri?.let {
+//                val lovedPrays = viewModel.getLovedPrays()
+//                val lovedSongs = viewModel.getLovedSongs()
+//
+//                val lovedDataList = mutableListOf<LovedDataPojo>().apply {
+//                    lovedPrays.forEach { add(LovedDataPojo(it.prayId, "Pray")) }
+//                    lovedSongs.forEach { add(LovedDataPojo(it.songId, "Song")) }
+//                }
+//
+//                if (lovedDataList.isEmpty()) {
+//                    Toast.makeText(context, "Nenhum dado encontrado para exportar.", Toast.LENGTH_SHORT).show()
+//                    return@let
+//                }
+//
+//                val json = Gson().toJson(lovedDataList)
+//
+//                context.contentResolver.openOutputStream(it)?.use { outputStream ->
+//                    outputStream.write(json.toByteArray())
+//                    outputStream.flush()
+//                    Toast.makeText(context, "Backup salvo com sucesso!", Toast.LENGTH_SHORT).show()
+//                }
+//            } ?: run {
+//                Toast.makeText(context, "Nenhum local selecionado para salvar.", Toast.LENGTH_SHORT).show()
+//            }
+//        }
+//    )
+//
+//    NormalButton ("Fazer\nBackup", ) {
+//        launcher.launch("lovedItems_backup.json")
+//    }
+//}
