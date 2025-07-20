@@ -13,10 +13,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material3.Button
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,16 +26,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.PopupProperties
 import androidx.navigation.NavController
 import com.samuel.oremoschanganapt.components.colorPickerDemo
 import com.samuel.oremoschanganapt.functionsKotlin.stringToColor
@@ -44,13 +48,20 @@ import com.samuel.oremoschanganapt.components.RadioButtonDialog
 //import com.samuel.oremoschanganapt.components.FilePickerScreen
 import com.samuel.oremoschanganapt.components.buttons.ExpandContentTabBtn
 import com.samuel.oremoschanganapt.components.KeyValueTextRow
+import com.samuel.oremoschanganapt.components.textFontSize
+import com.samuel.oremoschanganapt.functionsKotlin.restartActivity
+import com.samuel.oremoschanganapt.functionsKotlin.updateLocale
 import com.samuel.oremoschanganapt.repository.ColorObject
+import com.samuel.oremoschanganapt.repository.Configs
+import com.samuel.oremoschanganapt.repository.Configs.appLocale
+import com.samuel.oremoschanganapt.saveFontSize
+import com.samuel.oremoschanganapt.saveLanguage
 import com.samuel.oremoschanganapt.saveThemeMode
+import com.samuel.oremoschanganapt.view.states.UIState.configFontSize
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-
-//import com.samuel.oremoschanganapt.db.CommonViewModel
+import java.util.Locale
 
 // AppearanceWidget --------->>
 @Composable
@@ -63,18 +74,40 @@ fun AppearanceWidget(
     var mode by remember { mutableStateOf(modeSetting) }
     var showModeDialog by remember { mutableStateOf(false) }
     val modeOptions = mapOf(
-        "Claro" to "Light",
-        "Escuro" to "Dark",
-        "Sistema" to "System"
+        stringResource(R.string.light) to "Light",
+        stringResource(R.string.dark) to "Dark",
+        stringResource(R.string.system) to "System"
+    )
+    var showFontSizesDialog by remember { mutableStateOf(false) }
+    var selectedFontSizeOption by remember { mutableStateOf(Configs.fontSize) }
+
+    val fontSizeOptions = mapOf(
+        "Small" to stringResource(R.string.small),
+        "Normal" to stringResource(R.string.normal),
+        "Large" to stringResource(R.string.large),
+        "Huge" to stringResource(R.string.huge)
     )
 
+    val stringMode = stringResource(R.string.mode)
     var selectedModeOption by remember { mutableStateOf(mode) }
+    var expanded by remember { mutableStateOf(false) }
+    var coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
+
+    val localesAndLanguages = mapOf(
+        "pt" to stringResource(R.string.pt),
+        "ts" to stringResource(R.string.ts)
+    )
+
+
+    var appLanguage by remember { mutableStateOf("") }
+    appLanguage = localesAndLanguages[appLocale] ?: stringResource(R.string.pt)
+
 
     DefTabButton {
         ExpandContentTabBtn(
             ImageVector.vectorResource(R.drawable.grid_view_24),
-            "Aparência"
+            title = stringResource(R.string.appearance)
         ) { visibleAppearanceTab = !visibleAppearanceTab }
 
         AnimatedVisibility(visibleAppearanceTab){
@@ -82,7 +115,7 @@ fun AppearanceWidget(
                 Spacer(modifier = Modifier.height(10.dp))
 
                 Column(Modifier.fillMaxWidth()) {
-                    KeyValueTextRow(key = "Modo", value = modeOptions[modeSetting] ?: "Escuro") {
+                    KeyValueTextRow(key = stringMode, value = modeOptions[modeSetting] ?: stringResource(R.string.system)) {
                         showModeDialog = true
                     }
 
@@ -90,29 +123,58 @@ fun AppearanceWidget(
                         modifier = Modifier
                             .padding(10.dp)
                             .fillMaxSize()
+                            .height(30.dp)
                             .clickable { navController.navigate("appearancePage") },
                         Arrangement.SpaceBetween
                     ) {
-                        Text("Cor do app", fontSize = 17.sp)
+                        Text(text = stringResource(R.string.app_color), fontSize = textFontSize())
                         Row(
                             Modifier
                                 .size(24.dp)
                                 .background(
                                     color = ColorObject.mainColor,
-                                    shape = RoundedCornerShape(50)
+                                    shape = CircleShape
                                 )
                         ) {}
                     }
 
+                    KeyValueTextRow(key = stringResource(R.string.language), value = appLanguage) {
+                        expanded = true
+                    }
+
+                    DropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false },
+                        properties = PopupProperties(focusable = true)
+                    ) {
+
+                        for((locale, language) in localesAndLanguages) {
+                            DropdownMenuItem(
+                                text = { Text(text = language) },
+                                onClick = {
+                                    coroutineScope.launch { saveLanguage(context, locale) }
+                                    updateLocale(context, Locale(locale))
+                                    expanded = false
+//                                    Log.d("applocale", "$locale")
+//                                    restartActivity(context)
+                                }
+                            )
+                        }
+                    }
+
+                    KeyValueTextRow(
+                        key = stringResource(R.string.font_size),
+                        value = fontSizeOptions[Configs.fontSize] ?: "") {
+                        showFontSizesDialog = true
+                    }
                 }
                 Spacer(modifier = Modifier.height(10.dp))
-
             }
 
             if (showModeDialog) {
                 RadioButtonDialog(
                     showDialog = showModeDialog,
-                    title = "Modo",
+                    title = stringMode,
                     options = modeOptions.keys.toList(),
                     selectedOption = selectedModeOption,
                     onOptionSelected = { option ->
@@ -121,15 +183,31 @@ fun AppearanceWidget(
                         CoroutineScope(Dispatchers.IO).launch {
                             modeOptions[option]?.let {
                                 saveThemeMode(context, it)
-                            Log.d("themeMode", "thememode from save: $it")
                             }
-
                         }
                     },
                     onDismiss = { showModeDialog = false }
                 )
             }
 
+            if (showFontSizesDialog) {
+                RadioButtonDialog(
+                    showDialog = showFontSizesDialog,
+                    title = stringResource(R.string.font_size),
+                    options = fontSizeOptions.values.toList(),
+                    selectedOption = selectedFontSizeOption,
+                    onOptionSelected = { option ->
+                        selectedFontSizeOption = option
+                        CoroutineScope(Dispatchers.IO).launch {
+                            val currentMapOption = fontSizeOptions.entries.first { it.value == option }
+                            saveFontSize(context, currentMapOption.key)
+                            configFontSize = currentMapOption.key
+                        }
+                        showFontSizesDialog = false
+                    },
+                    onDismiss = { showFontSizesDialog = false }
+                )
+            }
         }
     }
 }

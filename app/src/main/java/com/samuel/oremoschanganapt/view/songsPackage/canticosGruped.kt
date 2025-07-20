@@ -27,11 +27,13 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.samuel.oremoschanganapt.R
 //import com.samuel.oremoschanganapt.apresentacaoOracao.CancaoState
 import com.samuel.oremoschanganapt.components.BottomAppBarPrincipal
 import com.samuel.oremoschanganapt.components.LoadingScreen
@@ -46,9 +48,7 @@ import com.samuel.oremoschanganapt.ui.theme.DarkColor
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CanticosAgrupados( navController: NavController,
-//                       songViewModel: SongViewModel
-){
+fun CanticosAgrupados( navController: NavController) {
 
     val allSongs = songsData
     val configuration = LocalConfiguration.current
@@ -57,7 +57,7 @@ fun CanticosAgrupados( navController: NavController,
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text="Cânticos Agrupados", color = MaterialTheme.colorScheme.tertiary, fontStyle = FontStyle.Italic, fontWeight = FontWeight.Bold) },
+                title = { Text(text = stringResource(R.string.grouped_songs), color = MaterialTheme.colorScheme.tertiary, fontStyle = FontStyle.Italic, fontWeight = FontWeight.Bold) },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color.Transparent
                 ),

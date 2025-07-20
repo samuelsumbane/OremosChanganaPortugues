@@ -25,6 +25,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.*
@@ -65,6 +66,7 @@ import kotlinx.coroutines.launch
 fun Home( navController: NavController,
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+//    val drawerState = rememberDrawerState(initialValue = DrawerValue.Open)
     val scope = rememberCoroutineScope()
     val scrollState = rememberScrollState()
     var textInputValue by remember { mutableStateOf("") }
@@ -124,9 +126,7 @@ fun Home( navController: NavController,
     var showFontSizeDialog by remember { mutableStateOf(false) }
 
     var selectedModeOption by remember { mutableStateOf(Configs.thememode) }
-    var selectedFontSizeOption by remember { mutableStateOf(Configs.fontSize) }
 
-    val fontSizeOptions = listOf("Small", "Normal", "Large", "Huge")
     val savedThemeColor by getThemeColor(context).collectAsState(initial = Color.Green)
 
 
@@ -148,7 +148,7 @@ fun Home( navController: NavController,
                     horizontalAlignment = Alignment.CenterHorizontally,
 
                 ) {
-                    Text("Configurações".uppercase(), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold, fontStyle = FontStyle.Italic)
+                    Text(text = stringResource(R.string.configurations).uppercase(), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold, fontStyle = FontStyle.Italic)
                     Spacer(Modifier.height(75.dp))
 
                     Column(verticalArrangement = Arrangement.spacedBy(30.dp)) {
@@ -263,7 +263,7 @@ fun Home( navController: NavController,
                         val searchBgColor = if (isSystemInDarkTheme()) Color(0xFF4A4F50) else Color(0xFF9DA0A1)
 
                         InputSearch(value = textInputValue, onValueChange = { textInputValue = it },
-                            placeholder = "Pesquisar Cântico / Oração",
+                            placeholder = stringResource(R.string.search_song_or_pray),
                             modifier = Modifier
                                 .fillMaxWidth(0.75f)
                                 .height(45.dp)

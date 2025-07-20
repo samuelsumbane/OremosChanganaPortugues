@@ -1,5 +1,6 @@
 package com.samuel.oremoschanganapt.functionsKotlin
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Build
@@ -70,8 +71,10 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import com.samuel.oremoschanganapt.R
 import com.samuel.oremoschanganapt.ReminderReceiver
 import com.samuel.oremoschanganapt.components.colorSelectBox
 import com.samuel.oremoschanganapt.components.spaceAroundContentWidget
@@ -92,6 +95,7 @@ import kotlinx.coroutines.withContext
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneOffset
+import java.util.Locale
 
 
 @SuppressLint("ScheduleExactAlarm")
@@ -117,6 +121,61 @@ fun scheduleNotificationForSongOrPray(context: Context, title: String, message: 
         pendingIntent
     )
 }
+
+fun updateLocale(context: Context, locale: Locale) {
+    val resources = context.resources
+    val configuration = resources.configuration
+    configuration.setLocale(locale)
+    val displayMetrics = resources.displayMetrics
+    resources.updateConfiguration(configuration, displayMetrics)
+
+    // Para versões posteriores ao Android 7.0 (API 24)
+    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+        context.createConfigurationContext(configuration)
+    }
+}
+
+
+fun restartActivity(context: Context) {
+    val activity = context as? Activity
+    activity?.recreate()
+}
+
+//@Composable
+//fun LanguageSwitcher() {
+//    val context = LocalContext.current
+//    var expanded by remember { mutableStateOf(false) }
+//    var language by remember { mutableStateOf("pt") }
+//
+//    val langs = listOf("pt", "en")
+//
+//    Column(
+//        modifier = Modifier.width(50.dp),
+//        verticalArrangement = Arrangement.Center,
+//        horizontalAlignment = Alignment.CenterHorizontally
+//    ) {
+//        Button(onClick = { expanded = true }) {
+//            Text(text = language)
+//        }
+//
+//        DropdownMenu(
+//            expanded = expanded,
+//            onDismissRequest = { expanded = false }
+//        ) {
+//            langs.forEach { lang ->
+//                DropdownMenuItem(
+//                    text = { Text(lang) },
+//                    onClick = {
+//                        language = lang
+//                        updateLocale(context, Locale(lang))
+//                        restartActivity(context)
+//                        expanded = false
+//                    }
+//                )
+//            }
+//        }
+//    }
+//}
 
 
 fun getCurrentTimestamp(): Long = System.currentTimeMillis()

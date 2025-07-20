@@ -26,6 +26,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.samuel.oremoschanganapt.components.textFontSize
 import com.samuel.oremoschanganapt.ui.theme.Typography
 
 
@@ -36,7 +37,7 @@ fun NormalText(text: String, modifier: Modifier = Modifier) {
 
     Text(
         text = text,
-        fontSize = 16.sp,
+        fontSize = textFontSize(),
         color = textColor,
         modifier = modifier
     )
@@ -106,7 +107,7 @@ fun About(navController: NavController){
                     text = "A produção deste aplicativo carreceu de alguns custos da parte do programador, neste sentido pretende-se produzir mais aplicativos desta natureza e para tal contamos com seu apoio financeiro que pode ser efectuado através do numero 865230661.",
                     textAlign = TextAlign.Justify,
                     modifier = Modifier.padding(17.dp, 0.dp, 17.dp, 0.dp),
-                    fontSize = 16.sp, lineHeight = 24.sp,
+                    fontSize = textFontSize(), lineHeight = 24.sp,
                     color = textColor
                 )
 

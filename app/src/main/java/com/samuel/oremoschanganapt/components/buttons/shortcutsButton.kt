@@ -1,11 +1,22 @@
 package com.samuel.oremoschanganapt.components.buttons
 
-import android.widget.Space
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.*
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -20,7 +31,6 @@ import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableIntStateOf
@@ -40,15 +50,12 @@ import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import com.samuel.oremoschanganapt.R
 import com.samuel.oremoschanganapt.components.PrayRow
-import com.samuel.oremoschanganapt.components.searchContainer
 import com.samuel.oremoschanganapt.components.SongRow
+import com.samuel.oremoschanganapt.components.searchContainer
 import com.samuel.oremoschanganapt.db.data.songsData
 import com.samuel.oremoschanganapt.functionsKotlin.isNumber
-//import com.samuel.oremoschanganapt.repository.TablesViewModels
 import com.samuel.oremoschanganapt.ui.theme.DarkSecondary
 import com.samuel.oremoschanganapt.ui.theme.LightSecondary
-//import com.samuelsumbane.oremoschanganapt.db.PrayViewModel
-//import com.samuelsumbane.oremoschanganapt.db.SongViewModel
 import com.samuelsumbane.oremoschanganapt.db.data.praysData
 import kotlinx.coroutines.coroutineScope
 import kotlin.math.roundToInt
@@ -250,7 +257,7 @@ fun ShortcutsButton(navController: NavController) {
                         Icon(
                             imageVector = ImageVector.vectorResource(R.drawable.adjust_24),
                             contentDescription = "Shortcuts",
-                            tint = MaterialTheme.colorScheme.background,
+                            tint = Color.White,
                             modifier = Modifier.size(48.dp)
                         )
                     }

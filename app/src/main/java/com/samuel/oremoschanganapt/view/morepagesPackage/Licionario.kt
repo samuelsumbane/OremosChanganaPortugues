@@ -118,7 +118,7 @@ val bookList: List<List<BooksItem>> = listOf(
     listOf(BooksItem("1° Domingo do Advento", "A Is. 2, 1-5     Rom. 13, 11-14      Mt. 24, 37-44\nB Is. 63, 16-64,  8 I Cor, 1,3-9  Mc. 13, 33-37\nC Jer. 33, 14-16  I Thes. 3, 12-4,2   Lc, 21, 25-36")),
     listOf(BooksItem("2° Domingo do Advento", "A Is. 11,1-10   Rom. 15,4-9   Mt. 3, 1-12\nB Is. 40, 1-11    2 Ped. 3,8-14    Mc. 1, 1-8\nC Baruc 5,   1-9 Flp. 1,4-11    Lc. 3, 1-6")),
     listOf(BooksItem("3° Domingo do Advento", "AIs. 35, 1-10    Tg. 5, 7-10    Mt, 11, 2-11\nB Is. 61,1-11    ITes. 5, 16-24    Jo. 1,6-8. 19-21\nC Sof. 3, 14-18   Flp. 4,4-7    Lc. 3, 10-18")),
-    listOf(BooksItem("4o Domingo do Advento", "AIs. 7, 10-14  Rom. 1, 1-7  Mt. 1, 18-24\nB 2Lam. 7, 1-16 Rom. 16,25-27 Lc. 1, 26-38\nC Miq. 5,2-5 Heb. 10,5-10 Lc. 1, 39-47")),
+    listOf(BooksItem("4° Domingo do Advento", "AIs. 7, 10-14  Rom. 1, 1-7  Mt. 1, 18-24\nB 2Lam. 7, 1-16 Rom. 16,25-27 Lc. 1, 26-38\nC Miq. 5,2-5 Heb. 10,5-10 Lc. 1, 39-47")),
     listOf(BooksItem("Sagrada Família (Dom. na oitava do Natal)", "AEclo. 3, 3-7. 14-17  Col. 3, 12-21  Mt. 2, 13-23\nB Eclo. 3,3-7. 14-17  Col. 3, 12-21  Lc. 2, 22-40\nC Eclo. 3,3-7. 14-17  Col. 3, 12-21  Lc. 2, 41-52")),
     listOf(BooksItem("Baptismo do Senhor (10. Dom. Com.)", "AIs. 42, 1-7  Act. 10, 34-38  Mt. 3, 13-17\nB Is. 42, 1-7  Act. 20, 34-38  Mc. 1,6-11\nC Is. 42, 1-7  Act. 10, 34-38  Lc. 3, 15-22")),
     listOf(BooksItem("1° Domingo da Quaresma", "AGen. 2,7-9;3,1-7  Rom. 5, 12-19  Mt. 4, 1-11\nB Gen. 9, 8-15  I Ped. 3, 18-22  Mc. 1, 12-15\nC Deut. 26, 4-10  Rom. 10, 8-13  Lc. 4, 1-13\n")),

@@ -31,10 +31,12 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.samuel.oremoschanganapt.R
 import com.samuel.oremoschanganapt.components.BottomAppBarPrincipal
 import com.samuel.oremoschanganapt.components.PrayRow
 import com.samuel.oremoschanganapt.components.searchContainer
@@ -105,7 +107,7 @@ fun LovedDataPage(navController: NavController) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = {Text(text="Favoritos", color = MaterialTheme.colorScheme.tertiary)},
+                title = {Text(text = stringResource(R.string.loved), color = MaterialTheme.colorScheme.tertiary)},
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color.Transparent
                 ),
@@ -115,7 +117,7 @@ fun LovedDataPage(navController: NavController) {
                     }
                 },
                 actions = {
-                    searchValue = searchContainer(searchValue, "Pesquisar favoritos")
+                    searchValue = searchContainer(searchValue, stringResource(R.string.search_loved))
                 }
             )
         },

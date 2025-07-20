@@ -43,11 +43,13 @@ import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.toColorInt
 import androidx.navigation.NavController
+import com.samuel.oremoschanganapt.R
 import com.samuel.oremoschanganapt.components.ColorPickerHSV
 import com.samuel.oremoschanganapt.components.LoadingScreen
 import com.samuel.oremoschanganapt.components.buttons.ShortcutsButton
@@ -70,7 +72,7 @@ fun AppearancePage(navController: NavController) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text="Cor de app", color = MaterialTheme.colorScheme.tertiary) },
+                title = { Text(text = stringResource(R.string.app_color), color = MaterialTheme.colorScheme.tertiary) },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.background
                 ),
@@ -94,7 +96,7 @@ fun AppearancePage(navController: NavController) {
 //        val themeColor = Color("")
         var color by remember { mutableStateOf<Color>(themeColor) }
         var secondColor by remember { mutableStateOf<Color>(secondThemeColor) }
-
+        var isSolidColorTabSelected by remember { mutableStateOf(false) }
 
         themeColor.let {
             Column(
@@ -108,6 +110,7 @@ fun AppearancePage(navController: NavController) {
                 ColorPickerHSV(
                     size = 450,
                     initialColor = it,
+                    isSolidColorTabSelected = { isSolidColorTabSelected = it },
                     onColorChanged = { color = it },
                     onSecondColorChanged = { secondColor = it }
                 )
@@ -117,30 +120,38 @@ fun AppearancePage(navController: NavController) {
                     horizontalArrangement = Arrangement.SpaceAround
                 ) {
                     OutlinedButton(
-                        onClick = {
-                            navController.popBackStack()
-                        }, colors = ButtonDefaults.buttonColors(
+                        onClick = { navController.popBackStack() },
+                        colors = ButtonDefaults.buttonColors(
                             contentColor = itemBgColor
                         )
                     ) {
-                        Text("Cancelar")
+                        Text(text = stringResource(R.string.cancel))
                     }
 
                     Button(
                         onClick = {
                             coroutineScope.launch {
-                                saveThemeColor(context, color)
-                                ColorObject.mainColor = color
-                                if (secondColor != Color.Unspecified) {
-                                    ColorObject.secondColor = secondColor
-                                    saveSecondThemeColor(context, secondColor)
-                                } else {
+                                if (isSolidColorTabSelected) {
+                                    saveThemeColor(context, color)
+                                    ColorObject.mainColor = color
+                                    /**
+                                     * If user clicked on "Aplicar" button while solid color tab
+                                     * was active is obvious that gradient color is not needed
+                                     */
                                     ColorObject.secondColor = Color.Unspecified
                                     saveSecondThemeColor(context, Color.Unspecified)
+                                } else {
+                                    if (secondColor != Color.Unspecified) {
+                                        ColorObject.secondColor = secondColor
+                                        saveSecondThemeColor(context, secondColor)
+                                    } else {
+                                        ColorObject.secondColor = Color.Unspecified
+                                        saveSecondThemeColor(context, Color.Unspecified)
+                                    }
                                 }
                             }
                         }) {
-                        Text("Aplicar")
+                        Text(text = stringResource(R.string.apply))
                     }
                 }
             }

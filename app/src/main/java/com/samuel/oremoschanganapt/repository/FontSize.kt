@@ -13,7 +13,7 @@ enum class FontSize(val size: TextUnit) {
             return when (value) {
                 "Small" -> SMALL
                 "Large" -> LARGE
-                else -> NORMAL  // Default para "normal"
+                else -> NORMAL  // Default to "normal"
             }
         }
     }

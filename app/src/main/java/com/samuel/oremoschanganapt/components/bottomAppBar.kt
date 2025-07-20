@@ -39,6 +39,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -113,7 +114,12 @@ fun MenuContent(navController: NavController, activePage: String, iconColorState
     }
 
     val pages = listOf("home", "oracoespage", "canticosAgrupados", "morepages")
-    val btnText = mapOf("home" to "Ínicio", "oracoespage" to "Orações", "canticosAgrupados" to "Cânticos", "morepages" to "Mais")
+    val btnText = mapOf(
+        "home" to stringResource(R.string.home),
+        "oracoespage" to stringResource(R.string.prays),
+        "canticosAgrupados" to stringResource(R.string.songs),
+        "morepages" to stringResource(R.string.more)
+    )
     val btnIcons = mapOf(
         "home" to Icons.Filled.Home,
         "oracoespage" to ImageVector.vectorResource(id = R.drawable.prayicon),
@@ -145,7 +151,7 @@ fun MenuContent(navController: NavController, activePage: String, iconColorState
                     imageVector = btnIcons[it]!!,
                     contentDescription = "",
                     modifier = Modifier.size(25.dp),
-                    tint = mainColor
+                    tint = LightSecondary
                 )
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(

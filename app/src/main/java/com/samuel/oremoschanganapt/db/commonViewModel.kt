@@ -39,15 +39,7 @@
 //class CommonViewModel: ViewModel() {
 //
 //    private val realm = MyApp.realm
-//
-//    fun getLovedPrays(): List<Pray> {
-//        return realm.query<Pray>("loved = true").find()
-//    }
-//
-//    fun getLovedSongs(): List<Song> {
-//        return realm.query<Song>("loved = true").find()
-//    }
-//
+
 //    fun restoreBackup(json: String, context: Context) {
 //        try {
 //            val lovedList: List<LovedDataPojo> = Gson().fromJson(json, Array<LovedDataPojo>::class.java).toList()

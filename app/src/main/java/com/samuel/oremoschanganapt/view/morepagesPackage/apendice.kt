@@ -43,9 +43,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.samuel.oremoschanganapt.R
 import com.samuel.oremoschanganapt.components.TextIconRow
 import com.samuel.oremoschanganapt.components.buttons.ShortcutsButton
 import com.samuel.oremoschanganapt.repository.ColorObject
@@ -67,7 +69,7 @@ fun Apendice(navController: NavController){
                 ),
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() } ){
-                        Icon(imageVector = Icons.Outlined.ArrowBack, contentDescription = "Voltar")
+                        Icon(imageVector = Icons.Outlined.ArrowBack, contentDescription = stringResource(R.string.go_back))
                     }
                 }
             )

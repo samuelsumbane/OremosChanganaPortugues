@@ -28,8 +28,11 @@ import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.samuel.oremoschanganapt.components.LoadingScreen
 import com.samuel.oremoschanganapt.functionsKotlin.stringToColor
+import com.samuel.oremoschanganapt.functionsKotlin.updateLocale
 //import com.samuel.oremoschanganapt.repository.TablesViewModels
 import com.samuel.oremoschanganapt.repository.ColorObject
+import com.samuel.oremoschanganapt.repository.Configs
+import com.samuel.oremoschanganapt.repository.Configs.appLocale
 import com.samuel.oremoschanganapt.ui.theme.OremosChanganaTheme
 import com.samuel.oremoschanganapt.view.Home
 import com.samuel.oremoschanganapt.view.SplashWindow
@@ -49,6 +52,7 @@ import com.samuel.oremoschanganapt.view.songsPackage.SongsPage
 //import com.samuelsumbane.oremoschanganapt.db.PrayViewModel
 //import com.samuelsumbane.oremoschanganapt.db.SongViewModel
 import com.samuelsumbane.oremoschanganapt.db.data.praysData
+import java.util.Locale
 
 
 class  MainActivity : ComponentActivity() {
@@ -57,13 +61,15 @@ class  MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+
+            val context = LocalContext.current
+
 //            val allPrays by prayViewModel.prays.collectAsState()
 //            val defs by defViewModel.defs.collectAsState()
 //            val reminders by reminderViewModel.reminders.collectAsState()
 
             // New
             var fontSize by remember { mutableStateOf("") }
-            val context = LocalContext.current
 //            var themeMode by getThemeMode(context).collectAsState(initial = "Dark")
             var themeMode by remember { mutableStateOf("") }
 //            var themeMode by getThemeMode(context).collectAsState(initial = "Dark")
@@ -76,9 +82,14 @@ class  MainActivity : ComponentActivity() {
             LaunchedEffect(Unit) {
                 fontSize = getInitialFontSize(context)
                 themeMode = getInitialThemeMode(context)
-                secondThemeColor = getInitialSecondThemeColor(context)
                 themeColor = getInitialThemeColor(context)
-                Log.d("themeColor", "theme is: $secondThemeColor != $themeColor")
+                secondThemeColor = getInitialSecondThemeColor(context)
+//                Log.d("themeColor", "theme is: $secondThemeColor != $themeColor")
+                val initialLanguage = getInitialLanguage(context)
+                updateLocale(context, Locale(initialLanguage))
+                appLocale = initialLanguage
+
+                Configs.fontSize = fontSize
             }
 
             val appMode = when (themeMode) {
@@ -89,7 +100,8 @@ class  MainActivity : ComponentActivity() {
 
             if (themeColor != Color.Unspecified) {
                 ColorObject.mainColor = themeColor
-                ColorObject.secondColor = secondThemeColor
+                ColorObject.secondColor =
+                    if (secondThemeColor == Color.Unspecified || secondThemeColor == Color.Transparent) themeColor else secondThemeColor
 
                 if (praysData.isNotEmpty()) {
                     OremosChanganaTheme(darkTheme = appMode) {
@@ -126,7 +138,7 @@ class  MainActivity : ComponentActivity() {
 
                                 val navController = rememberNavController()
 //                              NavHost(navController = navController, startDestination = "splash") {
-                                NavHost(navController = navController, startDestination = "oracoespage") {
+                                NavHost(navController = navController, startDestination = "canticosAgrupados") {
 //                                 define routes ------->>
 
                                     composable("splash") {

@@ -28,9 +28,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.samuel.oremoschanganapt.R
 import com.samuel.oremoschanganapt.components.buttons.ShortcutsButton
 import com.samuel.oremoschanganapt.repository.ColorObject
 import com.samuel.oremoschanganapt.ui.theme.DarkColor
@@ -67,7 +69,7 @@ fun FestasMoveis(navController: NavController) {
                 ),
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() } ){
-                        Icon(imageVector = Icons.Outlined.ArrowBack, contentDescription = "go back")
+                        Icon(imageVector = Icons.Outlined.ArrowBack, contentDescription = stringResource(R.string.go_back))
                     }
                 }
             )
@@ -76,8 +78,9 @@ fun FestasMoveis(navController: NavController) {
         val itemBgColor = ColorObject.mainColor
         val textColor = Color.White
         Column(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
                 .padding(innerValues)
+                .fillMaxSize()
                 .verticalScroll(scroll),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {

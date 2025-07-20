@@ -32,6 +32,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.samuel.oremoschanganapt.components.textFontSize
 import com.samuel.oremoschanganapt.repository.ColorObject
 import com.samuel.oremoschanganapt.ui.theme.DarkColor
 import com.samuel.oremoschanganapt.ui.theme.DarkSecondary
@@ -77,7 +78,7 @@ fun MorePagesBtn(
                 tint = Color.White
             )
             Spacer(modifier = Modifier.height(8.dp))
-            Text(text = text, color = Color.White, fontSize = 16.sp)
+            Text(text = text, color = Color.White, fontSize = textFontSize())
         }
     }
 }
@@ -100,7 +101,7 @@ fun ShortcutButtonChild(
         ),
         onClick = onClick
     ) {
-        Icon(icon, contentDescription = description, modifier = iconModifier, tint = MaterialTheme.colorScheme.background)
+        Icon(icon, contentDescription = description, modifier = iconModifier, tint = Color.White)
     }
 }
 
@@ -127,28 +128,6 @@ fun NormalButton(
     }
 }
 
-//@Composable
-//fun NormalButtonComp(
-//    text: String,
-//    btnColor: Color = colorObject.mainColor.copy(0.85f),
-//    onClick: @Composable () -> Unit
-//) {
-//    val bgColor = btnColor.copy(0.2f)
-//
-//    Button(
-////        onClick =  ,
-//        modifier = Modifier.width(95.dp).height(40.dp),
-//        colors = ButtonDefaults.buttonColors(
-//            containerColor = bgColor,
-//            contentColor = btnColor
-//        ),
-//        contentPadding = PaddingValues(0.dp),
-//        shape = RoundedCornerShape(10.dp)
-//    ) {
-//        Text(text, color = btnColor)
-//    }
-//}
-
 @Composable
 fun ExpandContentTabBtn(
     icon: ImageVector,
@@ -168,7 +147,7 @@ fun ExpandContentTabBtn(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Icon(icon, contentDescription = "language icon")
-            Text(text = title, fontSize = 16.sp)
+            Text(text = title, fontSize = textFontSize())
             Icon(
                 Icons.Default.KeyboardArrowDown,
                 contentDescription = "Open appearance"

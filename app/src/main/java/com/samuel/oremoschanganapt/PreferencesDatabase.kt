@@ -12,6 +12,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.samuel.oremoschanganapt.ui.theme.Green
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
@@ -26,6 +27,7 @@ val themeColor = intPreferencesKey("themeColor")
 val secondThemeColor = intPreferencesKey("secondThemeColor")
 val themeMode = stringPreferencesKey("themeMode")
 val fontSize = stringPreferencesKey("fontSize")
+val locale = stringPreferencesKey("locale")
 val praysId = stringPreferencesKey("praysIds")
 val songsId = stringPreferencesKey("songsIds")
 
@@ -67,7 +69,7 @@ suspend fun saveThemeColor(context: Context, color: Color) {
 
 fun getThemeColor(context: Context): Flow<Color> {
     return context.dataStore.data.map { preferences ->
-        val argb = preferences[themeColor] ?: Color.Transparent.toArgb()
+        val argb = preferences[themeColor] ?: Color.Unspecified.toArgb()
         Color(argb)
     }
 }
@@ -76,7 +78,7 @@ suspend fun getInitialThemeColor(context: Context): Color {
     val colorInt = context.dataStore.data
         .firstOrNull()
         ?.get(key = themeColor)
-        ?: Color.Unspecified.toArgb()
+        ?: Green.toArgb()
     return Color(colorInt)
 }
 
@@ -151,3 +153,14 @@ suspend fun getIdSet(
 }
 
 
+//
+
+suspend fun saveLanguage(context: Context, newLocale: String) {
+    context.dataStore.edit { preferences ->
+        preferences[locale] = newLocale
+    }
+}
+
+suspend fun getInitialLanguage(context: Context): String {
+    return context.dataStore.data.firstOrNull()?.get(locale) ?: "pt"
+}

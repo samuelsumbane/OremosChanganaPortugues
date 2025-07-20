@@ -75,19 +75,26 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.samuel.oremoschanganapt.R
 import com.samuel.oremoschanganapt.SetIdPreference
 import com.samuel.oremoschanganapt.db.data.Song
 import com.samuel.oremoschanganapt.getIdSet
 import com.samuel.oremoschanganapt.repository.ColorObject
+import com.samuel.oremoschanganapt.repository.Configs
+import com.samuel.oremoschanganapt.repository.FontSize
+import com.samuel.oremoschanganapt.repository.FontSize.Companion.fromString
 import com.samuel.oremoschanganapt.saveIdSet
 import com.samuel.oremoschanganapt.ui.theme.DarkColor
 import com.samuel.oremoschanganapt.ui.theme.Orange
+import com.samuel.oremoschanganapt.view.states.UIState.configFontSize
 import com.samuelsumbane.oremoschanganapt.db.data.Pray
 import kotlinx.coroutines.Dispatchers
 //import com.samuelsumbane.oremoschanganapt.db.PrayViewModel
@@ -112,7 +119,7 @@ fun LoadingScreen() {
             trackColor = iconDefaultColor,
         )
         Spacer(Modifier.height(20.dp))
-        Text("Carregando...")
+        Text("${stringResource(R.string.loading)}...")
     }
 }
 
@@ -142,15 +149,17 @@ fun CommonRow(
     ) {
         Text(
             text = title,
-            fontSize = 18.sp,
+            fontSize = textFontSize(),
             color = Color.White,
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
+            fontWeight = FontWeight.SemiBold
         )
 
-        if (subTitle.isBlank()){
+        if (subTitle.isNotBlank()){
+            val fontSizeUnit = textFontSize().value - 5
             Text(
                 text = subTitle,
-                fontSize = 16.sp,
+                fontSize = fontSizeUnit.sp,
                 color = Color.White,
                 textAlign = TextAlign.Center
             )
@@ -244,13 +253,13 @@ fun SongRow(
             val songNumberColor = if (blackBackground) Color.White else MaterialTheme.colorScheme.tertiary
             Text(
                 text = song.number,
-                fontSize = 16.sp,
+                fontSize = (textFontSize().value - 5).sp,
                 color = songNumberColor,
                 fontWeight = FontWeight.SemiBold
             )
         }
 
-        Spacer(Modifier.width(4.dp))
+        Spacer(Modifier.width(6.dp))
 
         Row (
             modifier = Modifier
@@ -360,10 +369,8 @@ fun PrayRow(
     val context = LocalContext.current
     val mainColor = ColorObject.mainColor
     val secondColor = ColorObject.secondColor
-//    Log.d("themeColor", "from widget theme is: $secondColor")
     var lovedIdPrays by remember { mutableStateOf( mutableSetOf<Int>()) }
 //    var lovedState by remember { mutableStateOf(song.id in lovedIdSongs) }
-
 //    lovedState = song.id in lovedIdSongs
     LaunchedEffect(lovedIdPrays) {
         lovedIdPrays = getIdSet(context, SetIdPreference.PRAYS_ID.preferenceName).toMutableSet()
@@ -390,9 +397,7 @@ fun PrayRow(
                     ),
                     shape = RoundedCornerShape(16.dp)
                 )
-                .clickable {
-                    navController.navigate("eachOracao/${id}")
-                },
+                .clickable { navController.navigate("eachOracao/${id}") },
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Row(
@@ -400,6 +405,7 @@ fun PrayRow(
                     .fillMaxSize()
                     .weight(0.9f)
                     .fillMaxHeight()
+//                    .background(Color.Red)
             ) {
                 CommonRow(title, subTitle, Modifier.weight(1f))
             }
@@ -429,7 +435,8 @@ fun PrayRow(
 fun ColorPickerHSV(
     modifier: Modifier = Modifier,
     size: Int = 256,
-    initialColor: Color = Color.Red,
+    initialColor: Color = Color.Green,
+    isSolidColorTabSelected: (Boolean) -> Unit,
     onColorChanged: (Color) -> Unit,
     onSecondColorChanged: (Color) -> Unit
 ) {
@@ -456,7 +463,10 @@ fun ColorPickerHSV(
     }
 
     var selectedTabIndex by remember { mutableIntStateOf(0) }
-    val tabs = listOf("Sólida", "Gradiente")
+    val tabs = listOf(
+        stringResource(R.string.solid),
+        stringResource(R.string.gradient),
+    )
     val typography = MaterialTheme.typography
     var firstColorBoxSelected by remember { mutableStateOf(true) }
 
@@ -471,6 +481,7 @@ fun ColorPickerHSV(
         val y = saturation * (size - 1)
         selectorPosition = Offset(x, y)
 
+        isSolidColorTabSelected(true)
         onColorChanged(Color.hsv(hue, saturation, value))
         onSecondColorChanged(Color.hsv(hue2, saturation2, value))
     }
@@ -534,7 +545,7 @@ fun ColorPickerHSV(
         fun FirstColorPreviewer() {
             Spacer(Modifier.height(18.dp))
             spaceAroundContentWidget {
-                Text("Cor principal")
+                Text(text = stringResource(R.string.principal_color))
                 colorSelectBox(
                     color = selectedColor,
                     selected = firstColorBoxSelected,
@@ -560,11 +571,16 @@ fun ColorPickerHSV(
                     selected = selectedTabIndex == index,
                     onClick = {
                         selectedTabIndex = index
-                        if (index == 0) {
-                            onSecondColorChanged(Color.Unspecified)
-                        } else {
-                            firstColorBoxSelected = false
-                        }
+
+                        firstColorBoxSelected =
+                            if (index == 0) {
+                                onSecondColorChanged(Color.Unspecified)
+                                isSolidColorTabSelected(true)
+                                true
+                            } else {
+                                isSolidColorTabSelected(false)
+                                false
+                            }
                     },
                     selectedContentColor = ColorObject.mainColor,
                 )
@@ -596,7 +612,7 @@ fun ColorPickerHSV(
                         Spacer(Modifier.height(16.dp))
 
                         spaceAroundContentWidget {
-                            Text("Cor secundária")
+                            Text(text = stringResource(R.string.secondary_color))
                             colorSelectBox(
                                 color = secondSelectedColor,
                                 selected = !firstColorBoxSelected,
@@ -690,13 +706,18 @@ fun KeyValueTextRow(
         modifier = Modifier
             .padding(10.dp)
             .fillMaxSize()
+            .height(30.dp)
             .clickable { onClick() },
         Arrangement.SpaceBetween
     ) {
-        Text(key, fontSize = 17.sp)
-        Text(value, fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
+        Text(key, fontSize = textFontSize())
+        Text(value, fontSize = textFontSize(), fontWeight = FontWeight.SemiBold)
     }
 }
+
+@Composable
+fun textFontSize() = FontSize.fromString(configFontSize).size
+
 
 //@Composable
 //fun FilePickerScreen(viewModel: CommonViewModel) {

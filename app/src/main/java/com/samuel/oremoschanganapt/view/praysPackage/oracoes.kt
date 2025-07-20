@@ -34,8 +34,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.samuel.oremoschanganapt.R
 import com.samuel.oremoschanganapt.components.BottomAppBarPrincipal
 import com.samuel.oremoschanganapt.components.LoadingScreen
 import com.samuel.oremoschanganapt.components.PrayRow
@@ -76,7 +78,7 @@ fun OracoesPage(navController: NavController) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = {Text(text="Orações", color = MaterialTheme.colorScheme.tertiary)},
+                title = {Text(text = stringResource(R.string.prays), color = MaterialTheme.colorScheme.tertiary)},
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color.Transparent
                 ),

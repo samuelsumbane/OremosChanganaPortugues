@@ -50,99 +50,96 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.PopupProperties
 import androidx.navigation.NavController
+import com.samuel.oremoschanganapt.R
 import com.samuel.oremoschanganapt.SetIdPreference
 import com.samuel.oremoschanganapt.components.StarButton
 import com.samuel.oremoschanganapt.components.buttons.ShortcutsButton
+import com.samuel.oremoschanganapt.components.textFontSize
 import com.samuel.oremoschanganapt.db.data.songsData
 import com.samuel.oremoschanganapt.functionsKotlin.shareText
 import com.samuel.oremoschanganapt.getIdSet
 import com.samuel.oremoschanganapt.saveIdSet
+import com.samuel.oremoschanganapt.view.states.AppState.configSongNumber
 import com.samuelsumbane.oremoschanganapt.db.data.praysData
 import kotlinx.coroutines.launch
 
-//import com.samuelsumbane.oremoschanganapt.db.DefViewModel
-const val newSongsSize = 14
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun EachSong(
     navController: NavController,
     songId: Int,
-//    defViewModel: DefViewModel
 ) {
 
-//    val allDef by defViewModel.defs.collectAsState()
     val songData = songsData.first { it.id == songId }
+    var lovedSongsIds by remember { mutableStateOf(setOf<Int>())}
+    val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
+    var lovedState by remember { mutableStateOf(false) }
+    lovedState = songId in lovedSongsIds
+    configSongNumber = songData.number.toInt()
 
-//        val reminderes by reminderViewModel.reminders.collectAsState()
-        var lastNavBtnClicked by remember { mutableStateOf("") }
-        var lovedSongsIds by remember { mutableStateOf(setOf<Int>())}
-        val context = LocalContext.current
-        val coroutineScope = rememberCoroutineScope()
-        var lovedState by remember { mutableStateOf(false) }
-        lovedState = songId in lovedSongsIds
+    LaunchedEffect(lovedSongsIds) {
+        lovedSongsIds = getIdSet(context, SetIdPreference.SONGS_ID.preferenceName)
+    }
 
-        Log.d("songs", "loved List is: $lovedSongsIds")
+    var expanded by remember { mutableStateOf(false) }
+    val menuBtns = listOf("Lembrete", "Partilhar")
+    val btnsIcons = mapOf("Lembrete" to Icons.Default.Notifications, "Partilhar" to Icons.Default.Share)
 
-        LaunchedEffect(lovedSongsIds) {
-            lovedSongsIds = getIdSet(context, SetIdPreference.SONGS_ID.preferenceName)
-        }
+    var reminderColor by remember { mutableStateOf(Color.Gray) }
 
-        var expanded by remember { mutableStateOf(false) }
-        val menuBtns = listOf("Lembrete", "Partilhar")
-        val btnsIcons = mapOf("Lembrete" to Icons.Default.Notifications, "Partilhar" to Icons.Default.Share)
-
-        var reminderColor by remember { mutableStateOf(Color.Gray) }
-        
-        Scaffold(
-            topBar = {
-                TopAppBar(
-                    title = { Text(text="Cântico", color = MaterialTheme.colorScheme.tertiary) },
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.background
-                    ),
-                    navigationIcon = {
-                        IconButton(onClick = { navController.navigate("canticospage/todos/todos cânticos")  } ){
-                            Icon(imageVector = Icons.Outlined.ArrowBack, contentDescription = "Voltar")
-                        }
-                    },
-                    actions = {
-                        val context = LocalContext.current
-                        // ---------->>
-                        StarButton(lovedState) {
-                            coroutineScope.launch {
-                                if (lovedState) {
-                                    lovedSongsIds.toMutableSet().remove(songId)
-                                } else {
-                                    lovedSongsIds.toMutableSet().add(songId)
-                                }
-                                saveIdSet(context, lovedSongsIds, SetIdPreference.SONGS_ID.preferenceName)
-                                Log.d("songs", "to save $lovedSongsIds")
-                                lovedState = !lovedState
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text(text = "${stringResource(R.string.song)}: $configSongNumber", color = MaterialTheme.colorScheme.tertiary) },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background
+                ),
+                navigationIcon = {
+                    IconButton(onClick = { navController.navigate("canticospage/todos/todos cânticos")  } ){
+                        Icon(imageVector = Icons.Outlined.ArrowBack, contentDescription = stringResource(R.string.go_back))
+                    }
+                },
+                actions = {
+                    val context = LocalContext.current
+                    // ---------->>
+                    StarButton(lovedState) {
+                        coroutineScope.launch {
+                            if (lovedState) {
+                                lovedSongsIds.toMutableSet().remove(songId)
+                            } else {
+                                lovedSongsIds.toMutableSet().add(songId)
                             }
+                            saveIdSet(context, lovedSongsIds, SetIdPreference.SONGS_ID.preferenceName)
+                            Log.d("songs", "to save $lovedSongsIds")
+                            lovedState = !lovedState
                         }
+                    }
 
-                        IconButton(onClick = { expanded = !expanded }) {
-                            Icon(Icons.Default.MoreVert, contentDescription = "Opcoes")
-                            DropdownMenu(
-                                expanded = expanded,
-                                onDismissRequest = { expanded = false },
-                                properties = PopupProperties(focusable = true),
-                                modifier = Modifier.shadow(elevation = 3.dp, spotColor = Color.DarkGray)
-                            ) {
-                                menuBtns.forEach {
-                                    DropdownMenuItem(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        text = { Text(it) },
-                                        trailingIcon = { Icon(btnsIcons[it]!!, contentDescription = "l", Modifier.size(18.dp)) },
-                                        onClick = {
-                                            when(it) {
-                                                "Lembrete" -> {
+                    IconButton(onClick = { expanded = !expanded }) {
+                        Icon(Icons.Default.MoreVert, contentDescription = stringResource(R.string.options))
+                        DropdownMenu(
+                            expanded = expanded,
+                            onDismissRequest = { expanded = false },
+                            properties = PopupProperties(focusable = true),
+                            modifier = Modifier.shadow(elevation = 3.dp, spotColor = Color.DarkGray)
+                        ) {
+                            menuBtns.forEach {
+                                DropdownMenuItem(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    text = { Text(it) },
+                                    trailingIcon = { Icon(btnsIcons[it]!!, contentDescription = "l", Modifier.size(18.dp)) },
+                                    onClick = {
+                                        when(it) {
+                                            "Lembrete" -> {
 //                                                    var hasReminder = false
 //                                                    if (reminderes.isNotEmpty()){
 //                                                        for(reminder in reminderes){
@@ -161,125 +158,76 @@ fun EachSong(
 //                                                        navController.navigate("configurereminder/$songId/Song/0/0")
 //                                                        reminderColor = Color.Gray
 //                                                    }
-                                                }
-                                                "Partilhar" -> {
-                                                    shareText(context, "${songData.number} - ${songData.title} \n ${songData.body}")
-                                                }
+                                            }
+                                            "Partilhar" -> {
+                                                shareText(context, "${songData.number} - ${songData.title} \n ${songData.body}")
                                             }
                                         }
-                                    )
-                                }
+                                    }
+                                )
                             }
                         }
                     }
-                )
-            },
-            ) { paddingValues ->
-                val scrollState = rememberScrollState()
-                val pagerState = rememberPagerState(
-                    initialPage = songId.toInt() - 1,
-                    pageCount = { songsData.size }
-                )
+                }
+            )
+        }) { paddingValues ->
+        val scrollState = rememberScrollState()
+        val pagerState = rememberPagerState(
+            initialPage = songId.toInt() - 1, pageCount = { songsData.size })
 
-            /**
-             * In pagerState, initialPage receives songId - 1 because, will be page + 1
-             * in page inside HorizontalPager
-             */
+        /**
+         * In pagerState, initialPage receives songId - 1 because, will be page + 1
+         * in page inside HorizontalPager
+         */
 
-            HorizontalPager(
-                    state = pagerState,
-                    pageSpacing = 15.dp
-                ) { page ->
-                    val dbScale by  remember { mutableDoubleStateOf(1.3) }
-                    var scale by remember { mutableFloatStateOf(dbScale.toFloat()) }
+        HorizontalPager(
+            state = pagerState, pageSpacing = 15.dp
+        ) { page ->
+            val dbScale by remember { mutableDoubleStateOf(1.3) }
 
-                    songsData.first { it.id == page + 1 }.run {
-//                Log.d("page", "page is ${page}, songId is: ${songId}")
+            songsData.first { it.id == page + 1 }.run {
+                configSongNumber = number.toInt()
 
-    //            if(allDef.isNotEmpty()) {
-    //                val def = allDef.first()
-    //                val dbScale by remember { mutableStateOf(def.textScale) }
+                Box(
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .padding(paddingValues)
+                            .fillMaxSize()
+                            .verticalScroll(scrollState),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Spacer(modifier = Modifier.height(50.dp))
 
-    //                Box(modifier = Modifier
-    //                    .fillMaxSize()
-    //                    .pointerInput(Unit) {
-    //                        detectTransformGestures { _, pan, zoom, _ ->
-    //                            val newScale = scale * zoom
-    //                            scale = newScale.coerceIn(1.0f, 2.0f) // intervalo do zoom.
-    ////                            defViewModel.updateDef("textScale", scale.toDouble())
-    //                        }
-    //                    }
-    //                ) {
-                        Column(
-                            modifier = Modifier
-                                .padding(paddingValues)
-                                .fillMaxSize()
-                                .verticalScroll(scrollState),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Spacer(modifier = Modifier.height(50.dp))
+                        Text(
+                            text = title.uppercase(),
+                            fontWeight = FontWeight.Bold,
+                            fontSize = (textFontSize().value + 3).sp,
+                            textAlign = TextAlign.Center,
+                            softWrap = true
+                        )
 
-                            Row {
-                                Text(
-                                    "$number  -",
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 20.sp * scale,
-                                    modifier = Modifier.padding(end = 10.dp, bottom = 5.dp)
-                                )
+                        Spacer(modifier = Modifier.height(12.dp))
 
-                                Text(
-                                    text = title.uppercase(),
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 17.sp * scale,
-                                    lineHeight = (24.sp * scale),
-                                    softWrap = true
-                                )
-                            }
+                        Text(
+                            text = subTitle,
+                            fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
+                        )
 
-                            Spacer(modifier = Modifier.height(12.dp))
+                        Spacer(modifier = Modifier.height(12.dp))
 
-                            Text(text = subTitle, fontStyle = androidx.compose.ui.text.font.FontStyle.Italic)
-                            Spacer(modifier = Modifier.height(12.dp))
-
-                            Text(text = body.trimIndent(), fontSize = 19.sp * scale, lineHeight = (24.sp * scale), softWrap = true, modifier = Modifier
-                                .fillMaxWidth().padding(15.dp)
-                            )
-                        }
+                        Text(
+                            text = body.trimIndent(),
+                            fontSize = textFontSize(),
+                            softWrap = true,
+                            modifier = Modifier.padding(15.dp).fillMaxWidth()
+                        )
                     }
 
                     ShortcutsButton(navController)
                 }
             }
-
-}
-
-@Composable
-fun NavContentButton(lastNavBtnClicked: String, to: String, onClick: () -> Unit) {
-    val scale = remember { androidx.compose.animation.core.Animatable(1f) }
-
-    LaunchedEffect(lastNavBtnClicked) {
-        scale.animateTo(
-            targetValue = 1.7f, // Increase to 1.5x ------>>
-            animationSpec = tween(durationMillis = 200)
-        )
-        scale.animateTo(
-            targetValue = 1f,
-            animationSpec = tween(durationMillis = 200)
-        )
-    }
-
-    IconButton(onClick = onClick) {
-        val scalePrevValue = if (lastNavBtnClicked == "Prev") scale.value else 1f
-        val scaleNextValue = if (lastNavBtnClicked == "Next") scale.value else 1f
-        when (to) {
-            "Prev" -> Icon(Icons.TwoTone.KeyboardArrowLeft, contentDescription = "Back", modifier = Modifier.size(30.dp).graphicsLayer(
-                scaleX = scalePrevValue,
-                scaleY = scalePrevValue
-            ))
-            "Next" -> Icon(Icons.Default.KeyboardArrowRight, contentDescription = "Next", modifier = Modifier.size(30.dp).graphicsLayer(
-                scaleX = scaleNextValue,
-                scaleY = scaleNextValue
-            ))
         }
     }
 }

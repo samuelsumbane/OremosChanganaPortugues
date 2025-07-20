@@ -198,9 +198,7 @@ fun SongsPage(navController: NavController, value: String, readbleValue: String,
                 }
 
                 Row(Modifier.fillMaxSize().padding(paddingVales)) {
-                    if (!isPortrait) {
-                        SidebarNav(navController, "canticosAgrupados")
-                    }
+                    if (!isPortrait) SidebarNav(navController, "canticosAgrupados")
 
                     Box(modifier = Modifier.weight(1f)) {
                         LazyColumn(

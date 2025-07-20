@@ -20,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -51,7 +52,7 @@ fun MorePages(navController: NavController) {
                 verticalArrangement = Arrangement.SpaceEvenly,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text("Mais paginas", style = Typography.titleLarge, fontStyle = FontStyle.Italic)
+                Text(text = stringResource(R.string.more_pages), style = Typography.titleLarge, fontStyle = FontStyle.Italic)
                 Column(Modifier.fillMaxWidth(0.80f)) {
                     Row(
                         Modifier.fillMaxWidth(),
@@ -96,7 +97,7 @@ fun MorePages(navController: NavController) {
                     Spacer(Modifier.height(25.dp))
 
                     Row(
-                        Modifier.fillMaxWidth().height(85.dp),
+                        Modifier.fillMaxWidth().height(95.dp),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         MorePagesBtn(
