@@ -39,5 +39,8 @@
     <string name="font_size">Vukulu bya fonto</string>
     <string name="pt">Xiputukezi</string>
     <string name="ts">Xitxangana</string>
+    <string name="reminder">xi kumbukiso</string>
+    <string name="share">nhiquela</string>
+    <string name="fullscreen">telefon alata</string>
 
 </resources>

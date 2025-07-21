@@ -57,7 +57,7 @@ fun CanticosAgrupados( navController: NavController) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = stringResource(R.string.grouped_songs), color = MaterialTheme.colorScheme.tertiary, fontStyle = FontStyle.Italic, fontWeight = FontWeight.Bold) },
+                title = { Text(text = stringResource(R.string.grouped_songs), color = MaterialTheme.colorScheme.tertiary) },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color.Transparent
                 ),
@@ -110,7 +110,9 @@ fun CanticosAgrupados( navController: NavController) {
                                     horizontalArrangement = Arrangement.Center
                                 ) {
                                     Text(
-                                        text = group.value.uppercase(),
+                                        text = group.value
+                                            .uppercase()
+                                            .replace(" | ", "\n"),
                                         textAlign = TextAlign.Center,
                                         color = Color.White,
                                         fontWeight = FontWeight.SemiBold

@@ -30,9 +30,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
@@ -85,6 +87,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.samuel.oremoschanganapt.R
 import com.samuel.oremoschanganapt.SetIdPreference
+import com.samuel.oremoschanganapt.components.buttons.ShortcutsButton
 import com.samuel.oremoschanganapt.db.data.Song
 import com.samuel.oremoschanganapt.getIdSet
 import com.samuel.oremoschanganapt.repository.ColorObject
@@ -718,6 +721,53 @@ fun KeyValueTextRow(
 @Composable
 fun textFontSize() = FontSize.fromString(configFontSize).size
 
+@Composable
+fun pagerContent(
+    navController: NavController,
+    modifier: Modifier,
+    title: String,
+    subTitle: String,
+    body: String,
+    showShortcutButton: Boolean = true
+) {
+    val scrollState = rememberScrollState()
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .verticalScroll(scrollState),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Spacer(modifier = Modifier.height(30.dp))
+
+            Text(
+                text = title,
+                fontWeight = FontWeight.Bold,
+                fontSize = (textFontSize().value + 2).sp,
+                textAlign = TextAlign.Center,
+                softWrap = true
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Text(
+                text = subTitle,
+                fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Text(
+                text = body.trimIndent(),
+                fontSize = textFontSize(),
+                softWrap = true,
+                modifier = Modifier.padding(15.dp).fillMaxWidth()
+            )
+        }
+
+        if (showShortcutButton) ShortcutsButton(navController)
+    }
+}
 
 //@Composable
 //fun FilePickerScreen(viewModel: CommonViewModel) {
@@ -776,3 +826,5 @@ fun textFontSize() = FontSize.fromString(configFontSize).size
 //        launcher.launch("lovedItems_backup.json")
 //    }
 //}
+
+

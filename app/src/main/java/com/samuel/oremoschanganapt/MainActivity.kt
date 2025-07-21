@@ -3,7 +3,6 @@ package com.samuel.oremoschanganapt
 
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
@@ -12,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -27,30 +25,25 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.samuel.oremoschanganapt.components.LoadingScreen
-import com.samuel.oremoschanganapt.functionsKotlin.stringToColor
 import com.samuel.oremoschanganapt.functionsKotlin.updateLocale
-//import com.samuel.oremoschanganapt.repository.TablesViewModels
 import com.samuel.oremoschanganapt.repository.ColorObject
 import com.samuel.oremoschanganapt.repository.Configs
 import com.samuel.oremoschanganapt.repository.Configs.appLocale
 import com.samuel.oremoschanganapt.ui.theme.OremosChanganaTheme
+import com.samuel.oremoschanganapt.view.DataCollection
 import com.samuel.oremoschanganapt.view.Home
 import com.samuel.oremoschanganapt.view.SplashWindow
+import com.samuel.oremoschanganapt.view.eachPage
 import com.samuel.oremoschanganapt.view.morepagesPackage.Apendice
 import com.samuel.oremoschanganapt.view.morepagesPackage.FestasMoveis
 import com.samuel.oremoschanganapt.view.morepagesPackage.Licionario
 import com.samuel.oremoschanganapt.view.morepagesPackage.LovedDataPage
 import com.samuel.oremoschanganapt.view.morepagesPackage.MorePages
-import com.samuel.oremoschanganapt.view.praysPackage.EachPray
 import com.samuel.oremoschanganapt.view.praysPackage.OracoesPage
 import com.samuel.oremoschanganapt.view.settingsPackage.AppearancePage
 import com.samuel.oremoschanganapt.view.sideBar.About
 import com.samuel.oremoschanganapt.view.songsPackage.CanticosAgrupados
-import com.samuel.oremoschanganapt.view.songsPackage.EachSong
 import com.samuel.oremoschanganapt.view.songsPackage.SongsPage
-//import com.samuelsumbane.oremoschanganapt.db.DefViewModel
-//import com.samuelsumbane.oremoschanganapt.db.PrayViewModel
-//import com.samuelsumbane.oremoschanganapt.db.SongViewModel
 import com.samuelsumbane.oremoschanganapt.db.data.praysData
 import java.util.Locale
 
@@ -64,15 +57,10 @@ class  MainActivity : ComponentActivity() {
 
             val context = LocalContext.current
 
-//            val allPrays by prayViewModel.prays.collectAsState()
-//            val defs by defViewModel.defs.collectAsState()
 //            val reminders by reminderViewModel.reminders.collectAsState()
-
             // New
             var fontSize by remember { mutableStateOf("") }
-//            var themeMode by getThemeMode(context).collectAsState(initial = "Dark")
             var themeMode by remember { mutableStateOf("") }
-//            var themeMode by getThemeMode(context).collectAsState(initial = "Dark")
             var themeColor by remember { mutableStateOf(Color.Unspecified) }
             var secondThemeColor by remember { mutableStateOf(Color.Unspecified) }
 //            val themeColor by getThemeColor(context).collectAsState(initial = Color.Unspecified)
@@ -166,13 +154,21 @@ class  MainActivity : ComponentActivity() {
                                     composable(route = "eachCantico/{songId}") { aC ->
                                         val stringSongId = aC.arguments?.getString("songId") ?: "0"
                                         val songId = stringSongId.toInt()
-                                        EachSong(navController, songId)
+                                        eachPage(
+                                            navController,
+                                            dataCollection = DataCollection.SONGS,
+                                            itemId = songId
+                                        )
                                     }
 
                                     composable(route = "eachOracao/{prayid}") { eO ->
-                                        val prayid = eO.arguments?.getString("prayid") ?: ""
+                                        val prayid = eO.arguments?.getString("prayid") ?: "0"
                                         val prayId = prayid.toInt()
-                                        EachPray(navController, prayId)
+                                        eachPage(
+                                            navController,
+                                            dataCollection = DataCollection.PRAYS,
+                                            itemId = prayId
+                                        )
                                     }
 
                                     composable(route = "canticosAgrupados") {

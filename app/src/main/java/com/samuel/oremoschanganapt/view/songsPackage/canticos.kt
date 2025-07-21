@@ -50,6 +50,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.samuel.oremoschanganapt.R
 import com.samuel.oremoschanganapt.SetIdPreference
@@ -60,6 +61,7 @@ import com.samuel.oremoschanganapt.components.SongRow
 import com.samuel.oremoschanganapt.components.buttons.ScrollToFirstItemBtn
 import com.samuel.oremoschanganapt.components.buttons.ShortcutsButton
 import com.samuel.oremoschanganapt.components.searchContainer
+import com.samuel.oremoschanganapt.components.textFontSize
 import com.samuel.oremoschanganapt.db.data.Song
 import com.samuel.oremoschanganapt.db.data.songsData
 import com.samuel.oremoschanganapt.functionsKotlin.isNumber
@@ -103,12 +105,20 @@ fun SongsPage(navController: NavController, value: String, readbleValue: String,
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = readbleValue.replaceFirstChar { e -> e.uppercase() }, color = MaterialTheme.colorScheme.tertiary, ) },
+                title = {
+                    Text(
+                        text = readbleValue
+                            .replaceFirstChar { e -> e.uppercase() }
+                            .replace(" | ", "\n"),
+                        fontSize = if ("|" in readbleValue) (textFontSize().value - 1).sp else textFontSize(),
+                        color = MaterialTheme.colorScheme.tertiary,
+                    )
+                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color.Transparent
                 ),
                 navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
+                    IconButton(onClick = { navController.navigate("canticosAgrupados") }) {
                         Icon(imageVector = Icons.Outlined.ArrowBack, contentDescription = null)
                     }
                 },

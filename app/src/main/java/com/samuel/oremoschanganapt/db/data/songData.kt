@@ -12,9 +12,9 @@ data class Song(
 
 val songsData = listOf(
 
-    Song(id = 1,"1","Entrada","A hi fambeni, hi ya gandzela (236)",""," Coro: A hi fambeni, a hi fambeni,\n hi ya gandzela Hosi. \n\n  1 - Hosi wa fuma, u yambale wukulukumba.\n 2 - Matilo ma tsakile, misava yi tlangela Hosi.\n 3 - Ku kwetsima ka Wena Hosi, hi la ku nga heliki.\n 4 - Hosi hi munene, a fuma hi ku rhula.\n 5 - Tanani, yi yimbelela, hi huwelela hi ku tsaka.\n 6 - Tanani hi khinsamela Hosi Muvumbi wa hina.\n 7 - Nwina valulami dzunisani Vito la Yena."),
+    Song(id = 1,"1","Entrada","A hi fambeni, hi ya gandzela (236)",""," Coro: A hi fambeni, a hi fambeni,\n hi ya gandzela Hosi. \n\n  1 - Hosi wa fuma, u yambale wukulukumba.\n  2 - Matilo ma tsakile, misava yi tlangela Hosi.\n  3 - Ku kwetsima ka Wena Hosi, hi la ku nga heliki.\n  4 - Hosi hi munene, a fuma hi ku rhula.\n  5 - Tanani, yi yimbelela, hi huwelela hi ku tsaka.\n  6 - Tanani hi khinsamela Hosi Muvumbi wa hina.\n  7 - Nwina valulami dzunisani Vito la Yena."),
 
-    Song(id = 2,"2","Entrada","A hi fambeni hinkwerhu (1)","","  Coro: A hi fambeni hinkwerhu le ka Hosi Bava (3 v.)\n Ku tsakeni lo'ku nga heliki.\n\n\n  1 - Hi tshama na Yesu, na Yena Bava (3 v.)\n Ku tsakeni lo'ku nga heliki.\n\n 2 - A ku na livengo le ka Yena Bava (3 v.)\n Ku ni ku tsaka lo'ku nga heliki.\n\n 3 - A ku na wukwele le ka Yena Bava (3 v.)\n Ku ni ku tsaka lo'ku nga heliki."),
+    Song(id = 2,"2","Entrada","A hi fambeni hinkwerhu (1)","","  Coro: A hi fambeni hinkwerhu le ka Hosi Bava (3 v.)\n Ku tsakeni lo'ku nga heliki.\n\n\n  1 - Hi tshama na Yesu, na Yena Bava (3 v.)\n Ku tsakeni lo'ku nga heliki.\n\n  2 - A ku na livengo le ka Yena Bava (3 v.)\n Ku ni ku tsaka lo'ku nga heliki.\n\n  3 - A ku na wukwele le ka Yena Bava (3 v.)\n Ku ni ku tsaka lo'ku nga heliki."),
 
     Song(id = 3,"3","Entrada","Ha lava ku ku landza (2)","","  1 - ha lava ku ku landza, ina, ha kunen\n\n  Coro: Xikwembu, hi lungisele ndlela leyi.\n\n  2 - Ka hinkwaswo swa swinene, ina hi ta swi landza (2x)\n\n  3 - Ndza swi lava ku ku rhandza, ina ha kunene (2x)\n\n  4 - Ndza swi lava ku yingisa, ina ha kunene (2x)."),
 

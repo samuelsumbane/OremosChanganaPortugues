@@ -30,7 +30,7 @@
     <string name="apply">Aplicar</string>
     <string name="go_back">Voltar</string>
     <string name="options">Opções</string>
-    <string name="grouped_songs">Cânticos Agrupados</string>
+    <string name="grouped_songs">Cânticos agrupados</string>
     <string name="loved">Favoritos</string>
     <string name="more_pages">Mais paginas</string>
     <string name="home">Casa</string>
@@ -39,5 +39,8 @@
     <string name="font_size">Tamanho da letra</string>
     <string name="pt">Português</string>
     <string name="ts">Changana</string>
+    <string name="reminder">Lembrete</string>
+    <string name="share">Partilhar</string>
+    <string name="fullscreen">Tela cheia</string>
 
 </resources>

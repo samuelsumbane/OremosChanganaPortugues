@@ -74,7 +74,6 @@ fun OracoesPage(navController: NavController) {
         Log.d("prays", "$lovedPraysIds")
     }
 
-
     Scaffold(
         topBar = {
             TopAppBar(
