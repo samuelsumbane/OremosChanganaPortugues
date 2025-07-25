@@ -47,7 +47,6 @@ fun MorePagesBtn(
     onClick: () -> Unit
 ) {
     val mainColor = ColorObject.mainColor
-    val secondColor = ColorObject.secondColor
 
     Button(
         onClick = onClick,
@@ -60,7 +59,7 @@ fun MorePagesBtn(
                         mainColor,
                         lerp(
                             start = mainColor,
-                            stop = if (secondColor == Color.Unspecified) mainColor else secondColor,
+                            stop = if (ColorObject.secondColor == Color.Unspecified) mainColor else ColorObject.secondColor,
                             fraction = 0.9f
                         )
                     ),

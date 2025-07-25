@@ -1,12 +1,17 @@
 package com.samuel.oremoschanganapt.view.morepagesPackage
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection.Companion.Down
+import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection.Companion.Up
+import androidx.compose.animation.core.EaseIn
+import androidx.compose.animation.core.EaseOut
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowBack
@@ -14,20 +19,23 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawWithContent
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
@@ -37,19 +45,23 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.samuel.oremoschanganapt.R
+import com.samuel.oremoschanganapt.SetIdPreference
 import com.samuel.oremoschanganapt.components.BottomAppBarPrincipal
 import com.samuel.oremoschanganapt.components.PrayRow
-import com.samuel.oremoschanganapt.components.searchContainer
 import com.samuel.oremoschanganapt.components.SidebarNav
 import com.samuel.oremoschanganapt.components.SongRow
-import com.samuel.oremoschanganapt.components.buttons.ShortcutsButton
+import com.samuel.oremoschanganapt.components.lazyColumn
+import com.samuel.oremoschanganapt.components.searchContainer
+import com.samuel.oremoschanganapt.db.data.Pray
 import com.samuel.oremoschanganapt.db.data.Song
+import com.samuel.oremoschanganapt.db.data.praysData
 import com.samuel.oremoschanganapt.db.data.songsData
+import com.samuel.oremoschanganapt.functionsKotlin.DataCollection
 import com.samuel.oremoschanganapt.functionsKotlin.isNumber
 import com.samuel.oremoschanganapt.getIdSet
 import com.samuel.oremoschanganapt.repository.ColorObject
-import com.samuelsumbane.oremoschanganapt.db.data.Pray
-import com.samuelsumbane.oremoschanganapt.db.data.praysData
+import com.samuel.oremoschanganapt.saveIdSet
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -60,29 +72,31 @@ fun LovedDataPage(navController: NavController) {
 
     var lPrays by remember { mutableStateOf(mutableListOf<Pray>()) }
     val lSongs by remember { mutableStateOf(mutableListOf<Song>()) }
-    var lovedSongsIds by remember { mutableStateOf(setOf<Int>()) }
-    var lovedPraysIds by remember { mutableStateOf(setOf<Int>()) }
 
     val context = LocalContext.current
+    var lovedIdPrays by remember { mutableStateOf(setOf<Int>()) }
+    var lovedIdSongs by remember { mutableStateOf(setOf<Int>()) }
+    val coroutineScope = rememberCoroutineScope()
 
-    LaunchedEffect(lovedSongsIds) {
-        lovedSongsIds = getIdSet(context, "songs_id_set")
-        lovedSongsIds.forEach { id ->
+    LaunchedEffect(Unit) {
+        lovedIdPrays = getIdSet(context, SetIdPreference.PRAYS_ID.preferenceName)
+        lovedIdSongs = getIdSet(context, SetIdPreference.SONGS_ID.preferenceName)
+    }
+
+    LaunchedEffect(lovedIdSongs) {
+        lovedIdSongs.forEach { id ->
             songsData
                 .firstOrNull { it.id == id }
                 ?.let { song -> lSongs.add(song) }
         }
     }
 
-    LaunchedEffect(lovedPraysIds) {
-        lovedPraysIds = getIdSet(context, "prays_id_set")
-
-        lovedPraysIds.forEach { id ->
+    LaunchedEffect(lovedIdPrays) {
+        lovedIdPrays.forEach { id ->
             praysData
                 .firstOrNull { it.id == id }
                 ?.let {  pray -> lPrays.add(pray) }
         }
-
     }
 
     val filteredPrays = remember(lPrays, searchValue){
@@ -104,6 +118,21 @@ fun LovedDataPage(navController: NavController) {
         } else lSongs
     }
 
+    var selectedTabIndex by remember { mutableIntStateOf(0) }
+    val tabs = listOf(
+        stringResource(R.string.songs), stringResource(R.string.prays),
+    )
+
+    @Composable
+    fun dataNotFound(text: String) {
+        Column(
+            modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(text = text , textAlign = TextAlign.Center, fontWeight = FontWeight.Bold)
+        }
+    }
+
+    
     Scaffold(
         topBar = {
             TopAppBar(
@@ -117,7 +146,7 @@ fun LovedDataPage(navController: NavController) {
                     }
                 },
                 actions = {
-                    searchValue = searchContainer(searchValue, stringResource(R.string.search_loved))
+//                    searchValue = searchContainer(searchValue, stringResource(R.string.search_loved))
                 }
             )
         },
@@ -125,57 +154,113 @@ fun LovedDataPage(navController: NavController) {
             if (isPortrait) BottomAppBarPrincipal(navController, "morepages")
         }
     ) { paddingVales ->
-
-        Row(Modifier.padding(paddingVales).fillMaxSize()) {
+        Column(
+            Modifier
+                .padding(paddingVales)
+                .fillMaxSize()
+        ) {
             if (!isPortrait) SidebarNav(navController, "canticosAgrupados")
 
-            if (lPrays.isEmpty() && lSongs.isEmpty()){
-                Column(
-                    modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(text = "Nenhuma oração ou cântico encontrado.", textAlign = TextAlign.Center, fontWeight = FontWeight.Bold)
+            @Composable
+            fun tabContent(dataCollection: DataCollection) {
+                if (dataCollection == DataCollection.PRAYS) {
+                    if (lPrays.isEmpty()) {
+                        dataNotFound(text = "Nenhuma oração encontrada.")
+                    } else {
+                        lazyColumn {
+                            items(filteredPrays) { pray ->
+                                PrayRow(
+                                    navController,
+                                    pray = pray,
+                                    loved = pray.id in lovedIdPrays,
+                                    onToggleLoved = { id ->
+                                        coroutineScope.launch {
+                                            val newSet = lovedIdPrays.toMutableSet().apply {
+                                                if (contains(id)) remove(id) else add(id)
+                                            }
+                                            saveIdSet(
+                                                context, newSet, SetIdPreference.PRAYS_ID.preferenceName
+                                            )
+                                            lovedIdPrays = newSet
+                                        }
+                                    })
+                            }
+                        }
+                    }
+                } else {
+                    if (lSongs.isEmpty()) {
+                        dataNotFound(text = "Nenhum cântico encontrado.")
+                    } else {
+                        lazyColumn {
+                            items(filteredSongs) { song ->
+                                SongRow(
+                                    navController,
+                                    song,
+                                    loved = song.id in lovedIdSongs,
+                                    onToggleLoved = { id ->
+                                        coroutineScope.launch {
+                                            val newSet = lovedIdSongs.toMutableSet().apply {
+                                                if (contains(id)) remove(id) else add(id)
+                                            }
+                                            saveIdSet(
+                                                context, newSet, SetIdPreference.SONGS_ID.preferenceName
+                                            )
+                                            lovedIdSongs = newSet
+                                        }
+                                    }
+                                )
+                            }
+                        }
+                    }
                 }
-            } else  {
-                LazyColumn(
-                    modifier = Modifier.fillMaxWidth().padding(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    if (filteredSongs.isNotEmpty()) {
-                        item { ColumnDivider(if (filteredSongs.size == 1) "Cântico" else "Cânticos") }
-                        items (filteredSongs) { song ->
-                            SongRow(navController, song, reloadIcon = false)
-                        }
-                    }
-                    if (filteredPrays.isNotEmpty()) {
-                        item { ColumnDivider(if (filteredPrays.size == 1) "Oração" else "Orações") }
-                        items (filteredPrays) { pray ->
-                            PrayRow(navController, pray = pray, reloadIcon = false)
-                        }
-                    }
+            }
 
+            TabRow(
+                selectedTabIndex = selectedTabIndex,
+                modifier = Modifier.padding(10.dp).background(Color.Gray)
+            ) {
+                tabs.forEachIndexed { index, tab ->
+                    Tab(
+                        text = {
+                            Text(
+                                text = tab,
+                                style = typography.bodyMedium,
+                                fontWeight = if (selectedTabIndex == index) FontWeight.SemiBold else FontWeight.Normal,
+                                color = MaterialTheme.colorScheme.tertiary
+                            )
+                        },
+                        selected = selectedTabIndex == index,
+                        onClick = {
+                            selectedTabIndex = index
+                        },
+                        selectedContentColor = ColorObject.mainColor,
+                    )
+                }
+            }
+
+            AnimatedContent(
+                targetState = selectedTabIndex,
+                transitionSpec = {
+                    slideIntoContainer(
+                        animationSpec = tween(400, easing = EaseIn), towards = Up
+                    ).togetherWith(
+                        slideOutOfContainer(
+                            animationSpec = tween(450, easing = EaseOut), towards = Down
+                        )
+                    )
+                },
+            ) { selectedTabIndex ->
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.spacedBy(20.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    when (selectedTabIndex) {
+                        0 -> tabContent(DataCollection.SONGS)
+                        1 -> tabContent(DataCollection.PRAYS)
+                    }
                 }
             }
         }
-
-        ShortcutsButton(navController)
-    }
-}
-
-@Composable
-fun ColumnDivider(text: String) {
-    val mainColor = ColorObject.mainColor
-    Column(
-        Modifier.fillMaxWidth()
-            .drawWithContent {
-                drawContent()
-                drawLine(
-                    color = mainColor,
-                    start = Offset(0f, size.height),
-                    end = Offset(size.width, size.height),
-                    strokeWidth = 3.dp.toPx(),
-                )
-            }
-    ) {
-        Text(text, Modifier.align(Alignment.CenterHorizontally).padding(bottom = 8.dp))
     }
 }

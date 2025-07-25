@@ -62,10 +62,14 @@ import com.samuel.oremoschanganapt.components.buttons.ScrollToFirstItemBtn
 import com.samuel.oremoschanganapt.components.buttons.ShortcutsButton
 import com.samuel.oremoschanganapt.components.searchContainer
 import com.samuel.oremoschanganapt.components.textFontSize
+import com.samuel.oremoschanganapt.components.toastAlert
 import com.samuel.oremoschanganapt.db.data.Song
 import com.samuel.oremoschanganapt.db.data.songsData
 import com.samuel.oremoschanganapt.functionsKotlin.isNumber
 import com.samuel.oremoschanganapt.getIdSet
+import com.samuel.oremoschanganapt.repository.ColorObject
+import com.samuel.oremoschanganapt.saveIdSet
+import com.samuel.oremoschanganapt.view.states.AppState.isSearchInputVisible
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -83,11 +87,13 @@ fun SongsPage(navController: NavController, value: String, readbleValue: String,
 
     val configuration = LocalConfiguration.current
     val isPortrait = configuration.orientation == android.content.res.Configuration.ORIENTATION_PORTRAIT
-    var mutableLovedSongs by remember { mutableStateOf(mutableSetOf<Int>()) }
+    val context = LocalContext.current
     var lovedSongsIds by remember { mutableStateOf(setOf<Int>()) }
-    var lovedSongsData by remember { mutableStateOf(listOf<Song>()) }
 
-    var context = LocalContext.current
+    LaunchedEffect(Unit) {
+        lovedSongsIds = getIdSet(context, SetIdPreference.SONGS_ID.preferenceName)
+    }
+
 
     val data = when(value){
         "todos" -> allSongs
@@ -101,12 +107,11 @@ fun SongsPage(navController: NavController, value: String, readbleValue: String,
     }
 
 
-
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(
+                    if (!isSearchInputVisible) Text(
                         text = readbleValue
                             .replaceFirstChar { e -> e.uppercase() }
                             .replace(" | ", "\n"),
@@ -140,8 +145,12 @@ fun SongsPage(navController: NavController, value: String, readbleValue: String,
                             },
                         ) { activeInput ->
                             when (activeInput) {
-                                0 -> searchValue = searchContainer(searchString = searchValue, searchInputLabel = "Pesquisar Cântico", searchInputActive)
-                                1 -> advancedSearchString = searchContainer(searchString = advancedSearchString, searchInputLabel = "Pesquisa Avançada", searchInputActive)
+                                0 -> searchContainer("Pesquisar cântico") {
+                                    searchValue = it
+                                }
+                                1 -> searchContainer("Pesquisa avançada") {
+                                    advancedSearchString = it
+                                }
                             }
                         }
 
@@ -154,13 +163,22 @@ fun SongsPage(navController: NavController, value: String, readbleValue: String,
                                 modifier = Modifier,
                                 onClick = {
                                    activeInput = if (activeInput == 0) 1 else 0
-                                   searchInputActive = true
+                                   searchInputActive = !searchInputActive
+                                   if (searchInputActive) {
+                                       toastAlert(
+                                           context,
+                                           text = "Pesquisa avançada activada\n" +
+                                                   "Encontra o cântico pelo seu conteúdo"
+
+                                       )
+                                   }
                                 }
                             ) {
                                 Icon(
-                                    imageVector = ImageVector.vectorResource(id = R.drawable.ic_reloadicon),
+                                    imageVector = ImageVector.vectorResource(id = R.drawable.advanced_search),
                                     contentDescription = "Trocar o campo de pesquisa",
-                                    modifier = Modifier.size(24.dp).padding(top=4.dp),
+                                    tint = if (searchInputActive) ColorObject.mainColor else MaterialTheme.colorScheme.tertiary,
+                                    modifier = Modifier.size(33.dp).padding(top=6.dp),
                                 )
                             }
                         }
@@ -214,12 +232,22 @@ fun SongsPage(navController: NavController, value: String, readbleValue: String,
                         LazyColumn(
                             state = listState,
                             modifier = Modifier.fillMaxSize().padding(5.dp),
-                            verticalArrangement = Arrangement.spacedBy(16.dp)
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
                             items(filteredSongs) {
                                 SongRow(
                                     navController,
-                                    song = it
+                                    song = it,
+                                    loved = it.id in lovedSongsIds,
+                                    onToggleLoved = { id ->
+                                        coroutineScope.launch {
+                                            val newSet = lovedSongsIds.toMutableSet().apply {
+                                                if (contains(id)) remove(id) else add(id)
+                                            }
+                                            saveIdSet(context, newSet, SetIdPreference.SONGS_ID.preferenceName)
+                                            lovedSongsIds = newSet
+                                        }
+                                    }
                                 )
                             }
                         }

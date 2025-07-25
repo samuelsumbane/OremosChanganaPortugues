@@ -63,7 +63,7 @@ fun FestasMoveis(navController: NavController) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text="Festas Móveis", color = MaterialTheme.colorScheme.tertiary) },
+                title = { Text(text="Festas móveis", color = MaterialTheme.colorScheme.tertiary) },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.background
                 ),
@@ -88,11 +88,13 @@ fun FestasMoveis(navController: NavController) {
                 Column(
                     Modifier.fillMaxWidth(0.9f)
                         .background(brush = Brush.horizontalGradient(
-                            colors = listOf(itemBgColor, lerp(itemBgColor, DarkColor, 0.9f)),
+                            colors = listOf(itemBgColor, lerp(itemBgColor, ColorObject.secondColor, 0.9f)),
                         ), RoundedCornerShape(10.dp))
                 ) {
                     Column(
-                        Modifier.fillMaxWidth().padding(10.dp)
+                        Modifier
+                            .padding(10.dp)
+                            .fillMaxWidth()
                     ) {
                         Row(
                             Modifier.fillMaxWidth(),

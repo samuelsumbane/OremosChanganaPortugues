@@ -39,8 +39,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.PopupProperties
 import androidx.navigation.NavController
-import com.samuel.oremoschanganapt.components.colorPickerDemo
-import com.samuel.oremoschanganapt.functionsKotlin.stringToColor
 import com.samuel.oremoschanganapt.R
 //import com.samuel.oremoschanganapt.components.BackupPickerScreen
 import com.samuel.oremoschanganapt.components.DefTabButton
@@ -299,7 +297,7 @@ fun RowColors (
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween){
             SidebarText(text = rowText, fontSize = 15)
-            returnValue = colorPickerDemo(stringToColor(defaultColor), withIcon = false)
+//            returnValue = colorPickerDemo(stringToColor(defaultColor), withIcon = false)
         }
     }
     return returnValue

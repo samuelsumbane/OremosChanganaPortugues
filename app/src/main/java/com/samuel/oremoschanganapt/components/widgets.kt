@@ -1,7 +1,6 @@
 package com.samuel.oremoschanganapt.components
 
 import android.content.Context
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection.Companion.Down
@@ -30,6 +29,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CircleShape
@@ -81,28 +82,21 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.samuel.oremoschanganapt.R
-import com.samuel.oremoschanganapt.SetIdPreference
 import com.samuel.oremoschanganapt.components.buttons.ShortcutsButton
 import com.samuel.oremoschanganapt.db.data.Song
-import com.samuel.oremoschanganapt.getIdSet
 import com.samuel.oremoschanganapt.repository.ColorObject
-import com.samuel.oremoschanganapt.repository.Configs
 import com.samuel.oremoschanganapt.repository.FontSize
-import com.samuel.oremoschanganapt.repository.FontSize.Companion.fromString
-import com.samuel.oremoschanganapt.saveIdSet
 import com.samuel.oremoschanganapt.ui.theme.DarkColor
 import com.samuel.oremoschanganapt.ui.theme.Orange
 import com.samuel.oremoschanganapt.view.states.UIState.configFontSize
-import com.samuelsumbane.oremoschanganapt.db.data.Pray
+import com.samuel.oremoschanganapt.db.data.Pray
 import kotlinx.coroutines.Dispatchers
 //import com.samuelsumbane.oremoschanganapt.db.PrayViewModel
 //import com.samuelsumbane.oremoschanganapt.db.SongViewModel
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 
@@ -221,20 +215,15 @@ fun RadioButtonDialog(
 fun SongRow(
     navController: NavController,
     song: Song,
-    reloadIcon: Boolean = true,
-    blackBackground: Boolean = false
+    blackBackground: Boolean = false,
+    loved: Boolean = false,
+    showStarButton: Boolean = true,
+    onToggleLoved: (Int) -> Unit = {},
 ) {
     val mainColor = ColorObject.mainColor
-    val secondColor = ColorObject.secondColor
     var lovedIdSongs by remember { mutableStateOf( mutableSetOf<Int>()) }
 //    var lovedState by remember { mutableStateOf(song.id in lovedIdSongs) }
     val context = LocalContext.current
-
-//    lovedState = song.id in lovedIdSongs
-    LaunchedEffect(lovedIdSongs) {
-        lovedIdSongs = getIdSet(context, SetIdPreference.SONGS_ID.preferenceName).toMutableSet()
-    }
-
     val coroutineScope = rememberCoroutineScope()
 
     Row(
@@ -248,7 +237,7 @@ fun SongRow(
             modifier = Modifier
                 .size(40.dp)
                 .height(60.dp)
-                .border(1.dp, lerp(mainColor, DarkColor, 0.3f), RoundedCornerShape(50))
+                .border(1.dp, lerp(mainColor, ColorObject.secondColor, 0.3f), RoundedCornerShape(50))
                 .align(Alignment.CenterVertically),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
@@ -274,7 +263,7 @@ fun SongRow(
                             mainColor,
                             lerp(
                                 start = mainColor,
-                                stop = if (secondColor == Color.Unspecified) mainColor else secondColor,
+                                stop = if (ColorObject.secondColor == Color.Unspecified) ColorObject.mainColor else ColorObject.secondColor,
                                 fraction = 0.9f
                             )
                         ),
@@ -285,32 +274,81 @@ fun SongRow(
         ) {
             CommonRow(song.title, song.subTitle, Modifier.weight(1f))
             Row(Modifier.padding(end = 10.dp)) {
-                StarButton(lovedState = song.id in lovedIdSongs) {
-                    coroutineScope.launch {
-                        if (song.id in lovedIdSongs) {
-                            Log.d("songs", "before re: $lovedIdSongs")
-                            lovedIdSongs.remove(song.id)
-                            Log.d("songs", "after re: $lovedIdSongs")
-                        } else {
-                            Log.d("songs", "before add: $lovedIdSongs")
-                            lovedIdSongs.add(song.id)
-                            Log.d("songs", "after add: $lovedIdSongs")
-                        }
-                        Log.d("songs", "to save List: $lovedIdSongs")
-
-                        saveIdSet(
-                            context,
-                            lovedIdSongs.toSet(),
-                            SetIdPreference.SONGS_ID.preferenceName)
-//                        if (reloadIcon) lovedState = !lovedState
-
-                        lovedIdSongs = getIdSet(context, SetIdPreference.SONGS_ID.preferenceName).toMutableSet()
+                if (showStarButton) {
+                    StarButton(loved) {
+                        onToggleLoved(song.id)
                     }
                 }
             }
         }
     }
 }
+
+
+@Composable
+fun lazyColumn(content:  LazyListScope.() -> Unit) {
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) { content() }
+}
+
+@Composable
+fun PrayRow(
+    navController: NavController,
+    pray: Pray,
+    loved: Boolean = false,
+    showStarButton: Boolean = true,
+    onToggleLoved: (Int) -> Unit = {},
+) {
+    val mainColor = ColorObject.mainColor
+    val secondColor = ColorObject.secondColor
+
+    with(pray) {
+        Row(
+            modifier = Modifier
+                .padding(8.dp, 0.dp, 0.dp, 0.dp)
+                .fillMaxSize()
+                .height(55.dp)
+                .background(
+                    brush = Brush.horizontalGradient(
+                        colors = listOf(
+                            mainColor,
+                            lerp(
+                                start = mainColor,
+                                stop = if (secondColor == Color.Unspecified) mainColor else secondColor,
+                                fraction = 0.9f
+                            )
+                        ),
+                    ),
+                    shape = RoundedCornerShape(12.dp)
+                )
+                .clickable { navController.navigate("eachOracao/$id") },
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .weight(0.9f)
+                    .fillMaxHeight()
+            ) {
+                CommonRow(title, subTitle, Modifier.weight(1f))
+            }
+
+            Row(Modifier.padding(end = 10.dp)) {
+                if (showStarButton) {
+                    StarButton(loved) {
+                        onToggleLoved(pray.id)
+                    }
+                }
+
+            }
+        }
+    }
+}
+
 
 @Composable
 fun StarButton(
@@ -362,77 +400,6 @@ fun StarButton(
     }
 }
 
-@Composable
-fun PrayRow(
-    navController: NavController,
-    pray: Pray,
-    reloadIcon: Boolean = true
-) {
-
-    val context = LocalContext.current
-    val mainColor = ColorObject.mainColor
-    val secondColor = ColorObject.secondColor
-    var lovedIdPrays by remember { mutableStateOf( mutableSetOf<Int>()) }
-//    var lovedState by remember { mutableStateOf(song.id in lovedIdSongs) }
-//    lovedState = song.id in lovedIdSongs
-    LaunchedEffect(lovedIdPrays) {
-        lovedIdPrays = getIdSet(context, SetIdPreference.PRAYS_ID.preferenceName).toMutableSet()
-    }
-
-    var coroutineScope = rememberCoroutineScope()
-
-    with (pray) {
-        Row(
-            modifier = Modifier
-                .padding(8.dp, 0.dp, 0.dp, 0.dp)
-                .fillMaxSize()
-                .height(55.dp)
-                .background(
-                    brush = Brush.horizontalGradient(
-                        colors = listOf(
-                            mainColor,
-                            lerp(
-                                start = mainColor,
-                                stop = if (secondColor == Color.Unspecified) mainColor else secondColor,
-                                fraction = 0.9f
-                            )
-                        ),
-                    ),
-                    shape = RoundedCornerShape(16.dp)
-                )
-                .clickable { navController.navigate("eachOracao/${id}") },
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .weight(0.9f)
-                    .fillMaxHeight()
-//                    .background(Color.Red)
-            ) {
-                CommonRow(title, subTitle, Modifier.weight(1f))
-            }
-
-            Row(Modifier.padding(end = 10.dp)) {
-                StarButton(pray.id in lovedIdPrays) {
-                    coroutineScope.launch {
-                        if (pray.id in lovedIdPrays) {
-                            lovedIdPrays.remove(pray.id)
-                        } else {
-                            lovedIdPrays.add(pray.id)
-                        }
-                        saveIdSet(
-                            context,
-                            lovedIdPrays.toSet(),
-                            "prays_id_set"
-                        )
-//                        if (reloadIcon) lovedState = !lovedState
-                    }
-                }
-            }
-        }
-    }
-}
 
 @Composable
 fun ColorPickerHSV(
@@ -679,7 +646,7 @@ fun TextIconRow(title: String, showContent: Boolean, modifier: Modifier) {
             .height(45.dp)
             .background(
                 brush = Brush.horizontalGradient(
-                    colors = listOf(mainColor, lerp(mainColor, DarkColor, 0.9f)),
+                    colors = listOf(mainColor, lerp(mainColor, ColorObject.secondColor, 0.9f)),
                 ), shape = if (showContent)
                     RoundedCornerShape(rS, rS, 0.dp, 0.dp) else RoundedCornerShape(rS)
             ),

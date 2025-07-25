@@ -1,4 +1,4 @@
-package com.samuelsumbane.oremoschanganapt.db.data
+package com.samuel.oremoschanganapt.db.data
 
 
 data class Pray(

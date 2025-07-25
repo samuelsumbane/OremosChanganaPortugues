@@ -98,7 +98,7 @@ fun BooksCard(dataList: List<BooksItem>) {
                             brush = Brush.horizontalGradient(
                                 colors = listOf(
                                     itemBgColor,
-                                    lerp(itemBgColor, DarkColor, 0.9f)
+                                    lerp(itemBgColor, ColorObject.secondColor, 0.9f)
                                 ),
                             ), RoundedCornerShape(0.dp, 0.dp, 13.dp, 13.dp)
                         )

@@ -122,6 +122,10 @@ fun scheduleNotificationForSongOrPray(context: Context, title: String, message: 
     )
 }
 
+enum class DataCollection {
+    SONGS, PRAYS
+}
+
 fun updateLocale(context: Context, locale: Locale) {
     val resources = context.resources
     val configuration = resources.configuration
@@ -217,39 +221,6 @@ fun ShareIconButton(context: Context, text: String) {
             imageVector = Icons.Outlined.Share,
             contentDescription = null
         )
-    }
-}
-
-
-// This function returns the string of  Color -------->>
-fun colorToString(color: Color): String{
-    return when(color){
-        Red -> "Red"
-        Pink -> "Pink"
-        Tomato -> "Tomato"
-        Lightblue -> "Lightblue"
-        Lightgray -> "Lightgray"
-        Blue -> "Blue"
-        Purple -> "Purple"
-        Green -> "Green"
-        Turquoise -> "Turquoise"
-        else -> "404"
-    }
-}
-
-// This function returns the color from string --------->>
-fun stringToColor(value: String): Color{
-    return when(value){
-        "Red" -> Red
-        "Pink" -> Pink
-        "Tomato" -> Tomato
-        "Lightblue" -> Lightblue
-        "Lightgray" -> Lightgray
-        "Blue" -> Blue
-        "Purple" -> Purple
-        "Green" -> Green
-        "Turquoise" -> Turquoise
-        else -> Color.DarkGray
     }
 }
 

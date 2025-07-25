@@ -39,7 +39,8 @@ fun NormalText(text: String, modifier: Modifier = Modifier) {
         text = text,
         fontSize = textFontSize(),
         color = textColor,
-        modifier = modifier
+        textAlign = TextAlign.Justify,
+        modifier = modifier.padding(17.dp, 0.dp, 17.dp, 0.dp),
     )
 }
 
@@ -97,7 +98,7 @@ fun About(navController: NavController){
                 Spacer(modifier = Modifier.height(30.dp))
 
                 SubTitleText("Contacto")
-                NormalText("+258 833597867 / +258 865230661")
+                NormalText("+258 865230661 / +258 833597867")
                 NormalText("samuelsumbane143@gmail.com")
 
                 Spacer(modifier = Modifier.height(30.dp))
@@ -124,11 +125,20 @@ fun About(navController: NavController){
                     NormalText("- Zulmira Congolo")
                 }
 
-
-                NormalText("Edição do Oremos físico: 4 e 5", modifier = Modifier.padding(bottom = 20.dp, top = 45.dp))
+                NormalText("Edição do Oremos físico: 5", modifier = Modifier.padding(bottom = 20.dp, top = 45.dp))
 
                 Spacer(modifier = Modifier.height(30.dp))
                 NormalText("Versão do aplicativo: 3.0", modifier = Modifier.padding(bottom = 20.dp))
+
+                Spacer(modifier = Modifier.height(30.dp))
+                SubTitleText("Contribuição")
+
+                NormalText("O app Oremos Changana PT é um projecto de código aberto disponível no GitHub e é feito 100% em Kotlin." +
+                        "\n Pode contribuir atravez do link:\n https://github.com/samuelsumbane/OremosChanganaPortugues.git",
+                    modifier = Modifier.padding(bottom = 20.dp)
+                )
+
+
             }
         }
     }

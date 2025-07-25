@@ -7,6 +7,7 @@ import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -17,23 +18,23 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
+import com.samuel.oremoschanganapt.view.states.AppState.isSearchInputVisible
 
 @Composable
 fun searchContainer(
-    searchString: String,
     searchInputLabel: String = "Pesquisar oração",
-    isContainerActive: Boolean = false,
-    showIcon: Boolean = true
-): String{
-    var activeContainer by remember { mutableStateOf(isContainerActive) }
+    showIcon: Boolean = true,
+    searchResponse: (String) -> Unit
+) {
+    var activeContainer by remember { mutableStateOf(false) }
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp
 
     val columnW by remember(screenWidth) {
-        derivedStateOf { screenWidth - (screenWidth * 0.35) }
+        derivedStateOf { screenWidth - (screenWidth * 0.10) }
     }
 
-    var pesquisaTexto by remember { mutableStateOf(searchString) }
+    var searchText by remember { mutableStateOf("") }
     var setFocus by remember { mutableStateOf(true) }
 
     Column(
@@ -43,6 +44,7 @@ fun searchContainer(
             .clickable {
                 activeContainer = !activeContainer
                 setFocus = activeContainer
+                isSearchInputVisible = activeContainer == true
             }
     ){
         if (activeContainer) {
@@ -51,8 +53,11 @@ fun searchContainer(
                 horizontalArrangement = Arrangement.End
             ) {
                 InputSearch(
-                    value = pesquisaTexto,
-                    onValueChange = { pesquisaTexto = it },
+                    value = searchText,
+                    onValueChange = {
+                        searchText = it
+                        searchResponse(it)
+                    },
                     placeholder = searchInputLabel,
                     modifier = Modifier.align(Alignment.CenterVertically),
                 )
@@ -62,7 +67,10 @@ fun searchContainer(
                         .width(30.dp),
                         verticalArrangement = Arrangement.Center
                     ){
-                        IconButton(onClick = { activeContainer = !activeContainer }){
+                        IconButton(onClick = {
+                            activeContainer = !activeContainer
+                            isSearchInputVisible = !isSearchInputVisible
+                        }){
                             Icon(Icons.Default.KeyboardArrowRight, contentDescription="Close search input",
                                 modifier = Modifier.width(30.dp).fillMaxHeight(0.9f)
                             )
@@ -76,11 +84,13 @@ fun searchContainer(
                 verticalArrangement = Arrangement.Center
             ){
                 Spacer(Modifier.height(10.dp))
-                Icon(Icons.Default.Search, contentDescription="Search",
+                Icon(
+                    Icons.Default.Search,
+                    contentDescription="Search",
+                    tint = MaterialTheme.colorScheme.tertiary,
                     modifier = Modifier.size(30.dp),
                 )
             }
         }
     }
-    return pesquisaTexto
 }

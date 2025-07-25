@@ -19,11 +19,10 @@ val Lightblue = Color(0xFF7398A3)
 val Blue = Color(0xFF14BCFF)
 val Purple = Color(0xFF9C27B0)
 val Red = Color(0xFFD41004)
-val Green = Color(0xFF00C853)
+val Green = Color(0xFF12D423)
 val Pink = Color(0xFFFFC1E3)
 val Tomato = Color(0xFFFF6347)
 val Turquoise = Color(0xFF40E0D0)   // Turquesa
-
 val RedButton = Color(0xFF970B05)
 val BlueColor = Color(0xFF02101E)
 val DarkColor = Color(0xFF191C1E)

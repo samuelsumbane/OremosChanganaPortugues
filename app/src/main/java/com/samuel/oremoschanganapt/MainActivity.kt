@@ -25,12 +25,13 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.samuel.oremoschanganapt.components.LoadingScreen
+import com.samuel.oremoschanganapt.functionsKotlin.DataCollection
 import com.samuel.oremoschanganapt.functionsKotlin.updateLocale
 import com.samuel.oremoschanganapt.repository.ColorObject
 import com.samuel.oremoschanganapt.repository.Configs
 import com.samuel.oremoschanganapt.repository.Configs.appLocale
 import com.samuel.oremoschanganapt.ui.theme.OremosChanganaTheme
-import com.samuel.oremoschanganapt.view.DataCollection
+//import com.samuel.oremoschanganapt.view.DataCollection
 import com.samuel.oremoschanganapt.view.Home
 import com.samuel.oremoschanganapt.view.SplashWindow
 import com.samuel.oremoschanganapt.view.eachPage
@@ -44,7 +45,8 @@ import com.samuel.oremoschanganapt.view.settingsPackage.AppearancePage
 import com.samuel.oremoschanganapt.view.sideBar.About
 import com.samuel.oremoschanganapt.view.songsPackage.CanticosAgrupados
 import com.samuel.oremoschanganapt.view.songsPackage.SongsPage
-import com.samuelsumbane.oremoschanganapt.db.data.praysData
+import com.samuel.oremoschanganapt.db.data.praysData
+import com.samuel.oremoschanganapt.view.sideBar.newColorPage
 import java.util.Locale
 
 
@@ -54,9 +56,7 @@ class  MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-
             val context = LocalContext.current
-
 //            val reminders by reminderViewModel.reminders.collectAsState()
             // New
             var fontSize by remember { mutableStateOf("") }
@@ -64,7 +64,7 @@ class  MainActivity : ComponentActivity() {
             var themeColor by remember { mutableStateOf(Color.Unspecified) }
             var secondThemeColor by remember { mutableStateOf(Color.Unspecified) }
 //            val themeColor by getThemeColor(context).collectAsState(initial = Color.Unspecified)
-//            val themeColor = Color.Yellow
+            var initialLanguage by remember { mutableStateOf("") }
 
 
             LaunchedEffect(Unit) {
@@ -72,10 +72,12 @@ class  MainActivity : ComponentActivity() {
                 themeMode = getInitialThemeMode(context)
                 themeColor = getInitialThemeColor(context)
                 secondThemeColor = getInitialSecondThemeColor(context)
-//                Log.d("themeColor", "theme is: $secondThemeColor != $themeColor")
-                val initialLanguage = getInitialLanguage(context)
-                updateLocale(context, Locale(initialLanguage))
+                initialLanguage = getInitialLanguage(context)
+
+                updateLocale(context, locale = Locale(if (initialLanguage == "404") "pt" else initialLanguage))
                 appLocale = initialLanguage
+
+
 
                 Configs.fontSize = fontSize
             }
@@ -86,7 +88,7 @@ class  MainActivity : ComponentActivity() {
                 else -> isSystemInDarkTheme()
             }
 
-            if (themeColor != Color.Unspecified) {
+            if (themeColor != Color.Unspecified || initialLanguage == "404") {
                 ColorObject.mainColor = themeColor
                 ColorObject.secondColor =
                     if (secondThemeColor == Color.Unspecified || secondThemeColor == Color.Transparent) themeColor else secondThemeColor
@@ -126,7 +128,7 @@ class  MainActivity : ComponentActivity() {
 
                                 val navController = rememberNavController()
 //                              NavHost(navController = navController, startDestination = "splash") {
-                                NavHost(navController = navController, startDestination = "canticosAgrupados") {
+                                NavHost(navController = navController, startDestination = "home") {
 //                                 define routes ------->>
 
                                     composable("splash") {
@@ -139,6 +141,10 @@ class  MainActivity : ComponentActivity() {
 
                                     composable(route = "appearancePage") {
                                         AppearancePage(navController)
+                                    }
+
+                                    composable(route = "newColorPage") {
+                                        newColorPage(navController)
                                     }
 
                                     composable(route = "oracoespage") {

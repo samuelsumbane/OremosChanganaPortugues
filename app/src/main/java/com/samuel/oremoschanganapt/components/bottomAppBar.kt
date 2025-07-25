@@ -82,16 +82,13 @@ fun BottomAppBarPrincipal(navController: NavController, activePage: String, icon
         contentPadding = PaddingValues(0.dp),
         modifier = Modifier.height(75.dp).fillMaxWidth()
     ) {
-        val bottomBgColor = if (isSystemInDarkTheme()) LightSecondary else DarkSecondary
         Card(
             modifier = Modifier
                 .fillMaxSize().height(60.dp)
                 .background(Color.Transparent)
                 .padding(10.dp, 0.dp, 10.dp, 7.dp),
-            elevation = CardDefaults.elevatedCardElevation(4.dp),
-            shape = RoundedCornerShape(16.dp),
             colors = CardDefaults.cardColors(
-                containerColor = bottomBgColor
+                containerColor = MaterialTheme.colorScheme.background,
             )
         ) {
             Row(modifier = Modifier.fillMaxSize(),
@@ -137,7 +134,7 @@ fun MenuContent(navController: NavController, activePage: String, iconColorState
                     if (activePage == it) {
                         drawLine(
                             color = lerp(
-                                ColorObject.mainColor, Color.White, 0.35f
+                                ColorObject.mainColor, Color.White, 0.15f
                             ),
                             start = Offset(0f, size.height),
                             end = Offset(size.width, size.height),
@@ -151,13 +148,13 @@ fun MenuContent(navController: NavController, activePage: String, iconColorState
                     imageVector = btnIcons[it]!!,
                     contentDescription = "",
                     modifier = Modifier.size(25.dp),
-                    tint = LightSecondary
+                    tint = ColorObject.mainColor
                 )
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
                     text = btnText[it]!!,
                     modifier = Modifier.padding(2.dp),
-                    color = Color.Black, fontSize = 13.sp
+                    color = MaterialTheme.colorScheme.tertiary, fontSize = 13.sp
                 )
             }
         }

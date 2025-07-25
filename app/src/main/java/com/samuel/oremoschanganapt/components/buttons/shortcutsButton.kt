@@ -36,6 +36,7 @@ import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,21 +44,26 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import com.samuel.oremoschanganapt.R
+import com.samuel.oremoschanganapt.SetIdPreference
 import com.samuel.oremoschanganapt.components.PrayRow
 import com.samuel.oremoschanganapt.components.SongRow
 import com.samuel.oremoschanganapt.components.searchContainer
 import com.samuel.oremoschanganapt.db.data.songsData
 import com.samuel.oremoschanganapt.functionsKotlin.isNumber
+import com.samuel.oremoschanganapt.getIdSet
+import com.samuel.oremoschanganapt.saveIdSet
 import com.samuel.oremoschanganapt.ui.theme.DarkSecondary
 import com.samuel.oremoschanganapt.ui.theme.LightSecondary
-import com.samuelsumbane.oremoschanganapt.db.data.praysData
+import com.samuel.oremoschanganapt.db.data.praysData
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
 
@@ -102,6 +108,16 @@ fun ShortcutsButton(navController: NavController) {
         var offsetY by remember { mutableDoubleStateOf(screenHeight) }
         val childColumnHeight by remember { mutableIntStateOf(220) }
         var showSearchModal by remember { mutableStateOf(false) }
+        val context = LocalContext.current
+        val coroutineScope = rememberCoroutineScope()
+
+        var lovedIdPrays by remember { mutableStateOf(setOf<Int>()) }
+        var lovedSongsIds by remember { mutableStateOf(setOf<Int>()) }
+
+        LaunchedEffect(Unit) {
+            lovedIdPrays = getIdSet(context, SetIdPreference.PRAYS_ID.preferenceName)
+            lovedSongsIds = getIdSet(context, SetIdPreference.SONGS_ID.preferenceName)
+        }
 
         LaunchedEffect(offsetY) {
             coroutineScope {
@@ -126,12 +142,16 @@ fun ShortcutsButton(navController: NavController) {
 
                 Row {
                     Column(Modifier.padding(top = 10.dp)) {
-                        searchValue = searchContainer(
-                            searchString = searchValue,
-                            searchInputLabel = "Cântico / Oração",
-                            isContainerActive = true,
-                            showIcon = false
-                        )
+//                        searchValue = searchContainer(
+//                            searchString = searchValue,
+//                            searchInputLabel = "Cântico / Oração",
+//                            isContainerActive = true,
+//                            showIcon = false
+//                        )
+
+                        searchContainer("Cântico / Oração") {
+                            searchValue = it
+                        }
                     }
 
                     IconButton(
@@ -150,8 +170,35 @@ fun ShortcutsButton(navController: NavController) {
                         .fillMaxWidth(0.95f),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    items (filteredPrays) { PrayRow(navController, it) }
-                    items (filteredSongs) { SongRow(navController, it, blackBackground = true) }
+                    items (filteredPrays) { PrayRow(
+                        navController, it,
+                        loved = it.id in lovedIdPrays,
+                        onToggleLoved = { id ->
+                            coroutineScope.launch {
+                                val newSet = lovedIdPrays.toMutableSet().apply {
+                                    if (contains(id)) remove(id) else add(id)
+                                }
+                                saveIdSet(context, newSet, SetIdPreference.PRAYS_ID.preferenceName)
+                                lovedIdPrays = newSet
+                            }
+                        }
+                    ) }
+                    items (filteredSongs) {
+                        SongRow(
+                            navController, it,
+                            blackBackground = true,
+                            loved = it.id in lovedSongsIds,
+                            onToggleLoved = { id ->
+                                coroutineScope.launch {
+                                    val newSet = lovedSongsIds.toMutableSet().apply {
+                                        if (contains(id)) remove(id) else add(id)
+                                    }
+                                    saveIdSet(context, newSet, SetIdPreference.SONGS_ID.preferenceName)
+                                    lovedSongsIds = newSet
+                                }
+                            }
+                        )
+                    }
                 }
             }
         }

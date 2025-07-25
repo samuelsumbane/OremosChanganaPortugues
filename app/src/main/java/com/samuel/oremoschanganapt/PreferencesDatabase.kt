@@ -107,7 +107,6 @@ suspend fun getInitialSecondThemeColor(context: Context): Color {
 }
 
 
-
 // FontSize -------------->>
 suspend fun saveFontSize(context: Context, fontsize: String) {
     context.dataStore.edit { preferences ->
@@ -115,11 +114,6 @@ suspend fun saveFontSize(context: Context, fontsize: String) {
     }
 }
 
-fun getFontSize(context: Context): Flow<String?> {
-    return context.dataStore.data.map { preferences ->
-        preferences[fontSize]
-    }
-}
 
 suspend fun getInitialFontSize(context: Context): String {
     return context.dataStore.data.firstOrNull()?.get(fontSize) ?: "Small"
@@ -139,7 +133,6 @@ suspend fun saveIdSet(
     }
 }
 
-
 suspend fun getIdSet(
     context: Context,
     preferencesString: String
@@ -152,9 +145,6 @@ suspend fun getIdSet(
     return Json.decodeFromString(SetSerializer(Int.serializer()), jsonString)
 }
 
-
-//
-
 suspend fun saveLanguage(context: Context, newLocale: String) {
     context.dataStore.edit { preferences ->
         preferences[locale] = newLocale
@@ -162,5 +152,5 @@ suspend fun saveLanguage(context: Context, newLocale: String) {
 }
 
 suspend fun getInitialLanguage(context: Context): String {
-    return context.dataStore.data.firstOrNull()?.get(locale) ?: "pt"
+    return context.dataStore.data.firstOrNull()?.get(locale) ?: "404"
 }

@@ -1,6 +1,5 @@
 package com.samuel.oremoschanganapt.view.praysPackage
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 //import androidx.compose.foundation.layout.FlowColumnScopeInstance.align
@@ -22,7 +21,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -38,6 +36,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.samuel.oremoschanganapt.R
+import com.samuel.oremoschanganapt.SetIdPreference
 import com.samuel.oremoschanganapt.components.BottomAppBarPrincipal
 import com.samuel.oremoschanganapt.components.LoadingScreen
 import com.samuel.oremoschanganapt.components.PrayRow
@@ -45,15 +44,13 @@ import com.samuel.oremoschanganapt.components.searchContainer
 import com.samuel.oremoschanganapt.components.SidebarNav
 import com.samuel.oremoschanganapt.components.buttons.ShortcutsButton
 import com.samuel.oremoschanganapt.components.buttons.ScrollToFirstItemBtn
-import com.samuel.oremoschanganapt.db.data.Song
-import com.samuel.oremoschanganapt.db.data.songsData
 import com.samuel.oremoschanganapt.getIdSet
-import com.samuelsumbane.oremoschanganapt.db.data.Pray
+import com.samuel.oremoschanganapt.saveIdSet
 //import com.samuel.oremoschanganapt.db.CommonViewModel
 //import com.samuelsumbane.oremoschanganapt.db.PrayViewModel
-import com.samuelsumbane.oremoschanganapt.db.data.praysData
+import com.samuel.oremoschanganapt.db.data.praysData
+import com.samuel.oremoschanganapt.view.states.AppState.isSearchInputVisible
 import kotlinx.coroutines.launch
-import kotlin.collections.plus
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -64,20 +61,18 @@ fun OracoesPage(navController: NavController) {
     val allPrays by remember { mutableStateOf(praysData) }
     val configuration = LocalConfiguration.current
     val isPortrait = configuration.orientation == android.content.res.Configuration.ORIENTATION_PORTRAIT
-    var lovedPraysIds by remember { mutableStateOf(setOf<Int>()) }
 
     var context = LocalContext.current
+    var lovedIdPrays by remember { mutableStateOf(setOf<Int>()) }
 
-
-    LaunchedEffect(lovedPraysIds) {
-        lovedPraysIds = getIdSet(context, "prays_id_set")
-        Log.d("prays", "$lovedPraysIds")
+    LaunchedEffect(Unit) {
+        lovedIdPrays = getIdSet(context, SetIdPreference.PRAYS_ID.preferenceName)
     }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = {Text(text = stringResource(R.string.prays), color = MaterialTheme.colorScheme.tertiary)},
+                title = { if (!isSearchInputVisible) Text(text = stringResource(R.string.prays), color = MaterialTheme.colorScheme.tertiary)},
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color.Transparent
                 ),
@@ -87,7 +82,9 @@ fun OracoesPage(navController: NavController) {
                     }
                 },
                 actions = {
-                    searchValue = searchContainer(searchString = searchValue)
+                    searchContainer {
+                        searchValue = it
+                    }
                 }
             )
         },
@@ -123,11 +120,25 @@ fun OracoesPage(navController: NavController) {
                             modifier = Modifier
                                 .padding(8.dp)
                                 .fillMaxSize(),
-                            verticalArrangement = Arrangement.spacedBy(16.dp)
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
                             items (filteredPrays) { pray ->
                                 // Each pray row --------->>
-                                PrayRow(navController, pray)
+//                                PrayRow(navController, pray)
+                                PrayRow(
+                                    navController = navController,
+                                    pray = pray,
+                                    loved = pray.id in lovedIdPrays,
+                                    onToggleLoved = { id ->
+                                        coroutineScope.launch {
+                                            val newSet = lovedIdPrays.toMutableSet().apply {
+                                                if (contains(id)) remove(id) else add(id)
+                                            }
+                                            saveIdSet(context, newSet, SetIdPreference.PRAYS_ID.preferenceName)
+                                            lovedIdPrays = newSet
+                                        }
+                                    }
+                                )
                             }
                         }
 

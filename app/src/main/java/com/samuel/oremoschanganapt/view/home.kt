@@ -2,14 +2,13 @@ package com.samuel.oremoschanganapt.view
 
 import android.annotation.SuppressLint
 import android.os.Build
-import android.util.Log
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -31,61 +30,50 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.*
 import androidx.navigation.NavController
 import com.samuel.oremoschanganapt.R
+import com.samuel.oremoschanganapt.SetIdPreference
 import com.samuel.oremoschanganapt.components.*
 //import com.samuel.oremoschanganapt.db.CommonViewModel
 import com.samuel.oremoschanganapt.db.data.songsData
 //import com.samuel.oremoschanganapt.functionsKotlin.AdvancedColorPickerDrawScope
-import com.samuel.oremoschanganapt.functionsKotlin.colorToString
 import com.samuel.oremoschanganapt.functionsKotlin.isNumber
-import com.samuel.oremoschanganapt.functionsKotlin.stringToColor
+import com.samuel.oremoschanganapt.getIdSet
 //import com.samuel.oremoschanganapt.getInitialThemeColor
 import com.samuel.oremoschanganapt.getInitialThemeMode
 import com.samuel.oremoschanganapt.getThemeColor
 //import com.samuel.oremoschanganapt.repository.TablesViewModels
 import com.samuel.oremoschanganapt.repository.ColorObject
 import com.samuel.oremoschanganapt.repository.Configs
-import com.samuel.oremoschanganapt.saveFontSize
-import com.samuel.oremoschanganapt.saveThemeColor
-import com.samuel.oremoschanganapt.saveThemeMode
 import com.samuel.oremoschanganapt.view.sideBar.AppearanceWidget
 //import com.samuel.oremoschanganapt.view.sideBar.RowBackup
 import com.samuel.oremoschanganapt.view.sideBar.RowAbout
-//import com.samuelsumbane.oremoschanganapt.db.DefViewModel
-//import com.samuelsumbane.oremoschanganapt.db.PrayViewModel
-//import com.samuelsumbane.oremoschanganapt.db.SongViewModel
-import com.samuelsumbane.oremoschanganapt.db.data.praysData
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
+import com.samuel.oremoschanganapt.db.data.praysData
 import kotlinx.coroutines.launch
 
 
 @RequiresApi(Build.VERSION_CODES.O)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "NewApi")
 @Composable
-fun Home( navController: NavController,
-) {
+fun Home(navController: NavController) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
 //    val drawerState = rememberDrawerState(initialValue = DrawerValue.Open)
     val scope = rememberCoroutineScope()
     val scrollState = rememberScrollState()
     var textInputValue by remember { mutableStateOf("") }
-//    val defs by defViewModel.defs.collectAsState()
     var showModal by remember { mutableStateOf(false) }
     val context = LocalContext.current
 
-//    var themeColor by remember { mutableStateOf("")}
     var themeColor = ColorObject.mainColor
 
     var mode by remember { mutableStateOf("") }
 
-
     val configuration = LocalConfiguration.current
     val isPortrait = configuration.orientation == android.content.res.Configuration.ORIENTATION_PORTRAIT
 
-    val filteredPrays = remember(praysData, textInputValue){
+    val allPrays = praysData
+
+    val filteredPrays = remember(allPrays, textInputValue){
         if (textInputValue.isNotEmpty()) {
-            praysData.filter { it.title.contains(textInputValue, ignoreCase = true)}
+            allPrays.filter { it.title.contains(textInputValue, ignoreCase = true)}
         } else emptyList()
     }
 
@@ -100,6 +88,12 @@ fun Home( navController: NavController,
                 }
             }
         } else emptyList()
+    }
+
+    var lovedSongsIds by remember { mutableStateOf(setOf<Int>()) }
+
+    LaunchedEffect(Unit) {
+        lovedSongsIds = getIdSet(context, SetIdPreference.SONGS_ID.preferenceName)
     }
 
     LaunchedEffect(textInputValue) {
@@ -124,9 +118,7 @@ fun Home( navController: NavController,
 
     var showModeDialog by remember { mutableStateOf(false) }
     var showFontSizeDialog by remember { mutableStateOf(false) }
-
     var selectedModeOption by remember { mutableStateOf(Configs.thememode) }
-
     val savedThemeColor by getThemeColor(context).collectAsState(initial = Color.Green)
 
 
@@ -152,71 +144,8 @@ fun Home( navController: NavController,
                     Spacer(Modifier.height(75.dp))
 
                     Column(verticalArrangement = Arrangement.spacedBy(30.dp)) {
-
-//                        LaunchedEffect(themeColor) {
-//                            coroutineScope {
-//                                if (savedThemeColor != themeColor){
-//                                    saveThemeColor(context, themeColor)
-//                                    ColorObject.mainColor = themeColor
-//                                    iconColorState = "Reload"
-//                                }
-//                            }
-//                        }
-
-//                            LaunchedEffect(mode) {
-//                                coroutineScope {
-//                                    saveThemeMode(context, mode)
-//                                    val themeMode = getInitialThemeMode(context)
-//
-//                                    if (mode != themeMode) {
-//                                        toastAlert(
-//                                            context,
-//                                            text = "Modo guardado! Será aplicado na próxima vez que abrir a aplicação",
-//                                            duration = Toast.LENGTH_LONG
-//                                        )
-//                                    }
-//                                }
-//                            }
-                            // appearencia ------->>
-                            AppearanceWidget(navController, mode)
-
-
-//                        }
-
-//                        RadioButtonDialog(
-//                            showDialog = showModeDialog,
-//                            title = "Base Theme",
-//                            options = modeOptions,
-//                            selectedOption = selectedModeOption,
-//                            onOptionSelected = {
-//                                selectedModeOption = it
-//                                showModeDialog = false
-//
-//                                CoroutineScope(Dispatchers.IO).launch {
-//                                    saveThemeMode(context, it)
-//                                }
-//                            },
-//                            onDismiss = { showModeDialog = false }
-//                        )
-                        //
-//                        RadioButtonDialog(
-//                            showDialog = showFontSizeDialog,
-//                            title = "Font Size",
-//                            options = fontSizeOptions,
-//                            selectedOption = selectedFontSizeOption,
-//                            onOptionSelected = {
-//                                selectedFontSizeOption = it
-//                                CoroutineScope(Dispatchers.IO).launch {
-//                                    saveFontSize(context, it)
-//                                }
-//                                showFontSizeDialog = false
-//                            },
-//                            onDismiss = { showFontSizeDialog = false }
-//                        )
-//                    else LoadingScreen()
-
-//                        RowBackup(commonViewModel = CommonViewModel())
-
+                        // appearencia ------->>
+                        AppearanceWidget(navController, mode)
 
                         // About --------->>
                         RowAbout(navController)
@@ -288,19 +217,21 @@ fun Home( navController: NavController,
                             verticalArrangement = Arrangement.Center,
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            LazyColumn(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(8.dp),
-                                verticalArrangement = Arrangement.spacedBy(16.dp)
-                            ) {
-//                                items (filteredPrays) { pray ->
-//                                    PrayRow(navController, prayViewModel, pray)
-//                                }
+                            lazyColumn {
+                                items (filteredPrays) { pray ->
+                                    PrayRow(
+                                        navController, pray = pray,
+                                        showStarButton = false,
+                                    )
+                                }
 
-//                                items (filteredSongs) { song ->
-//                                    SongRow(navController, songViewModel, song, blackBackground = true)
-//                                }
+                                items (filteredSongs) { song ->
+                                    SongRow(
+                                        navController, song = song,
+                                        blackBackground = true,
+                                        showStarButton = false
+                                    )
+                                }
                             }
                         }
                     }

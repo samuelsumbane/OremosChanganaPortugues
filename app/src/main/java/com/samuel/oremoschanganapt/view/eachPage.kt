@@ -1,18 +1,12 @@
 package com.samuel.oremoschanganapt.view
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Notifications
@@ -43,32 +37,26 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.PopupProperties
 import androidx.navigation.NavController
 import com.samuel.oremoschanganapt.R
 import com.samuel.oremoschanganapt.SetIdPreference
 import com.samuel.oremoschanganapt.components.StarButton
-import com.samuel.oremoschanganapt.components.buttons.ShortcutsButton
 import com.samuel.oremoschanganapt.components.pagerContent
-import com.samuel.oremoschanganapt.components.textFontSize
 import com.samuel.oremoschanganapt.db.data.songsData
+import com.samuel.oremoschanganapt.functionsKotlin.DataCollection
 import com.samuel.oremoschanganapt.functionsKotlin.shareText
 import com.samuel.oremoschanganapt.getIdSet
 import com.samuel.oremoschanganapt.saveIdSet
 import com.samuel.oremoschanganapt.view.states.UIState.isFullScreen
-import com.samuelsumbane.oremoschanganapt.db.data.praysData
+import com.samuel.oremoschanganapt.db.data.praysData
 import kotlinx.coroutines.launch
 import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.iterator
 
-enum class DataCollection {
-    SONGS, PRAYS
-}
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -114,7 +102,6 @@ fun eachPage(
      * In pagerState, initialPage receives songId - 1 because, will be page + 1
      * in page inside HorizontalPager
      */
-
 
     @Composable
     fun pager(
@@ -187,7 +174,13 @@ fun eachPage(
                     }, colors = TopAppBarDefaults.topAppBarColors(
                         containerColor = MaterialTheme.colorScheme.background
                     ), navigationIcon = {
-                        IconButton(onClick = { navController.navigate("canticospage/todos/todos cânticos") }) {
+                        IconButton(onClick = {
+                            if (data == songsData) {
+                                navController.navigate("canticospage/todos/todos cânticos")
+                            } else {
+                                navController.navigate("oracoespage")
+                            }
+                        }) {
                             Icon(
                                 imageVector = Icons.Outlined.ArrowBack,
                                 contentDescription = stringResource(R.string.go_back)
