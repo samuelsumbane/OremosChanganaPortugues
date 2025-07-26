@@ -1,10 +1,5 @@
 package com.samuel.oremoschanganapt.view.songsPackage
 
-//import androidx.compose.foundation.layout.FlowColumnScopeInstance.weight
-//import com.samuel.oremoschanganapt.apresentacaoOracao.CancaoEvent
-//import com.samuel.oremoschanganapt.apresentacaoOracao.CancaoState
-//import com.samuel.oremoschanganapt.db.CommonViewModel
-//import com.samuelsumbane.oremoschanganapt.db.SongViewModel
 import android.util.Log
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection.Companion.Left
@@ -75,7 +70,6 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SongsPage(navController: NavController, value: String, readbleValue: String,
-//              songViewModel: SongViewModel,
 ) {
 
     var searchValue by remember { mutableStateOf("") }

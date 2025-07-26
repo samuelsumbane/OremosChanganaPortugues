@@ -66,7 +66,6 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
-
 @Composable
 fun ShortcutsButton(navController: NavController) {
 
@@ -142,13 +141,6 @@ fun ShortcutsButton(navController: NavController) {
 
                 Row {
                     Column(Modifier.padding(top = 10.dp)) {
-//                        searchValue = searchContainer(
-//                            searchString = searchValue,
-//                            searchInputLabel = "Cântico / Oração",
-//                            isContainerActive = true,
-//                            showIcon = false
-//                        )
-
                         searchContainer("Cântico / Oração") {
                             searchValue = it
                         }

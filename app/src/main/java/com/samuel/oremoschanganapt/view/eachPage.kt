@@ -1,5 +1,7 @@
 package com.samuel.oremoschanganapt.view
 
+import Reminder
+import ReminderRepository
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -25,6 +27,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -44,6 +47,7 @@ import com.samuel.oremoschanganapt.R
 import com.samuel.oremoschanganapt.SetIdPreference
 import com.samuel.oremoschanganapt.components.StarButton
 import com.samuel.oremoschanganapt.components.pagerContent
+import com.samuel.oremoschanganapt.components.toastAlert
 import com.samuel.oremoschanganapt.db.data.songsData
 import com.samuel.oremoschanganapt.functionsKotlin.DataCollection
 import com.samuel.oremoschanganapt.functionsKotlin.shareText
@@ -51,6 +55,7 @@ import com.samuel.oremoschanganapt.getIdSet
 import com.samuel.oremoschanganapt.saveIdSet
 import com.samuel.oremoschanganapt.view.states.UIState.isFullScreen
 import com.samuel.oremoschanganapt.db.data.praysData
+import com.samuel.oremoschanganapt.functionsKotlin.getCurrentTimestamp
 import kotlinx.coroutines.launch
 import kotlin.collections.component1
 import kotlin.collections.component2
@@ -70,6 +75,7 @@ fun eachPage(
     val fullscreen = stringResource(R.string.fullscreen)
     var expanded by remember { mutableStateOf(false) }
 
+    var songOrPrayId by remember { mutableIntStateOf(0) }
     var pageNumber by remember { mutableStateOf("") }
     var pageTitle by remember { mutableStateOf("") }
     var pageSubTitle by remember { mutableStateOf("") }
@@ -124,6 +130,7 @@ fun eachPage(
                     pageTitle = "$number - ${title.uppercase()}"
                     pageSubTitle = subTitle
                     pageBody = body
+                    songOrPrayId = id
                 }
             } else {
                 praysData.first { it.id == page + 1 }.run {
@@ -138,6 +145,7 @@ fun eachPage(
                     pageTitle = title.uppercase()
                     pageSubTitle = subTitle
                     pageBody = body
+                    songOrPrayId = id
                 }
             }
         }
@@ -234,6 +242,10 @@ fun eachPage(
                                         },
                                         onClick = {
                                             when (name) {
+                                                reminder -> {
+                                                    navController.navigate("configurereminder/$songOrPrayId/${if (data == songsData) "Song" else "Pray"}/0")
+                                                }
+
                                                 share -> {
                                                     shareText(
                                                         context,

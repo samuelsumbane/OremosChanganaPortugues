@@ -5,7 +5,6 @@ import java.util.Properties
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-//    id("io.realm.kotlin")
 }
 
 val keystorePropertiesFile = rootProject.file("local.properties")
@@ -13,7 +12,7 @@ val keystoreProperties = Properties()
 keystoreProperties.load(FileInputStream(keystorePropertiesFile))
 
 android {
-        signingConfigs {
+    signingConfigs {
         create("release") {
             keyAlias = keystoreProperties["keyAlias"] as String
             keyPassword = keystoreProperties["keyPassword"] as String
@@ -35,7 +34,7 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
-//        resourceConfigurations.addAll(listOf("pt", "en"))
+        resourceConfigurations.addAll(listOf("pt", "ts"))
         signingConfig = signingConfigs.getByName("release")
     }
 
@@ -49,7 +48,7 @@ android {
             )
 
             ndk {
-                debugSymbolLevel = "FULL" // Gera símbolos de depuração completos
+                debugSymbolLevel = "FULL"
             }
         }
     }
@@ -65,7 +64,7 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
+        kotlinCompilerExtensionVersion = "1.5.11"
     }
     packaging {
         resources {
@@ -99,16 +98,8 @@ dependencies {
     // Preferences -------->>
     implementation("androidx.datastore:datastore-preferences:1.1.1")
 
-    // Realm
-//    implementation("io.realm.kotlin:library-base:1.11.0")
-
     implementation("com.google.accompanist:accompanist-permissions:0.30.1")
 
-//    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
-
-//    implementation("androidx.work:work-runtime-ktx:2.7.1")
-
-    implementation("com.google.code.gson:gson:2.10.1")
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
 

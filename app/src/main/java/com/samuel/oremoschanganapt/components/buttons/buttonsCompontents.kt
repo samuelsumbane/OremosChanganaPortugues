@@ -29,12 +29,9 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.vector.ImageVector
-
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.samuel.oremoschanganapt.components.textFontSize
 import com.samuel.oremoschanganapt.repository.ColorObject
-import com.samuel.oremoschanganapt.ui.theme.DarkColor
 import com.samuel.oremoschanganapt.ui.theme.DarkSecondary
 import com.samuel.oremoschanganapt.ui.theme.LightSecondary
 

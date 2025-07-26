@@ -46,6 +46,8 @@ import com.samuel.oremoschanganapt.view.sideBar.About
 import com.samuel.oremoschanganapt.view.songsPackage.CanticosAgrupados
 import com.samuel.oremoschanganapt.view.songsPackage.SongsPage
 import com.samuel.oremoschanganapt.db.data.praysData
+import com.samuel.oremoschanganapt.view.morepagesPackage.remindersPages.ConfigureReminder
+import com.samuel.oremoschanganapt.view.morepagesPackage.remindersPages.RemindersPage
 import com.samuel.oremoschanganapt.view.sideBar.newColorPage
 import java.util.Locale
 
@@ -77,8 +79,6 @@ class  MainActivity : ComponentActivity() {
                 updateLocale(context, locale = Locale(if (initialLanguage == "404") "pt" else initialLanguage))
                 appLocale = initialLanguage
 
-
-
                 Configs.fontSize = fontSize
             }
 
@@ -105,23 +105,6 @@ class  MainActivity : ComponentActivity() {
                                 LaunchedEffect(key1 = true) {
                                     if (!postNotificationPermission.status.isGranted) {
                                         postNotificationPermission.launchPermissionRequest()
-                                    }
-                                }
-                            }
-
-                            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-                                val writeStorage = rememberPermissionState(permission = android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
-
-                                LaunchedEffect(key1 = writeStorage.status.isGranted) {
-                                    if (!writeStorage.status.isGranted) {
-                                        writeStorage.launchPermissionRequest()
-                                    }
-                                }
-
-                                val readStorage = rememberPermissionState(permission = android.Manifest.permission.READ_EXTERNAL_STORAGE)
-                                LaunchedEffect(key1 = readStorage.status.isGranted) {
-                                    if (!readStorage.status.isGranted) {
-                                        readStorage.launchPermissionRequest()
                                     }
                                 }
                             }
@@ -201,30 +184,22 @@ class  MainActivity : ComponentActivity() {
                                         MorePages(navController)
                                     }
 
-//                                composable("reminderspage") {
-//                                    RemindersPage(
-//                                        navController,
-//                                        songViewModel,
-//                                        prayViewModel,
-//                                        reminderViewModel
-//                                    )
-//                                }
+                                    composable("reminderspage") {
+                                        RemindersPage(navController)
+                                    }
 
                                     composable("about") {
                                         About(navController)
                                     }
 
-                                    composable("configurereminder/{id}/{table}/{rdatetime}/{reminderid}"){ cR ->
+                                    composable("configurereminder/{id}/{table}/{reminderid}") { cR ->
                                         val stringId = cR.arguments?.getString("id") ?: ""
                                         val id = stringId.toInt()
                                         val table = cR.arguments?.getString("table") ?: ""
-                                        val rdatetime = cR.arguments?.getString("rdatetime") ?: ""
-                                        val rDateTime = rdatetime.toLong()
                                         val rid = cR.arguments?.getString("reminderid") ?: ""
                                         val rId = rid.toInt()
 
-//                                    ConfigureReminder(navController, id, table, rDateTime, rId, reminderViewModel)
-
+                                        ConfigureReminder(navController, id, table, rId)
                                     }
                                 }
                         }

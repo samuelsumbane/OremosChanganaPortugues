@@ -102,12 +102,11 @@ fun CanticosAgrupados( navController: NavController) {
                                                 .uppercase()
                                                 .replace(" | ", "\n"),
                                             textAlign = TextAlign.Center,
-                                            color = Color.White,
+                                            color = MaterialTheme.colorScheme.tertiary,
                                             fontWeight = FontWeight.SemiBold
                                         )
                                         Icon(Icons.Default.ArrowForward, contentDescription = "to go collection")
                                     }
-
                                 }
                             }
                         }
