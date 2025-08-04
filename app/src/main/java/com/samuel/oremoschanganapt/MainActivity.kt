@@ -46,6 +46,7 @@ import com.samuel.oremoschanganapt.view.sideBar.About
 import com.samuel.oremoschanganapt.view.songsPackage.CanticosAgrupados
 import com.samuel.oremoschanganapt.view.songsPackage.SongsPage
 import com.samuel.oremoschanganapt.db.data.praysData
+import com.samuel.oremoschanganapt.view.morepagesPackage.Santoral
 import com.samuel.oremoschanganapt.view.morepagesPackage.remindersPages.ConfigureReminder
 import com.samuel.oremoschanganapt.view.morepagesPackage.remindersPages.RemindersPage
 import com.samuel.oremoschanganapt.view.sideBar.newColorPage
@@ -110,8 +111,8 @@ class  MainActivity : ComponentActivity() {
                             }
 
                                 val navController = rememberNavController()
-//                              NavHost(navController = navController, startDestination = "splash") {
-                                NavHost(navController = navController, startDestination = "home") {
+                              NavHost(navController = navController, startDestination = "splash") {
+//                                NavHost(navController = navController, startDestination = "home") {
 //                                 define routes ------->>
 
                                     composable("splash") {
@@ -200,6 +201,10 @@ class  MainActivity : ComponentActivity() {
                                         val rId = rid.toInt()
 
                                         ConfigureReminder(navController, id, table, rId)
+                                    }
+
+                                    composable("santoralpage") {
+                                        Santoral(navController)
                                     }
                                 }
                         }

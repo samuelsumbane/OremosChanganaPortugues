@@ -30,15 +30,13 @@ fun InputSearch(
     placeholder: String,
     modifier: Modifier
 ) {
-    val inputBgColor = if (isSystemInDarkTheme()) Color(0xFF4A4F50) else Color(0xFF9DA0A1)
-
     BasicTextField(
         value = value,
         onValueChange = onValueChange,
         textStyle = TextStyle(color = Color.White, fontSize = 17.sp),
         modifier = modifier
             .fillMaxWidth(0.85f)
-            .background(inputBgColor, RoundedCornerShape(20.dp))
+            .background(color = Color(0xFF373C42), RoundedCornerShape(20.dp))
             .height(40.dp),
         singleLine = true,
         decorationBox = @Composable { innerTextField ->
@@ -46,7 +44,7 @@ fun InputSearch(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.padding(4.dp)
             ) {
-                Icon(Icons.Default.Search, contentDescription = "input pesquisar", tint = Color.White, modifier = Modifier.padding(start = 7.dp))
+                Icon(Icons.Default.Search, contentDescription = "search Input", tint = Color.White, modifier = Modifier.padding(start = 7.dp))
                 Spacer(modifier = Modifier.width(4.dp))
                 Box {
                     if (value.isEmpty()) {

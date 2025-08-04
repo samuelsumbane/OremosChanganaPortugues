@@ -48,12 +48,6 @@ suspend fun saveThemeMode(context: Context, mode: String) {
     }
 }
 
-fun getThemeMode(context: Context): Flow<String> {
-    return context.dataStore.data.map { preferences ->
-        preferences[themeMode] ?: "System"
-    }
-}
-
 suspend fun getInitialThemeMode(context: Context): String {
     val mode = context.dataStore.data.firstOrNull()?.get(themeMode) ?: "System"
     return if (mode == "404" || mode == "") "System" else mode
@@ -116,7 +110,7 @@ suspend fun saveFontSize(context: Context, fontsize: String) {
 
 
 suspend fun getInitialFontSize(context: Context): String {
-    return context.dataStore.data.firstOrNull()?.get(fontSize) ?: "Small"
+    return context.dataStore.data.firstOrNull()?.get(fontSize) ?: "Normal"
 }
 
 

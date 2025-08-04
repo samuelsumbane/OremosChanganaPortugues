@@ -105,10 +105,8 @@ fun ShortcutsButton(navController: NavController) {
 //        .background(Color.Magenta)
     ) {
         var offsetY by remember { mutableDoubleStateOf(screenHeight) }
-        val childColumnHeight by remember { mutableIntStateOf(220) }
-        var showSearchModal by remember { mutableStateOf(false) }
+        val childColumnHeight by remember { mutableIntStateOf(150) }
         val context = LocalContext.current
-        val coroutineScope = rememberCoroutineScope()
 
         var lovedIdPrays by remember { mutableStateOf(setOf<Int>()) }
         var lovedSongsIds by remember { mutableStateOf(setOf<Int>()) }
@@ -128,73 +126,6 @@ fun ShortcutsButton(navController: NavController) {
             }
         }
 
-        if (showSearchModal) {
-            Column(
-                Modifier
-                    .fillMaxHeight(0.88f)
-                    .fillMaxWidth()
-                    .padding(start= 12.dp, top=80.dp, end = 12.dp)
-                    .zIndex(4.0f),
-                verticalArrangement = Arrangement.Top,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-
-                Row {
-                    Column(Modifier.padding(top = 10.dp)) {
-                        searchContainer("Cântico / Oração") {
-                            searchValue = it
-                        }
-                    }
-
-                    IconButton(
-                        modifier = Modifier.padding(top = 6.dp),
-                        onClick = {showSearchModal = !showSearchModal}
-                    ) {
-                        Icon(Icons.Default.Clear, contentDescription = "close",
-                            tint = MaterialTheme.colorScheme.tertiary,
-                            modifier = Modifier.size(32.dp))
-                    }
-                }
-
-                LazyColumn(
-                    Modifier
-                        .fillMaxHeight(1f)
-                        .fillMaxWidth(0.95f),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    items (filteredPrays) { PrayRow(
-                        navController, it,
-                        loved = it.id in lovedIdPrays,
-                        onToggleLoved = { id ->
-                            coroutineScope.launch {
-                                val newSet = lovedIdPrays.toMutableSet().apply {
-                                    if (contains(id)) remove(id) else add(id)
-                                }
-                                saveIdSet(context, newSet, SetIdPreference.PRAYS_ID.preferenceName)
-                                lovedIdPrays = newSet
-                            }
-                        }
-                    ) }
-                    items (filteredSongs) {
-                        SongRow(
-                            navController, it,
-                            blackBackground = true,
-                            loved = it.id in lovedSongsIds,
-                            onToggleLoved = { id ->
-                                coroutineScope.launch {
-                                    val newSet = lovedSongsIds.toMutableSet().apply {
-                                        if (contains(id)) remove(id) else add(id)
-                                    }
-                                    saveIdSet(context, newSet, SetIdPreference.SONGS_ID.preferenceName)
-                                    lovedSongsIds = newSet
-                                }
-                            }
-                        )
-                    }
-                }
-            }
-        }
-
         Row(
             Modifier
                 .align(Alignment.TopEnd)
@@ -210,68 +141,52 @@ fun ShortcutsButton(navController: NavController) {
             ) {
                 // Leftpart (Songs icon, Pray icon, star icon) -------->>
                 AnimatedVisibility(isActive) {
-                    Row(
+                    Column(
                         modifier = Modifier
+                            .padding(end = 5.dp)
+                            .width(140.dp)
                             .background(
                                 color = Color.Black.copy(alpha = 0.96f),
                                 shape = RoundedCornerShape(10)
-                            )
-                            .padding(all = 10.dp),
+                            ),
+                        verticalArrangement = Arrangement.SpaceAround
                     ) {
-                        Column(
+                        Row(
                             Modifier
-                                .padding(end = 5.dp)
-                                .width(80.dp)
-                                .height(childColumnHeight.dp),
-                            verticalArrangement = Arrangement.Center
+                                .padding(10.dp)
+                                .fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             // Songs
                             ShortcutButtonChild(
-                                modifier = Modifier.align(Alignment.End),
                                 icon = ImageVector.vectorResource(id = R.drawable.ic_music),
                                 description = "Canticos",
                                 iconModifier = Modifier.size(26.dp)
                             ) {  navController.navigate("canticosAgrupados") }
 
-                            Spacer(Modifier.height(10.dp))
-
                             // Prays
                             ShortcutButtonChild(
                                 icon = ImageVector.vectorResource(id = R.drawable.prayicon),
-                                description = "Oracoes",
+                                description = "Prays",
                                 iconModifier = Modifier.size(26.dp)
                             ) { navController.navigate("oracoespage") }
+                        }
 
-                            Spacer(Modifier.height(10.dp))
-
+                        Row(
+                            modifier = Modifier
+                                .padding(10.dp)
+                                .fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
                             ShortcutButtonChild(
-                                modifier = Modifier.align(Alignment.End),
                                 icon = Icons.Outlined.Star,
                                 description = "Favoritos"
                             ) {  navController.navigate("favoritospage") }
-                        }
 
-                        // Column
-                        Column(
-                            modifier = Modifier
-                                .fillMaxHeight(),
-                            verticalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            AnimatedVisibility(isActive) {
-                                ShortcutButtonChild(
-                                    modifier = Modifier.align(Alignment.End),
-                                    icon = Icons.Default.Search,
-                                    description = "Search"
-                                ) { showSearchModal = !showSearchModal; isActive = !isActive }
-                            }
-
-                            AnimatedVisibility(isActive) {
-                                ShortcutButtonChild(
-                                    modifier = Modifier.align(Alignment.End),
-                                    icon = Icons.Default.Home,
-                                    description = "Home"
-                                ) {navController.navigate("home")}
-                            }
+                            ShortcutButtonChild(
+                                icon = Icons.Default.Home,
+                                description = "Home"
+                            ) {navController.navigate("home")}
                         }
                     }
                 }

@@ -1,6 +1,7 @@
 package com.samuel.oremoschanganapt.components.buttons
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,6 +22,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -29,11 +31,15 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.samuel.oremoschanganapt.R
 import com.samuel.oremoschanganapt.components.textFontSize
 import com.samuel.oremoschanganapt.repository.ColorObject
 import com.samuel.oremoschanganapt.ui.theme.DarkSecondary
 import com.samuel.oremoschanganapt.ui.theme.LightSecondary
+import com.samuel.oremoschanganapt.ui.theme.RedButton
 
 @Composable
 fun MorePagesBtn(
@@ -41,28 +47,15 @@ fun MorePagesBtn(
     description: String,
     text: String,
     modifier: Modifier = Modifier,
+    shape: RoundedCornerShape,
     onClick: () -> Unit
 ) {
-    val mainColor = ColorObject.mainColor
-
     Button(
         onClick = onClick,
         colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
         modifier = modifier
             .fillMaxWidth()
-            .background(
-                brush = Brush.horizontalGradient(
-                    colors = listOf(
-                        mainColor,
-                        lerp(
-                            start = mainColor,
-                            stop = if (ColorObject.secondColor == Color.Unspecified) mainColor else ColorObject.secondColor,
-                            fraction = 0.9f
-                        )
-                    ),
-                ),
-                shape = RoundedCornerShape(16.dp)
-            )
+            .background(color = ColorObject.mainColor, shape = shape)
             .height(120.dp),
         contentPadding = PaddingValues(15.dp),
         ) {
@@ -74,7 +67,7 @@ fun MorePagesBtn(
                 tint = Color.White
             )
             Spacer(modifier = Modifier.height(8.dp))
-            Text(text = text, color = Color.White, fontSize = textFontSize())
+            Text(text = text, color = Color.White, fontSize = textFontSize(), fontWeight = FontWeight.SemiBold)
         }
     }
 }
@@ -105,22 +98,47 @@ fun ShortcutButtonChild(
 @Composable
 fun NormalButton(
     text: String,
-    btnColor: Color = ColorObject.mainColor.copy(0.85f),
+    btnColor: Color = ColorObject.mainColor,
     onClick: () -> Unit
 ) {
-    val bgColor = btnColor.copy(0.2f)
-
     Button(
         onClick = onClick,
         modifier = Modifier.width(95.dp).height(40.dp),
         colors = ButtonDefaults.buttonColors(
-            containerColor = bgColor,
-            contentColor = btnColor
+            containerColor = btnColor,
+            contentColor = Color.White
         ),
         contentPadding = PaddingValues(0.dp),
         shape = RoundedCornerShape(10.dp)
     ) {
-        Text(text, color = btnColor)
+        Text(text, color = Color.White)
+    }
+}
+
+@Composable
+fun CancelButton(
+    text: String,
+    onClick: () -> Unit
+) {
+    OutlinedButton(
+        onClick = { onClick() },
+        colors = ButtonDefaults.buttonColors(
+            contentColor = ColorObject.mainColor, containerColor = Color.Transparent
+        ),
+    ) {
+        Text(text = text)
+    }
+}
+
+@Composable
+fun submitButtonsRow(
+    content: @Composable () -> Unit
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceAround
+    ) {
+        content()
     }
 }
 
@@ -132,21 +150,24 @@ fun ExpandContentTabBtn(
 ) {
     Button(
         onClick = onClick,
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(44.dp),
         colors = ButtonDefaults.buttonColors(
-            containerColor = Color.Transparent,
-            contentColor = MaterialTheme.colorScheme.tertiary
-        )
+            containerColor = ColorObject.mainColor,
+        ),
+        shape = RoundedCornerShape(10.dp)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Icon(icon, contentDescription = "language icon")
-            Text(text = title, fontSize = textFontSize())
+            Icon(icon, contentDescription = "icon", tint = Color.White)
+            Text(text = title, fontSize = textFontSize(), color = Color.White)
             Icon(
                 Icons.Default.KeyboardArrowDown,
-                contentDescription = "Open appearance"
+                contentDescription = "Open ou close tab",
+                tint = Color.White
             )
         }
     }

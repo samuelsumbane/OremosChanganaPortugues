@@ -1,5 +1,7 @@
 package com.samuel.oremoschanganapt.view.sideBar
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -36,12 +38,14 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.samuel.oremoschanganapt.R
 import com.samuel.oremoschanganapt.components.ColorPickerHSV
+import com.samuel.oremoschanganapt.components.buttons.CancelButton
 import com.samuel.oremoschanganapt.components.toastAlert
 import com.samuel.oremoschanganapt.repository.ColorObject
 import com.samuel.oremoschanganapt.saveSecondThemeColor
 import com.samuel.oremoschanganapt.saveThemeColor
 import kotlinx.coroutines.launch
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun newColorPage(navController: NavController) {
@@ -83,19 +87,15 @@ fun newColorPage(navController: NavController) {
                     initialColor = it,
                     isSolidColorTabSelected = { isSolidColorTabSelected = it },
                     onColorChanged = { color = it },
-                    onSecondColorChanged = { secondColor = it })
+                    onSecondColorChanged = { secondColor = it }
+                )
 
                 Row(
                     modifier = Modifier.padding(bottom = 20.dp).fillMaxWidth(0.9f),
                     horizontalArrangement = Arrangement.SpaceAround
                 ) {
-                    OutlinedButton(
-                        onClick = { navController.popBackStack() },
-                        colors = ButtonDefaults.buttonColors(
-                            contentColor = itemBgColor, containerColor = Color.Transparent
-                        )
-                    ) {
-                        Text(text = stringResource(R.string.cancel))
+                    CancelButton(text = stringResource(R.string.cancel)) {
+                        navController.popBackStack()
                     }
 
                     Button(

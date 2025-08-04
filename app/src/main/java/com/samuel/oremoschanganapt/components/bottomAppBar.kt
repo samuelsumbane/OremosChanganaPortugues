@@ -50,7 +50,7 @@ import com.samuel.oremoschanganapt.ui.theme.DarkSecondary
 import com.samuel.oremoschanganapt.ui.theme.LightSecondary
 
 @Composable
-fun SidebarNav(navController: NavController, activePage: String, modifier: Modifier = Modifier,iconColorState: String = "Keep", ) {
+fun SidebarNav(navController: NavController, activePage: String, modifier: Modifier = Modifier,iconColorState: String = "Keep") {
     NavigationRail(
         modifier = if (activePage == "home") modifier else Modifier.padding(0.dp).width(80.dp),
         containerColor = Color.Transparent,

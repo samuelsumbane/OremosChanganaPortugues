@@ -2,11 +2,10 @@ package com.samuel.oremoschanganapt.view.settingsPackage
 
 //import com.samuel.oremoschanganapt.functionsKotlin.ColorPickerHSV
 //import com.samuel.oremoschanganapt.getInitialThemeColor
-import androidx.compose.foundation.background
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -37,21 +36,31 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.samuel.oremoschanganapt.R
 import com.samuel.oremoschanganapt.components.colorSelectBox
-import com.samuel.oremoschanganapt.components.toastAlert
+import com.samuel.oremoschanganapt.components.RowPreviewColor
 import com.samuel.oremoschanganapt.repository.ColorObject
 import com.samuel.oremoschanganapt.saveSecondThemeColor
 import com.samuel.oremoschanganapt.saveThemeColor
-import com.samuel.oremoschanganapt.ui.theme.*
+import com.samuel.oremoschanganapt.ui.theme.Blue
+import com.samuel.oremoschanganapt.ui.theme.BlueColor
+import com.samuel.oremoschanganapt.ui.theme.Green
+import com.samuel.oremoschanganapt.ui.theme.Lightblue
+import com.samuel.oremoschanganapt.ui.theme.Lightgray
+import com.samuel.oremoschanganapt.ui.theme.Orange
+import com.samuel.oremoschanganapt.ui.theme.Pink
+import com.samuel.oremoschanganapt.ui.theme.Purple
+import com.samuel.oremoschanganapt.ui.theme.Red
+import com.samuel.oremoschanganapt.ui.theme.RedButton
+import com.samuel.oremoschanganapt.ui.theme.Tomato
+import com.samuel.oremoschanganapt.ui.theme.Turquoise
 import kotlinx.coroutines.launch
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppearancePage(navController: NavController) {
@@ -77,7 +86,7 @@ fun AppearancePage(navController: NavController) {
         val scrollState = rememberScrollState()
 //        var color by remember { mutableStateOf(Color.Red) }
         val context = LocalContext.current
-        val themeColor by remember { mutableStateOf(ColorObject.mainColor) }
+        var themeColor by remember { mutableStateOf(ColorObject.mainColor) }
         val secondThemeColor by remember { mutableStateOf(ColorObject.secondColor) }
         var color by remember { mutableStateOf<Color>(themeColor) }
         var secondColor by remember { mutableStateOf<Color>(secondThemeColor) }
@@ -100,13 +109,16 @@ fun AppearancePage(navController: NavController) {
             ) {
 
                 Spacer(Modifier.height(60.dp))
+
+                RowPreviewColor(themeColor)
+
+                Spacer(Modifier.height(60.dp))
                 Column(
                     verticalArrangement = Arrangement.spacedBy(30.dp)
                 ) {
                     for (eachList in colorList) {
                         Row(
-                            modifier = Modifier
-                                .fillMaxSize(0.8f),
+                            modifier = Modifier.fillMaxSize(0.8f),
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             for (color in eachList) {
@@ -114,11 +126,10 @@ fun AppearancePage(navController: NavController) {
                                     coroutineScope.launch {
                                         saveThemeColor(context, color)
                                         ColorObject.mainColor = color
+                                        themeColor = color
                                         //
                                         ColorObject.secondColor = Color.Unspecified
                                         saveSecondThemeColor(context, Color.Unspecified)
-
-                                        toastAlert(context, text = "Nova cor foi definida com sucesso.")
                                     }
                                 }
                             }
@@ -130,7 +141,7 @@ fun AppearancePage(navController: NavController) {
                         modifier = Modifier
                             .border(
                                 width = 1.1.dp,
-                                color = Color.White,
+                                color = MaterialTheme.colorScheme.tertiary,
                                 shape = CircleShape
                             )
                             .size(58.dp)
@@ -142,11 +153,6 @@ fun AppearancePage(navController: NavController) {
                         )
                     }
                 }
-
-
-
-
-
 
             }
         }

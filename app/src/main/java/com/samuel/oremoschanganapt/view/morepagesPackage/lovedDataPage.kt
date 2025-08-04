@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -233,6 +234,11 @@ fun LovedDataPage(navController: NavController) {
                         onClick = {
                             selectedTabIndex = index
                         },
+                        modifier = Modifier
+                            .background(
+                                color = if (selectedTabIndex == index) ColorObject.mainColor else Color.Transparent,
+                                shape = RoundedCornerShape(8.dp)
+                            ),
                         selectedContentColor = ColorObject.mainColor,
                     )
                 }

@@ -94,7 +94,6 @@ fun Apendice(navController: NavController){
                                 color = if (selectedTabIndex == index) ColorObject.mainColor else Color.Transparent,
                                 shape = RoundedCornerShape(8.dp)
                             ),
-                        unselectedContentColor = Color.Red
 
                     )
                 }
@@ -142,7 +141,7 @@ fun ListWidget(
         AnimatedVisibility(showContent) {
             Column(
                 Modifier.background(brush = Brush.horizontalGradient(
-                    colors = listOf(mainColor, lerp(mainColor, DarkColor, 0.9f)),
+                    colors = listOf(mainColor, lerp(mainColor, ColorObject.secondColor, 0.9f)),
                 ), RoundedCornerShape(0.dp, 0.dp, 14.dp, 14.dp)).fillMaxWidth()
             ) {
                 dataList.forEach { list ->

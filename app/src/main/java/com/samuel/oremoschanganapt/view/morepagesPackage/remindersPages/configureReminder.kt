@@ -23,19 +23,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.samuel.oremoschanganapt.components.DatePickerModalInput
 import com.samuel.oremoschanganapt.components.TimePickerDialog
 import com.samuel.oremoschanganapt.components.buttons.NormalButton
+import com.samuel.oremoschanganapt.components.buttons.CancelButton
+import com.samuel.oremoschanganapt.components.buttons.submitButtonsRow
 import com.samuel.oremoschanganapt.components.toastAlert
-import com.samuel.oremoschanganapt.db.data.songsData
 import com.samuel.oremoschanganapt.functionsKotlin.combineTimestamps
 import com.samuel.oremoschanganapt.functionsKotlin.convertLongToTimeString
 import com.samuel.oremoschanganapt.functionsKotlin.convertTimePickerStateToLong
@@ -43,7 +42,6 @@ import com.samuel.oremoschanganapt.functionsKotlin.getCurrentTimestamp
 import com.samuel.oremoschanganapt.functionsKotlin.convertLongToDateString
 import com.samuel.oremoschanganapt.functionsKotlin.scheduleNotificationForSongOrPray
 import com.samuel.oremoschanganapt.repository.ColorObject
-import com.samuel.oremoschanganapt.ui.theme.RedButton
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
@@ -89,6 +87,9 @@ fun ConfigureReminder(
                 .background(MaterialTheme.colorScheme.background),
             verticalArrangement = Arrangement.SpaceEvenly
         ) {
+
+
+
             Row( Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceAround) {
 
                 DateTimeButtonLabel(text = convertLongToDateString(reminderdate)) {
@@ -125,15 +126,8 @@ fun ConfigureReminder(
                 ) { showDatePicker = false }
             }
 
-            Row(
-                Modifier
-                    .fillMaxWidth(0.9f)
-                    .height(40.dp)
-                    .align(Alignment.CenterHorizontally),
-                horizontalArrangement = Arrangement.SpaceAround
-            ){
-
-                NormalButton("Cancelar", RedButton) { navController.popBackStack() }
+            submitButtonsRow {
+                CancelButton(text = "Cancelar") { navController.popBackStack() }
 
                 NormalButton("Finalizar") {
                     if (reminderdate == 0L ) {
@@ -175,11 +169,13 @@ fun ConfigureReminder(
                             reminderDateTime
                         )
 
-//                        navController.popBackStack()
+                        navController.popBackStack()
                     }
                 }
-
             }
+
+
+//            }
         }
     }
 }

@@ -1,6 +1,8 @@
 package com.samuel.oremoschanganapt.view.sideBar
 
-import android.util.Log
+//import androidx.compose.runtime.R
+//import com.samuel.oremoschanganapt.components.BackupPickerScreen
+//import com.samuel.oremoschanganapt.components.FilePickerScreen
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -14,7 +16,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.DropdownMenu
@@ -22,13 +23,11 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-//import androidx.compose.runtime.R
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
@@ -40,13 +39,12 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.PopupProperties
 import androidx.navigation.NavController
 import com.samuel.oremoschanganapt.R
-//import com.samuel.oremoschanganapt.components.BackupPickerScreen
 import com.samuel.oremoschanganapt.components.DefTabButton
-import com.samuel.oremoschanganapt.components.RadioButtonDialog
-//import com.samuel.oremoschanganapt.components.FilePickerScreen
-import com.samuel.oremoschanganapt.components.buttons.ExpandContentTabBtn
 import com.samuel.oremoschanganapt.components.KeyValueTextRow
+import com.samuel.oremoschanganapt.components.RadioButtonDialog
+import com.samuel.oremoschanganapt.components.buttons.ExpandContentTabBtn
 import com.samuel.oremoschanganapt.components.textFontSize
+import com.samuel.oremoschanganapt.components.toastAlert
 import com.samuel.oremoschanganapt.functionsKotlin.restartActivity
 import com.samuel.oremoschanganapt.functionsKotlin.updateLocale
 import com.samuel.oremoschanganapt.repository.ColorObject
@@ -67,7 +65,6 @@ fun AppearanceWidget(
     navController: NavController,
     modeSetting: String,
 ) {
-
     var visibleAppearanceTab by remember { mutableStateOf(false) }
     var mode by remember { mutableStateOf(modeSetting) }
     var showModeDialog by remember { mutableStateOf(false) }
@@ -76,31 +73,12 @@ fun AppearanceWidget(
         stringResource(R.string.dark) to "Dark",
         stringResource(R.string.system) to "System"
     )
-    var showFontSizesDialog by remember { mutableStateOf(false) }
-    var selectedFontSizeOption by remember { mutableStateOf(Configs.fontSize) }
-
-    val fontSizeOptions = mapOf(
-        "Small" to stringResource(R.string.small),
-        "Normal" to stringResource(R.string.normal),
-        "Large" to stringResource(R.string.large),
-        "Huge" to stringResource(R.string.huge)
-    )
 
     val stringMode = stringResource(R.string.mode)
     var selectedModeOption by remember { mutableStateOf(mode) }
     var expanded by remember { mutableStateOf(false) }
     var coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
-
-    val localesAndLanguages = mapOf(
-        "pt" to stringResource(R.string.pt),
-        "ts" to stringResource(R.string.ts)
-    )
-
-
-    var appLanguage by remember { mutableStateOf("") }
-    appLanguage = localesAndLanguages[appLocale] ?: stringResource(R.string.pt)
-
 
     DefTabButton {
         ExpandContentTabBtn(
@@ -136,6 +114,77 @@ fun AppearanceWidget(
                         ) {}
                     }
 
+                }
+                Spacer(modifier = Modifier.height(10.dp))
+            }
+
+            if (showModeDialog) {
+                RadioButtonDialog(
+                    showDialog = showModeDialog,
+                    title = stringMode,
+                    options = modeOptions.keys.toList(),
+                    selectedOption = selectedModeOption,
+                    onOptionSelected = { option ->
+                        selectedModeOption = option
+                        showModeDialog = false
+                        CoroutineScope(Dispatchers.IO).launch {
+                            modeOptions[option]?.let {
+                                saveThemeMode(context, it)
+                            }
+                        }
+                        restartActivity(context)
+                    },
+                    onDismiss = { showModeDialog = false }
+                )
+            }
+        }
+    }
+}
+@Composable
+fun PreferencesWidget(navController: NavController) {
+
+    var visibleAppearanceTab by remember { mutableStateOf(false) }
+    var showFontSizesDialog by remember { mutableStateOf(false) }
+    var selectedFontSizeOption by remember { mutableStateOf(Configs.fontSize) }
+
+    val fontSizeOptions = mapOf(
+        "Small" to stringResource(R.string.small),
+        "Normal" to stringResource(R.string.normal),
+        "Large" to stringResource(R.string.large),
+        "Huge" to stringResource(R.string.huge)
+    )
+
+    var expanded by remember { mutableStateOf(false) }
+    var coroutineScope = rememberCoroutineScope()
+    val context = LocalContext.current
+
+    val localesAndLanguages = mapOf(
+        "pt" to stringResource(R.string.pt),
+        "ts" to stringResource(R.string.ts)
+    )
+
+    var appLanguage by remember { mutableStateOf("") }
+    appLanguage = localesAndLanguages[appLocale] ?: stringResource(R.string.pt)
+
+
+    DefTabButton {
+        ExpandContentTabBtn(
+            ImageVector.vectorResource(R.drawable.preferences),
+            title = "Preferências"
+        ) { visibleAppearanceTab = !visibleAppearanceTab }
+
+        AnimatedVisibility(visibleAppearanceTab){
+            Column {
+                Spacer(modifier = Modifier.height(10.dp))
+
+                Column(Modifier.fillMaxWidth()) {
+
+                    KeyValueTextRow(
+                        key = stringResource(R.string.font_size),
+                        value = fontSizeOptions[Configs.fontSize] ?: "") {
+                        showFontSizesDialog = true
+                    }
+
                     KeyValueTextRow(key = stringResource(R.string.language), value = appLanguage) {
                         expanded = true
                     }
@@ -159,33 +208,8 @@ fun AppearanceWidget(
                             )
                         }
                     }
-
-                    KeyValueTextRow(
-                        key = stringResource(R.string.font_size),
-                        value = fontSizeOptions[Configs.fontSize] ?: "") {
-                        showFontSizesDialog = true
-                    }
                 }
                 Spacer(modifier = Modifier.height(10.dp))
-            }
-
-            if (showModeDialog) {
-                RadioButtonDialog(
-                    showDialog = showModeDialog,
-                    title = stringMode,
-                    options = modeOptions.keys.toList(),
-                    selectedOption = selectedModeOption,
-                    onOptionSelected = { option ->
-                        selectedModeOption = option
-                        showModeDialog = false
-                        CoroutineScope(Dispatchers.IO).launch {
-                            modeOptions[option]?.let {
-                                saveThemeMode(context, it)
-                            }
-                        }
-                    },
-                    onDismiss = { showModeDialog = false }
-                )
             }
 
             if (showFontSizesDialog) {
@@ -281,29 +305,6 @@ fun SidebarText(text: String, bold: Boolean = false, fontSize: Int = 16){
 }
 
 @Composable
-fun RowColors (
-    rowText: String,
-    defaultColor: String
-): String {
-    var returnValue by remember { mutableStateOf("") }
-    Row(
-        Modifier
-            .fillMaxWidth()
-            .height(50.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center
-    ){
-        Row(Modifier.fillMaxWidth(0.90f),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween){
-            SidebarText(text = rowText, fontSize = 15)
-//            returnValue = colorPickerDemo(stringToColor(defaultColor), withIcon = false)
-        }
-    }
-    return returnValue
-}
-
-@Composable
 fun RowAbout (navController: NavController) {
     DefTabButton {
         ExpandContentTabBtn(
@@ -311,30 +312,3 @@ fun RowAbout (navController: NavController) {
         ) { navController.navigate("about") }
     }
 }
-
-
-//@Composable
-//fun RowBackup(commonViewModel: CommonViewModel) {
-//    var isThisTabVisible by remember { mutableStateOf(false) }
-//
-//    DefTabButton {
-//        ExpandContentTabBtn(
-//            Icons.Default.Refresh,
-//            "Backup / Restourar"
-//        ) { isThisTabVisible = !isThisTabVisible }
-//
-//        AnimatedVisibility(isThisTabVisible) {
-//            Column {
-//                Text("Pode salvar (Backup) a lista de orações ou/e cânticos favoritos no dispositivo e carregar (Restourar) quando quiser actualizar a lista actual.", modifier = Modifier.padding(10.dp))
-//                Row(
-//                    modifier = Modifier.fillMaxWidth().padding(10.dp),
-//                    horizontalArrangement = Arrangement.SpaceAround
-//                ) {
-//                    BackupPickerScreen(commonViewModel)
-//                    FilePickerScreen(commonViewModel)
-//                }
-//            }
-//        }
-//    }
-//}
-

@@ -210,7 +210,6 @@ fun eachPage(
                                     preferencesString = if (data == songsData) SetIdPreference.SONGS_ID.preferenceName
                                     else SetIdPreference.PRAYS_ID.preferenceName
                                 )
-//                            Log.d("songs", "to save $lovedSongsIds")
                                 lovedState = !lovedState
                             }
                         }

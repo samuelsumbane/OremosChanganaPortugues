@@ -7,12 +7,14 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -47,6 +49,8 @@ import com.samuel.oremoschanganapt.view.sideBar.AppearanceWidget
 //import com.samuel.oremoschanganapt.view.sideBar.RowBackup
 import com.samuel.oremoschanganapt.view.sideBar.RowAbout
 import com.samuel.oremoschanganapt.db.data.praysData
+import com.samuel.oremoschanganapt.view.sideBar.PreferencesWidget
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
 
@@ -94,14 +98,11 @@ fun Home(navController: NavController) {
 
     LaunchedEffect(Unit) {
         lovedSongsIds = getIdSet(context, SetIdPreference.SONGS_ID.preferenceName)
+        mode = getInitialThemeMode(context)
     }
 
     LaunchedEffect(textInputValue) {
         showModal = textInputValue != ""
-    }
-
-    LaunchedEffect(mode) {
-        mode = getInitialThemeMode(context)
     }
 
     val screenWidth = configuration.screenWidthDp
@@ -116,40 +117,59 @@ fun Home(navController: NavController) {
 
     var iconColorState by remember { mutableStateOf("Keep")}
 
-    var showModeDialog by remember { mutableStateOf(false) }
-    var showFontSizeDialog by remember { mutableStateOf(false) }
-    var selectedModeOption by remember { mutableStateOf(Configs.thememode) }
-    val savedThemeColor by getThemeColor(context).collectAsState(initial = Color.Green)
-
-
     ModalNavigationDrawer(
         drawerState = drawerState,
         gesturesEnabled = true,
         drawerContent = {
             ModalDrawerSheet(
-                Modifier.width(if (isPortrait) inVertical.dp else inHorizontal.dp )
+                Modifier
                     .padding(end = 10.dp)
+                    .width(if (isPortrait) inVertical.dp else inHorizontal.dp )
             ) {
                 Spacer(modifier = Modifier.height(30.dp))
 
                 Column (
                     Modifier.fillMaxWidth(0.95f)
-                        .padding(start = 10.dp)
+                        .padding(start = 12.dp)
                         .fillMaxHeight()
                         .verticalScroll(scrollState),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-
                 ) {
-                    Text(text = stringResource(R.string.configurations).uppercase(), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold, fontStyle = FontStyle.Italic)
-                    Spacer(Modifier.height(75.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(text = stringResource(R.string.configurations).uppercase(), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold, fontStyle = FontStyle.Italic)
 
-                    Column(verticalArrangement = Arrangement.spacedBy(30.dp)) {
-                        // appearencia ------->>
-                        AppearanceWidget(navController, mode)
-
-                        // About --------->>
-                        RowAbout(navController)
+                        IconButton(
+                            onClick = { scope.launch { drawerState.close() } },
+                        ) {
+                            Icon(
+                                Icons.Default.Close,
+                                contentDescription = "Close sidebar",
+                                tint = MaterialTheme.colorScheme.tertiary,
+                            )
+                        }
                     }
+
+                    Spacer(Modifier.height(12.dp))
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+
+                        Spacer(Modifier.height(75.dp))
+
+                        Column(verticalArrangement = Arrangement.spacedBy(30.dp)) {
+                            // appearencia ------->>
+                            AppearanceWidget(navController, mode)
+                            //
+                            PreferencesWidget(navController)
+                            // About --------->>
+                            RowAbout(navController)
+                        }
+                    }
+
                 }
             }
         }
@@ -175,7 +195,8 @@ fun Home(navController: NavController) {
                     if (!isPortrait) SidebarNav(navController, "home", modifier = Modifier.fillMaxHeight().width(80.dp).padding(top=30.dp))
 
                     Column(
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier
+                            .fillMaxWidth()
                             .background(color = Color.Transparent),
                         verticalArrangement = Arrangement.SpaceAround,
                         horizontalAlignment = Alignment.CenterHorizontally
@@ -189,14 +210,14 @@ fun Home(navController: NavController) {
 
                         Spacer(Modifier.height(20.dp))
 
-                        val searchBgColor = if (isSystemInDarkTheme()) Color(0xFF4A4F50) else Color(0xFF9DA0A1)
+//                        val searchBgColor =  Color(0xFF242A2D)
 
                         InputSearch(value = textInputValue, onValueChange = { textInputValue = it },
                             placeholder = stringResource(R.string.search_song_or_pray),
                             modifier = Modifier
                                 .fillMaxWidth(0.75f)
                                 .height(45.dp)
-                                .background(color = searchBgColor, shape = RoundedCornerShape(35.dp)),
+//                                .background(color = searchBgColor, shape = RoundedCornerShape(35.dp)),
                         )
 
                         Spacer(Modifier.height(20.dp))

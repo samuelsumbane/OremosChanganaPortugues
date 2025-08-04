@@ -90,7 +90,6 @@ import com.samuel.oremoschanganapt.components.buttons.ShortcutsButton
 import com.samuel.oremoschanganapt.db.data.Song
 import com.samuel.oremoschanganapt.repository.ColorObject
 import com.samuel.oremoschanganapt.repository.FontSize
-import com.samuel.oremoschanganapt.ui.theme.DarkColor
 import com.samuel.oremoschanganapt.ui.theme.Orange
 import com.samuel.oremoschanganapt.view.states.UIState.configFontSize
 import com.samuel.oremoschanganapt.db.data.Pray
@@ -343,7 +342,6 @@ fun PrayRow(
                         onToggleLoved(pray.id)
                     }
                 }
-
             }
         }
     }
@@ -357,9 +355,8 @@ fun StarButton(
 ) {
     // Icon size animation ------->>
     val scale = remember { androidx.compose.animation.core.Animatable(1f) }
-    val iconDefaultColor = if (isSystemInDarkTheme()) Color.LightGray else Color.DarkGray
     val iconColor by animateColorAsState(
-        targetValue = if (lovedState) Orange else iconDefaultColor,
+        targetValue = if (lovedState) Orange else MaterialTheme.colorScheme.tertiary,
         animationSpec = tween(durationMillis = 300)
     )
 
@@ -552,6 +549,11 @@ fun ColorPickerHSV(
                                 false
                             }
                     },
+                    modifier = Modifier
+                        .background(
+                            color = if (selectedTabIndex == index) ColorObject.mainColor else Color.Transparent,
+                            shape = RoundedCornerShape(8.dp)
+                        ),
                     selectedContentColor = ColorObject.mainColor,
                 )
             }
@@ -624,7 +626,9 @@ fun spaceAroundContentWidget(content: @Composable () -> Unit) {
 @Composable
 fun DefTabButton(content: @Composable () -> Unit){
     Card(
-        Modifier.fillMaxWidth()
+        Modifier
+            .fillMaxWidth()
+//            .height(50.dp)
             .background(Color.Transparent, RoundedCornerShape(10.dp)),
         elevation = CardDefaults.elevatedCardElevation(3.dp)
     ) {
@@ -719,7 +723,8 @@ fun pagerContent(
 
             Text(
                 text = subTitle,
-                fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
+                fontStyle = androidx.compose.ui.text.font.FontStyle.Italic,
+                textAlign = TextAlign.Center,
             )
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -728,10 +733,27 @@ fun pagerContent(
                 text = body.trimIndent(),
                 fontSize = textFontSize(),
                 softWrap = true,
-                modifier = Modifier.padding(15.dp).fillMaxWidth()
+                modifier = Modifier.padding(15.dp).fillMaxWidth(),
+                textAlign = TextAlign.Justify,
             )
         }
 
         if (showShortcutButton) ShortcutsButton(navController)
+    }
+}
+
+
+@Composable
+fun RowPreviewColor(color: Color) {
+    Row(
+        modifier = Modifier
+            .padding(12.dp)
+            .fillMaxWidth(0.9f)
+            .height(48.dp)
+            .background(color, shape = RoundedCornerShape(25)),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text("Apenas para previsualização", color = Color.White)
     }
 }
