@@ -1163,11 +1163,14 @@ val songsData = listOf(
 
     Song(id = 574, "034", "Latim", "Salve Regin", "", "Salve, Regina, mater misericordiae,\n vita, dulcedo, et spes nostra, salve.\n Ad te clamamus, exsules, filii Hevae.\n Ad te suspiramus, gementes et flentes\n in hac lacrimarum valle.\n\n Eia ergo, Advocata nostra,\n illos tuos misericordes oculos ad nos converte.\n Et Iesum, benedictum fructum ventris tui,\n nobis post hoc exsilium ostende.\n O clemens, O pia, O dulcis Virgo Maria."),
 
-    Song(id = 57, "035", "Latim", "Pater Noster", "", "Pater noster, qui es in caelis:\n sanctificetur nomen tuum;\n adveniat regnum tuum;\n fiat voluntas tua, sicut in caelo, et in terra.\n\n Panem nostrum quotidianum da nobis hodie;\n et dimitte nobis debita nostra,\n sicut et nos dimittimus debitoribus nostris;\n et ne nos inducas in tentationem;\n sed libera nos a malo.\n Amen."),
-//    Song(id = 57, "03", "", "", "", ""),
-//    Song(id = 57, "03", "", "", "", ""),
-)
+    Song(id = 575, "035", "Latim", "Pater Noster", "", "Pater noster, qui es in caelis:\n sanctificetur nomen tuum;\n adveniat regnum tuum;\n fiat voluntas tua, sicut in caelo, et in terra.\n\n Panem nostrum quotidianum da nobis hodie;\n et dimitte nobis debita nostra,\n sicut et nos dimittimus debitoribus nostris;\n et ne nos inducas in tentationem;\n sed libera nos a malo.\n Amen."),
 
+    Song(id = 576, "036", "", "Magnificat", "", "4 voz: Nungungulo i mahile xilhamaliso (2x)\n Tod.: Nungungulo i mahile xilhamaliso\n Nzita mu bonga ha yine?\n Nzita mu nyika mbilo yanga\n Nzita mu bonga ha yine?\n Nzita mu nyika lirandzo langa.\n\n 1. Muhefemulo wa mina wa dumisa Hosi\n Ni moya wanga wa tsaka hi mintiro yakwe\n Hakuva i nzi mahile nanza gakwe\n A nzi lhawula, a nzi hanyisa (2x)\n\n 2. I mahile xilhamaliso hi ntamo wakwe\n Tixakeni tontle aveni wuxinji gakwe\n Aka vonitle lava vamu khizamelako\n I thlakekile a txanja gakwe (2x)\n\n 3. I hangalasile lav' ti kukumuxako\n I wisile tihosi le wukosini gabye\n I thakusile lava kutitsongohata\n I xurisile a zisiwana (2x)\n\n 4. I lhayisile Israeli - a nanza gakwe\n Na a alakanya a wuxinji gakwe\n A ka Abrahama ni npswalo wakwe\n Le'xitsumbiso xa va dadani (2x)\n\n 5. Ha dumisa Hosi - Nungungulo Dadani\n Ha dumisa Hosi Jesu - nwana kakwe\n Ha dumisa Hosi - Moya waku basa\n Hi malembe ni malembe."),
+
+    Song(id = 577, "037", "", "Xuma xa mina I Xikwembu", "", "1. Se ndzi tile a kuva ndri ta nyikela\n Ka Xikwembu Tatana wa munene (2x)\n\n Solista: Xuma xa mina i Xikwembu\n Todos: Xuma xa mina i Xikwembu eh eh eh\n \tHinkwaswo swa mina hi Yena\n \tXuma lexi hi ta nyikela\n \tMhamba leyi yi ta saseka.\n\n 2. A mi nyikelo leyi ya wusiwana\n Yamukela Tatana wa munene (2x)\n\n 3. Xinkwa xa hina, vinya la hina\n Hi ku nyika hina vana va wena (2x)\n\n 4. Tirhu wa hina ni ti tsomba ha hina\n Yamukela muvumbi wa, hinkwaswo (2x)\n\n 5. Ni mi handru ya hina ni masinweni ya hina\n Yamukela we nwinyi wa hinkwaswo (2x)"),
+
+    Song(id = 578, "038", "", "Ó khanimambo", "", "Coro: Tod.: Ó khanimambo, oh Xikwembo xanga (2x)\n Sol.: Xikwembu xa mina xindzi hlauliki\n Tod.: Khanimambo\n Sol.: Xindzi randza mini, xindzi yentxa wakwe\n Tod.: Khanimambo\n Sol.: Xikwembu xa mina xindzi xavile mina\n Tod.: Khanimambo\n Sol.: Xindzi xavile mina hi ngati yakwe\n Tod.: Khanimambo\n\n 1. Nini ku tsaka, nini ku khen\n loku kulo nhopfu a moyeni wa\n A lidzimi dzanga, dzi nge tlhamuse\n Le swinga kone a bilwini yanga.\n\n 2. Nini ku tsaka, siku dza namuti\n Ni mhaka ya leswi, A ndzi maheliki sw\n A ndzi tiyisile, a ndleleni yan\n Masiku yo tala wa ndzi pfunetela\n\n 3. A lirandzo dzakwe, dzi ndzi nyikile nta\n waku ku tirela, hi mbilo hinkwa\n yamukeka Hosi, utomi dzawan\n mine ndza ku nyika hi mbilu hinkwayo."),
+)
 
 
 var groupValues = mapOf(

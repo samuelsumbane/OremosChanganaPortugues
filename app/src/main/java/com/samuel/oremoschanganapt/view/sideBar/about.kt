@@ -101,13 +101,13 @@ fun About(navController: NavController){
 
                 Spacer(modifier = Modifier.height(30.dp))
 
-                NormalText("Oremos Changana - Português(PT) é um aplicativo que disponibiliza de forma simples, intuítiva e gratuita o conteúdo do Oremos físico e um pouco mais.\n Estamos abertos para quem deseja ajudar, sua ajuda será apreciada.")
+                NormalText("Oremos Changana - Português(PT) é um aplicativo que disponibiliza, de forma simples, intuitiva e gratuita o conteúdo do Oremos físico e um pouco mais.\n Estamos abertos para quem deseja ajudar, sua ajuda será apreciada.")
 
                 Spacer(modifier = Modifier.height(30.dp))
 
                 SubTitleText("Apoio")
                 Text(
-                    text = "A produção deste aplicativo carreceu de alguns custos da parte do programador, neste sentido pretende-se produzir mais aplicativos desta natureza e para tal contamos com seu apoio financeiro que pode ser efectuado através dos seguintes serviços:",
+                    text = "A produção deste aplicativo acarretou de alguns custos da parte do programador, neste sentido pretende-se continuar a produzir mais aplicativos desta natureza e para tal contamos com o seu apoio financeiro que pode ser efetuado através dos seguintes serviços:",
                     textAlign = TextAlign.Justify,
                     modifier = Modifier.padding(17.dp, 0.dp, 17.dp, 0.dp),
                     fontSize = textFontSize(), lineHeight = 24.sp,
@@ -153,12 +153,7 @@ fun About(navController: NavController){
                               )
                           }
                   }
-
-
-
                 }
-                NormalText("")
-
 
                 Spacer(modifier = Modifier.height(35.dp))
 
@@ -169,23 +164,24 @@ fun About(navController: NavController){
                     NormalText("- Arcelia Sitoe")
                     NormalText("- Berílio Mate")
                     NormalText("- Mário Langa")
-                    NormalText("- Yunura")
+                    NormalText("- Yunura da Conceição")
                     NormalText("- Zulmira Congolo")
                 }
 
-                NormalText("Edição do Oremos físico: 5", modifier = Modifier.padding(bottom = 20.dp, top = 45.dp))
-
-                Spacer(modifier = Modifier.height(20.dp))
-                NormalText("Versão do aplicativo: 4.0", modifier = Modifier.padding(bottom = 20.dp))
-
-                Spacer(modifier = Modifier.height(30.dp))
+                Spacer(modifier = Modifier.height(50.dp))
                 SubTitleText("Contribuição no código \n(Programadores ou Designers)")
 
-                NormalText("O app Oremos Changana PT é um projecto de código aberto disponível no GitHub e é feito 100% em Kotlin." +
+                NormalText("O app Oremos - Changana PT é um projecto de código aberto disponível no GitHub e é feito 100% em Kotlin." +
                         "\n Pode contribuir atravez do link:\n https://github.com/samuelsumbane/OremosChanganaPortugues.git",
                     modifier = Modifier.padding(bottom = 20.dp)
                 )
 
+                Spacer(modifier = Modifier.height(50.dp))
+
+                NormalText("Edição do Oremos físico: 5", modifier = Modifier.padding(bottom = 20.dp, top = 45.dp))
+
+                Spacer(modifier = Modifier.height(20.dp))
+                NormalText("Versão do aplicativo: 5.0", modifier = Modifier.padding(bottom = 20.dp))
 
             }
         }
