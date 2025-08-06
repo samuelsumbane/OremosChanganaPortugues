@@ -161,7 +161,7 @@ fun Home(navController: NavController) {
                         Spacer(Modifier.height(75.dp))
 
                         Column(verticalArrangement = Arrangement.spacedBy(30.dp)) {
-                            // appearencia ------->>
+                            // appearance ------->>
                             AppearanceWidget(navController, mode)
                             //
                             PreferencesWidget(navController)

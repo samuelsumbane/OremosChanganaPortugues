@@ -2,6 +2,7 @@ package com.samuel.oremoschanganapt.view.sideBar
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -37,7 +38,6 @@ import com.samuel.oremoschanganapt.components.textFontSize
 import com.samuel.oremoschanganapt.components.toastAlert
 import com.samuel.oremoschanganapt.ui.theme.Blue
 import com.samuel.oremoschanganapt.ui.theme.Typography
-
 
 @Composable
 fun NormalText(text: String, modifier: Modifier = Modifier) {
@@ -114,12 +114,44 @@ fun About(navController: NavController){
                     color = textColor
                 )
 
-                NormalText("\n" +
-                        "* Emola - 865230661\n" +
-                        "* MKhesh - 833597867\n" +
-                        "* BIM - 1046225220\n" +
-                        "* PayPal - samuelsumbane143@gmail.com"
-                )
+                Column(
+                    modifier = Modifier.fillMaxWidth(0.9f)
+                ) {
+                    for((key, contact) in mutableMapOf(
+                        "emola" to "865230661", "mkhesh" to "833597867",
+                        "mbim" to "1046225220", "paypal" to "samuelsumbane143@gmail.com"
+                    )) {
+                        TextButton(
+                            onClick = {
+                                localClipboardManager.setText(AnnotatedString(contact))
+                                toastAlert(context, "Texto copiado para prancheta")
+                            },
+                            modifier = Modifier.height(40.dp),
+                            contentPadding = PaddingValues(0.dp)
+                        ) {
+                            Row() {
+                                when(key) {
+                                    "emola" -> {
+                                        NormalText("Emola   -")
+                                        LinkText(contact)
+                                    }
+                                    "mkhesh" -> {
+                                        NormalText("Mkhesh   -")
+                                        LinkText(contact)
+                                    }
+                                    "mbim" -> {
+                                        NormalText("MBIM   -")
+                                        LinkText(contact)
+                                    }
+                                    else -> {
+                                        NormalText("Paypal    -")
+                                        LinkText(contact)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
 
 
                 Spacer(modifier = Modifier.height(50.dp))
@@ -137,21 +169,16 @@ fun About(navController: NavController){
                     mutableListOf(
                         "+258 865230661", "+258 833597867", "samuelsumbane143@gmail.com"
                     ).forEach { contact ->
-                          TextButton(
-                              onClick = {
-                                  localClipboardManager.setText(AnnotatedString(contact))
-                                  toastAlert(context, "Texto copiado para prancheta")
-                              },
-                              modifier = Modifier.height(40.dp),
-                              contentPadding = PaddingValues(0.dp)
-                          ) {
-                              Text(
-                                  text = contact,
-                                  fontSize = textFontSize(),
-                                  color = Blue,
-                                  textDecoration = TextDecoration.Underline,
-                              )
-                          }
+                      TextButton(
+                          onClick = {
+                              localClipboardManager.setText(AnnotatedString(contact))
+                              toastAlert(context, "Texto copiado para prancheta")
+                          },
+                          modifier = Modifier.height(40.dp),
+                          contentPadding = PaddingValues(0.dp)
+                      ) {
+                          LinkText(contact)
+                      }
                   }
                 }
 
@@ -186,4 +213,15 @@ fun About(navController: NavController){
             }
         }
     }
+}
+
+
+@Composable
+fun LinkText(text: String) {
+    Text(
+        text = text,
+        fontSize = textFontSize(),
+        color = Blue,
+        textDecoration = TextDecoration.Underline,
+    )
 }

@@ -146,7 +146,7 @@ fun ShortcutsButton(navController: NavController) {
                             .padding(end = 5.dp)
                             .width(140.dp)
                             .background(
-                                color = Color.Black.copy(alpha = 0.96f),
+                                color = Color.Black.copy(alpha = 0.86f),
                                 shape = RoundedCornerShape(10)
                             ),
                         verticalArrangement = Arrangement.SpaceAround

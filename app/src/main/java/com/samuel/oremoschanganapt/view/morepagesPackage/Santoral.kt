@@ -199,7 +199,6 @@ val monthAndDates = mapOf(
     ),
 )
 
-
 @Composable
 fun ListItem(
     title: String,

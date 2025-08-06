@@ -25,8 +25,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -68,7 +70,7 @@ fun MorePages(navController: NavController) {
                         Modifier.fillMaxWidth(),
                     ) {
                         MorePagesBtn(
-                            icon = Icons.Default.Warning,
+                            icon = ImageVector.vectorResource(R.drawable.appendix),
                             description = "pagina de apêndice",
                             text = "Apêndice",
                             Modifier.weight(1f),
@@ -80,7 +82,7 @@ fun MorePages(navController: NavController) {
                         Spacer(Modifier.width(25.dp))
 
                         MorePagesBtn(
-                            icon = Icons.Default.Notifications,
+                            icon = ImageVector.vectorResource(R.drawable.party),
                             description = "Pagina de festas móveis",
                             text = "Festas Móveis",
                             Modifier.weight(1f),
@@ -104,7 +106,7 @@ fun MorePages(navController: NavController) {
                         Spacer(Modifier.width(25.dp))
 
                         MorePagesBtn(
-                            icon = Icons.Default.Notifications,
+                            icon = ImageVector.vectorResource(R.drawable.cruz),
                             description = "pagina de santos e santas",
                             text = "Santoral",
                             modifier = Modifier.weight(1f),

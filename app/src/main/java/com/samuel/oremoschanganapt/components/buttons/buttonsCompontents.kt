@@ -27,6 +27,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
@@ -50,13 +51,37 @@ fun MorePagesBtn(
     shape: RoundedCornerShape,
     onClick: () -> Unit
 ) {
+//    Button(
+//        onClick = onClick,
+//        colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+//        modifier = modifier
+//            .fillMaxWidth()
+//            .background(color = ColorObject.mainColor, shape = shape)
+//            .height(120.dp),
+//        contentPadding = PaddingValues(15.dp),
+//        ) {
+//        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+//            Icon(
+//                imageVector = icon,
+//                contentDescription = description,
+//                modifier = Modifier.size(30.dp),
+//                tint = Color.White
+//            )
+//            Spacer(modifier = Modifier.height(8.dp))
+//            Text(text = text, color = Color.White, fontSize = textFontSize(), fontWeight = FontWeight.SemiBold)
+//        }
+//    }
+
     Button(
         onClick = onClick,
-        colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = ColorObject.mainColor
+        ),
         modifier = modifier
             .fillMaxWidth()
-            .background(color = ColorObject.mainColor, shape = shape)
+            .shadow(elevation = 12.dp, shape = shape, spotColor = Color.Black)
             .height(120.dp),
+        shape = shape,
         contentPadding = PaddingValues(15.dp),
         ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {

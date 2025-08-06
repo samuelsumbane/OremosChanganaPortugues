@@ -1,8 +1,5 @@
 package com.samuel.oremoschanganapt.view.sideBar
 
-//import androidx.compose.runtime.R
-//import com.samuel.oremoschanganapt.components.BackupPickerScreen
-//import com.samuel.oremoschanganapt.components.FilePickerScreen
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -44,7 +41,6 @@ import com.samuel.oremoschanganapt.components.KeyValueTextRow
 import com.samuel.oremoschanganapt.components.RadioButtonDialog
 import com.samuel.oremoschanganapt.components.buttons.ExpandContentTabBtn
 import com.samuel.oremoschanganapt.components.textFontSize
-import com.samuel.oremoschanganapt.components.toastAlert
 import com.samuel.oremoschanganapt.functionsKotlin.restartActivity
 import com.samuel.oremoschanganapt.functionsKotlin.updateLocale
 import com.samuel.oremoschanganapt.repository.ColorObject

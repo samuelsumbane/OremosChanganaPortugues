@@ -661,7 +661,7 @@ fun TextIconRow(title: String, showContent: Boolean, modifier: Modifier) {
                 .fillMaxSize(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(title, color = MaterialTheme.colorScheme.tertiary, fontSize = 17.sp)
+            Text(title, color = Color.White, fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
             if (showContent)
                 Icon(Icons.Default.KeyboardArrowUp, contentDescription = "Close", tint = Color.White)
             else
@@ -716,7 +716,8 @@ fun pagerContent(
                 fontWeight = FontWeight.Bold,
                 fontSize = (textFontSize().value + 2).sp,
                 textAlign = TextAlign.Center,
-                softWrap = true
+                softWrap = true,
+                modifier = Modifier.padding(20.dp)
             )
 
             Spacer(modifier = Modifier.height(12.dp))

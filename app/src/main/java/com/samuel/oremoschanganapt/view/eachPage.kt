@@ -1,7 +1,5 @@
 package com.samuel.oremoschanganapt.view
 
-import Reminder
-import ReminderRepository
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -26,6 +24,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -47,20 +46,16 @@ import com.samuel.oremoschanganapt.R
 import com.samuel.oremoschanganapt.SetIdPreference
 import com.samuel.oremoschanganapt.components.StarButton
 import com.samuel.oremoschanganapt.components.pagerContent
-import com.samuel.oremoschanganapt.components.toastAlert
+import com.samuel.oremoschanganapt.db.data.praysData
 import com.samuel.oremoschanganapt.db.data.songsData
 import com.samuel.oremoschanganapt.functionsKotlin.DataCollection
 import com.samuel.oremoschanganapt.functionsKotlin.shareText
 import com.samuel.oremoschanganapt.getIdSet
 import com.samuel.oremoschanganapt.saveIdSet
 import com.samuel.oremoschanganapt.view.states.UIState.isFullScreen
-import com.samuel.oremoschanganapt.db.data.praysData
-import com.samuel.oremoschanganapt.functionsKotlin.getCurrentTimestamp
 import kotlinx.coroutines.launch
 import kotlin.collections.component1
 import kotlin.collections.component2
-import kotlin.collections.iterator
-
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -74,8 +69,7 @@ fun eachPage(
     val share = stringResource(R.string.share)
     val fullscreen = stringResource(R.string.fullscreen)
     var expanded by remember { mutableStateOf(false) }
-
-    var songOrPrayId by remember { mutableIntStateOf(0) }
+    var pageContentId by remember { mutableIntStateOf(0) } //prayOrSongId
     var pageNumber by remember { mutableStateOf("") }
     var pageTitle by remember { mutableStateOf("") }
     var pageSubTitle by remember { mutableStateOf("") }
@@ -83,14 +77,6 @@ fun eachPage(
 
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
-    var lovedState by remember { mutableStateOf(false) }
-    var lovedIds by remember { mutableStateOf(setOf<Int>()) }
-
-
-    LaunchedEffect(lovedIds) {
-        lovedIds = getIdSet(context, SetIdPreference.SONGS_ID.preferenceName)
-        lovedState = itemId in lovedIds
-    }
 
     val btnsIcons = mapOf(
         reminder to Icons.Default.Notifications,
@@ -104,10 +90,28 @@ fun eachPage(
         initialPage = itemId - 1, pageCount = { data.size }
     )
 
+    var lovedIdPrays by remember { mutableStateOf(setOf<Int>()) }
+    var lovedIdSongs by remember { mutableStateOf(setOf<Int>()) }
+//    var isItemLoved by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        lovedIdPrays = getIdSet(context, SetIdPreference.PRAYS_ID.preferenceName)
+        lovedIdSongs = getIdSet(context, SetIdPreference.SONGS_ID.preferenceName)
+    }
+
     /**
      * In pagerState, initialPage receives songId - 1 because, will be page + 1
      * in page inside HorizontalPager
      */
+    val isItemLoved by remember(pageContentId, lovedIdPrays, lovedIdSongs) {
+        derivedStateOf {
+            if (dataCollection == DataCollection.SONGS) {
+                pageContentId in lovedIdSongs
+            } else {
+                pageContentId in lovedIdPrays
+            }
+        }
+    }
 
     @Composable
     fun pager(
@@ -130,7 +134,7 @@ fun eachPage(
                     pageTitle = "$number - ${title.uppercase()}"
                     pageSubTitle = subTitle
                     pageBody = body
-                    songOrPrayId = id
+                    if (pageContentId != id) pageContentId = id
                 }
             } else {
                 praysData.first { it.id == page + 1 }.run {
@@ -145,7 +149,8 @@ fun eachPage(
                     pageTitle = title.uppercase()
                     pageSubTitle = subTitle
                     pageBody = body
-                    songOrPrayId = id
+                    if (pageContentId != id) pageContentId = id
+
                 }
             }
         }
@@ -197,20 +202,21 @@ fun eachPage(
                     }, actions = {
                         val context = LocalContext.current
                         // ---------->>
-                        StarButton(lovedState) {
+                        StarButton(lovedState = isItemLoved) {
                             coroutineScope.launch {
-                                if (lovedState) {
-                                    lovedIds.toMutableSet().remove(itemId)
+                                if (dataCollection == DataCollection.SONGS) {
+                                    val newSet = lovedIdSongs.toMutableSet().apply {
+                                        if (contains(pageContentId)) remove(pageContentId) else add(pageContentId)
+                                    }
+                                    saveIdSet(context, newSet, SetIdPreference.SONGS_ID.preferenceName)
+                                    lovedIdSongs = newSet
                                 } else {
-                                    lovedIds.toMutableSet().add(itemId)
+                                    val newSet = lovedIdPrays.toMutableSet().apply {
+                                        if (contains(pageContentId)) remove(pageContentId) else add(pageContentId)
+                                    }
+                                    saveIdSet(context, newSet, SetIdPreference.PRAYS_ID.preferenceName)
+                                    lovedIdPrays = newSet
                                 }
-                                saveIdSet(
-                                    context,
-                                    lovedIds,
-                                    preferencesString = if (data == songsData) SetIdPreference.SONGS_ID.preferenceName
-                                    else SetIdPreference.PRAYS_ID.preferenceName
-                                )
-                                lovedState = !lovedState
                             }
                         }
 
@@ -242,7 +248,7 @@ fun eachPage(
                                         onClick = {
                                             when (name) {
                                                 reminder -> {
-                                                    navController.navigate("configurereminder/$songOrPrayId/${if (data == songsData) "Song" else "Pray"}/0")
+                                                    navController.navigate("configurereminder/$pageContentId/${if (data == songsData) "Song" else "Pray"}/0")
                                                 }
 
                                                 share -> {
@@ -265,7 +271,5 @@ fun eachPage(
             }) { paddingValues ->
             pager(modifier = Modifier.padding(paddingValues))
         }
-
     }
-
 }

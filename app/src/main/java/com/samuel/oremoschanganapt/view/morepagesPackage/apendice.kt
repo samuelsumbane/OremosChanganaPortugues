@@ -76,7 +76,6 @@ fun Apendice(navController: NavController){
         },
     ) { innerValues ->
          val bgColor = MaterialTheme.colorScheme.background
-         val textColor = MaterialTheme.colorScheme.tertiary
         Column(
             modifier = Modifier.padding(innerValues).background(bgColor)
         ) {
@@ -86,7 +85,9 @@ fun Apendice(navController: NavController){
             ) {
                 tabs.forEachIndexed { index, tab ->
                     Tab(
-                        text = { Text(tab, style = MaterialTheme.typography.bodyMedium, color = textColor) },
+                        text = { Text(tab, style = MaterialTheme.typography.bodyMedium,
+                            color = if (selectedTabIndex == index) Color.White else MaterialTheme.colorScheme.tertiary
+                        ) },
                         selected = selectedTabIndex == index,
                         onClick = { selectedTabIndex = index },
                         modifier = Modifier
@@ -94,7 +95,6 @@ fun Apendice(navController: NavController){
                                 color = if (selectedTabIndex == index) ColorObject.mainColor else Color.Transparent,
                                 shape = RoundedCornerShape(8.dp)
                             ),
-
                     )
                 }
             }
