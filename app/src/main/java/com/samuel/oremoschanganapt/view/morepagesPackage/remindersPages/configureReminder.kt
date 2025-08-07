@@ -8,6 +8,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowBack
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -51,7 +52,7 @@ fun ConfigureReminder(
     itemId: Int,
     table: String,
 //    rdatetime: Long,
-    rId: Int? = null,
+    rId: Long = 0L,
 ) {
     Scaffold(
         topBar = {
@@ -68,17 +69,19 @@ fun ConfigureReminder(
             )
         }
     ) { paddingVales ->
+        val context = LocalContext.current
+        val reminderRepo = ReminderRepository(context)
 
         var reminderdate by remember { mutableStateOf(getCurrentTimestamp()) }
         var remindertime by remember { mutableStateOf(0L) }
 
         val reminderrepeat = "no-repeat"
-        val context = LocalContext.current
 
         var showDatePicker by remember { mutableStateOf(false)}
         var showTimePicker by remember { mutableStateOf(false)}
         val mainColor = ColorObject.mainColor
         var selectedTime: TimePickerState? by remember { mutableStateOf(null) }
+        val reminders = reminderRepo.getAll()
 
         Column (
             Modifier
@@ -87,8 +90,6 @@ fun ConfigureReminder(
                 .background(MaterialTheme.colorScheme.background),
             verticalArrangement = Arrangement.SpaceEvenly
         ) {
-
-
 
             Row( Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceAround) {
 
@@ -99,7 +100,6 @@ fun ConfigureReminder(
                 DateTimeButtonLabel(text = convertLongToTimeString(remindertime)) {
                     showTimePicker = true
                 }
-
             }
 
             if (showTimePicker) {
@@ -126,6 +126,22 @@ fun ConfigureReminder(
                 ) { showDatePicker = false }
             }
 
+            fun editReminder(
+                reminderId: Long = rId,
+                reminderDateTime: Long
+            ) {
+                reminderRepo.update(
+                    reminder = Reminder(
+                        id = reminderId,
+                        reminderData = itemId,
+                        reminderTable = table,
+                        reminderDateTime = reminderDateTime
+                    )
+                )
+                toastAlert(context, "Lembrete actualizado com sucesso.")
+            }
+
+
             submitButtonsRow {
                 CancelButton(text = "Cancelar") { navController.popBackStack() }
 
@@ -136,31 +152,26 @@ fun ConfigureReminder(
                         toastAlert(context, "Por favor, selecione a hora")
                     } else {
                         val reminderDateTime = combineTimestamps(reminderdate, remindertime)
-                        val reminderRepo = ReminderRepository(context)
 
-                        if (rId != 0){
+                        if (rId != 0L){
                             // Edit reminder --------->>
-//                            reminderViewModel.updateReminder( reminderDateTime, rId)
-
-                            reminderRepo.update(
-                                reminder = Reminder(
-                                    reminderData = itemId,
-                                    reminderTable = table,
-                                    reminderDateTime = reminderDateTime
-                                )
-                            )
-                            toastAlert(context, "Lembrete actualizado com sucesso.")
-
+                           editReminder(reminderDateTime = reminderDateTime)
                         } else {
                             // Create reminder ---------->>
-                            reminderRepo.insert(
-                                reminder = Reminder(
-                                    reminderData = itemId,
-                                    reminderTable = table,
-                                    reminderDateTime = reminderDateTime
+                            val possiblyReminder = reminders.firstOrNull { it.reminderData == itemId && it.reminderTable == table }
+
+                            if (possiblyReminder != null) {
+                                editReminder(reminderId = possiblyReminder.id, reminderDateTime)
+                            } else {
+                                reminderRepo.insert(
+                                    reminder = Reminder(
+                                        reminderData = itemId,
+                                        reminderTable = table,
+                                        reminderDateTime = reminderDateTime
+                                    )
                                 )
-                            )
-                            toastAlert(context, "Lembrete adicionado com sucesso.")
+                                toastAlert(context, "Lembrete adicionado com sucesso.")
+                            }
                         }
 
                         scheduleNotificationForSongOrPray(context,

@@ -172,6 +172,8 @@ fun RadioButtonDialog(
     onOptionSelected: (String) -> Unit,
     onDismiss: () -> Unit
 ) {
+    val textColor = MaterialTheme.colorScheme.tertiary
+
     if (showDialog) {
         AlertDialog(
             onDismissRequest = onDismiss,
@@ -195,7 +197,7 @@ fun RadioButtonDialog(
                                 onClick = { onOptionSelected(option) }
                             )
                             Spacer(modifier = Modifier.width(8.dp))
-                            Text(option)
+                            Text(option, color = textColor)
                         }
                     }
                 }
@@ -203,7 +205,7 @@ fun RadioButtonDialog(
             shape = RoundedCornerShape(18.dp),
             confirmButton = {
                 TextButton(onClick = onDismiss) {
-                    Text("Cancel")
+                    Text("Cancel", color = textColor)
                 }
             }
         )
@@ -751,7 +753,19 @@ fun RowPreviewColor(color: Color) {
             .padding(12.dp)
             .fillMaxWidth(0.9f)
             .height(48.dp)
-            .background(color, shape = RoundedCornerShape(25)),
+            .background(
+                brush = Brush.horizontalGradient(
+                    colors = listOf(
+                        color,
+                        lerp(
+                            start = color,
+                            stop = if (ColorObject.secondColor == Color.Unspecified) color else ColorObject.secondColor,
+                            fraction = 0.9f
+                        )
+                    ),
+                ),
+                shape = RoundedCornerShape(25)
+            ),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {

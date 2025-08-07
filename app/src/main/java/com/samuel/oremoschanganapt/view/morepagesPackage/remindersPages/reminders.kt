@@ -40,6 +40,7 @@ import com.samuel.oremoschanganapt.R
 import com.samuel.oremoschanganapt.components.OkAlertDialog
 import com.samuel.oremoschanganapt.components.TextIconRow
 import com.samuel.oremoschanganapt.components.buttons.NormalButton
+import com.samuel.oremoschanganapt.components.buttons.ReminderButton
 import com.samuel.oremoschanganapt.components.buttons.ShortcutsButton
 import com.samuel.oremoschanganapt.components.toastAlert
 import com.samuel.oremoschanganapt.db.data.praysData
@@ -59,12 +60,8 @@ fun RemindersPage(navController: NavController) {
     val context = LocalContext.current
     val repo = ReminderRepository(context)
 
-
     var showModal by remember { mutableStateOf(false) }
 
-//    LaunchedEffect(reminders) {
-//
-//    }
     var allReminders by remember { mutableStateOf(listOf<Reminder>()) }
     allReminders = repo.getAll()
 
@@ -181,19 +178,14 @@ fun RemindersPage(navController: NavController) {
                                         .align(Alignment.CenterHorizontally),
                                     horizontalArrangement = Arrangement.SpaceAround){
 
-                                    NormalButton("Ver", MaterialTheme.colorScheme.tertiary) {
-                                        seeReminderContent()
-                                    }
+                                    ReminderButton("Ver") { seeReminderContent() }
 
-                                    NormalButton("Editar", MaterialTheme.colorScheme.tertiary){
+                                    ReminderButton("Editar") {
                                         val r = reminder
-                                        navController.navigate("configurereminder/${r.reminderData}/${r.reminderTable}/${r.reminderDateTime}")
+                                        navController.navigate("configurereminder/${r.reminderData}/${r.reminderTable}/${r.id}")
                                     }
 
-                                    val deleteButtonColor = if (RedButton.luminance() > 0.5f) RedButton else Color(
-                                        0xFFDB0801
-                                    )
-                                    NormalButton("Remover", deleteButtonColor) {
+                                    ReminderButton("Remover") {
                                         repo.deleteById(reminder.id)
                                         showContent()
                                         toastAlert(context, "Lembrente removido com sucesso.")

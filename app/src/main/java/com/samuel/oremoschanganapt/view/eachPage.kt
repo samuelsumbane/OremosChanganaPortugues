@@ -87,7 +87,12 @@ fun eachPage(
 
 //    val scrollState = rememberScrollState()
     val pagerState = rememberPagerState(
-        initialPage = itemId - 1, pageCount = { data.size }
+        initialPage = itemId - 1, pageCount =
+            if (dataCollection == DataCollection.SONGS) {
+                { data.size + 1}
+            } else {
+                { data.size }
+            }
     )
 
     var lovedIdPrays by remember { mutableStateOf(setOf<Int>()) }
@@ -103,6 +108,7 @@ fun eachPage(
      * In pagerState, initialPage receives songId - 1 because, will be page + 1
      * in page inside HorizontalPager
      */
+
     val isItemLoved by remember(pageContentId, lovedIdPrays, lovedIdSongs) {
         derivedStateOf {
             if (dataCollection == DataCollection.SONGS) {
@@ -135,6 +141,7 @@ fun eachPage(
                     pageSubTitle = subTitle
                     pageBody = body
                     if (pageContentId != id) pageContentId = id
+//                    pageContentId = id
                 }
             } else {
                 praysData.first { it.id == page + 1 }.run {
@@ -248,7 +255,7 @@ fun eachPage(
                                         onClick = {
                                             when (name) {
                                                 reminder -> {
-                                                    navController.navigate("configurereminder/$pageContentId/${if (data == songsData) "Song" else "Pray"}/0")
+                                                    navController.navigate("configurereminder/$pageContentId/${if (data == songsData) "Song" else "Pray"}/${0L}")
                                                 }
 
                                                 share -> {

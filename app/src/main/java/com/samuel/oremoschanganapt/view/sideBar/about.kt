@@ -1,5 +1,7 @@
 package com.samuel.oremoschanganapt.view.sideBar
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -38,6 +40,10 @@ import com.samuel.oremoschanganapt.components.textFontSize
 import com.samuel.oremoschanganapt.components.toastAlert
 import com.samuel.oremoschanganapt.ui.theme.Blue
 import com.samuel.oremoschanganapt.ui.theme.Typography
+import androidx.core.net.toUri
+
+
+const val githubLink = "https://github.com/samuelsumbane/OremosChanganaPortugues.git"
 
 @Composable
 fun NormalText(text: String, modifier: Modifier = Modifier) {
@@ -129,25 +135,14 @@ fun About(navController: NavController){
                             modifier = Modifier.height(40.dp),
                             contentPadding = PaddingValues(0.dp)
                         ) {
-                            Row() {
+                            Row {
                                 when(key) {
-                                    "emola" -> {
-                                        NormalText("Emola   -")
-                                        LinkText(contact)
-                                    }
-                                    "mkhesh" -> {
-                                        NormalText("Mkhesh   -")
-                                        LinkText(contact)
-                                    }
-                                    "mbim" -> {
-                                        NormalText("MBIM   -")
-                                        LinkText(contact)
-                                    }
-                                    else -> {
-                                        NormalText("Paypal    -")
-                                        LinkText(contact)
-                                    }
+                                    "emola" -> NormalText("Emola   -")
+                                    "mkhesh" -> NormalText("Mkhesh   -")
+                                    "mbim" -> NormalText("MBIM   -")
+                                    else -> NormalText("Paypal    -")
                                 }
+                                LinkText(contact)
                             }
                         }
                     }
@@ -198,10 +193,18 @@ fun About(navController: NavController){
                 Spacer(modifier = Modifier.height(50.dp))
                 SubTitleText("Contribuição no código \n(Programadores ou Designers)")
 
-                NormalText("O app Oremos - Changana PT é um projecto de código aberto disponível no GitHub e é feito 100% em Kotlin." +
-                        "\n Pode contribuir atravez do link:\n https://github.com/samuelsumbane/OremosChanganaPortugues.git",
-                    modifier = Modifier.padding(bottom = 20.dp)
+                NormalText(
+                    "O app Oremos - Changana PT é um projecto de código aberto disponível no GitHub e é feito 100% em Kotlin. Pode contribuir através do link:",
                 )
+
+                TextButton(
+                    onClick = {
+                        val intent = Intent(Intent.ACTION_VIEW, githubLink.toUri())
+                        context.startActivity(intent)
+                    }
+                ) {
+                    LinkText(githubLink)
+                }
 
                 Spacer(modifier = Modifier.height(50.dp))
 

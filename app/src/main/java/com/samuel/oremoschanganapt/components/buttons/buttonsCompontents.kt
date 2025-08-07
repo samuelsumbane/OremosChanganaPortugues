@@ -1,5 +1,6 @@
 package com.samuel.oremoschanganapt.components.buttons
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -105,17 +106,15 @@ fun ShortcutButtonChild(
     iconModifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
-    val bgColor = if (!isSystemInDarkTheme()) LightSecondary else DarkSecondary
-
     IconButton(
-        modifier = modifier.then(Modifier.size(45.dp)),
-        colors = IconButtonDefaults.iconButtonColors(
-            containerColor = bgColor,
-            contentColor = MaterialTheme.colorScheme.primary
+        modifier = modifier.then(
+            Modifier
+                .size(45.dp)
+                .background(MaterialTheme.colorScheme.background, shape = RoundedCornerShape(15.dp))
         ),
         onClick = onClick
     ) {
-        Icon(icon, contentDescription = description, modifier = iconModifier, tint = Color.White)
+        Icon(icon, contentDescription = description, modifier = iconModifier, tint = MaterialTheme.colorScheme.tertiary)
     }
 }
 
@@ -134,11 +133,33 @@ fun NormalButton(
             contentColor = Color.White
         ),
         contentPadding = PaddingValues(0.dp),
-        shape = RoundedCornerShape(10.dp)
+//        shape = RoundedCornerShape(10.dp)
     ) {
         Text(text, color = Color.White)
     }
 }
+
+@Composable
+fun ReminderButton(
+    text: String,
+    onClick: () -> Unit
+) {
+    val mTheme = MaterialTheme.colorScheme
+    Button(
+        onClick = onClick,
+        modifier = Modifier.width(95.dp).height(40.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = mTheme.background.copy(alpha = 0.7f),
+            contentColor = mTheme.tertiary
+        ),
+        contentPadding = PaddingValues(0.dp),
+        shape = RoundedCornerShape(11.dp),
+    ) {
+        Text(text, color = MaterialTheme.colorScheme.tertiary)
+    }
+}
+
+
 
 @Composable
 fun CancelButton(

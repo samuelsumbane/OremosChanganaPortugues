@@ -46,6 +46,7 @@ import com.samuel.oremoschanganapt.functionsKotlin.updateLocale
 import com.samuel.oremoschanganapt.repository.ColorObject
 import com.samuel.oremoschanganapt.repository.Configs
 import com.samuel.oremoschanganapt.repository.Configs.appLocale
+import com.samuel.oremoschanganapt.repository.Configs.thememode
 import com.samuel.oremoschanganapt.saveFontSize
 import com.samuel.oremoschanganapt.saveLanguage
 import com.samuel.oremoschanganapt.saveThemeMode
@@ -64,11 +65,20 @@ fun AppearanceWidget(
     var visibleAppearanceTab by remember { mutableStateOf(false) }
     var mode by remember { mutableStateOf(modeSetting) }
     var showModeDialog by remember { mutableStateOf(false) }
+    val lightString = stringResource(R.string.light)
+    val darkString = stringResource(R.string.dark)
+    val systemString = stringResource(R.string.system)
+
     val modeOptions = mapOf(
-        stringResource(R.string.light) to "Light",
-        stringResource(R.string.dark) to "Dark",
-        stringResource(R.string.system) to "System"
+        lightString to "Light",
+        darkString to "Dark",
+        systemString to "System"
     )
+    val themeName = when(thememode) {
+        "Light" -> lightString
+        "Dark" -> darkString
+        else -> systemString
+    }
 
     val stringMode = stringResource(R.string.mode)
     var selectedModeOption by remember { mutableStateOf(mode) }
@@ -87,7 +97,7 @@ fun AppearanceWidget(
                 Spacer(modifier = Modifier.height(10.dp))
 
                 Column(Modifier.fillMaxWidth()) {
-                    KeyValueTextRow(key = stringMode, value = modeOptions[modeSetting] ?: stringResource(R.string.system)) {
+                    KeyValueTextRow(key = stringMode, value = themeName) {
                         showModeDialog = true
                     }
 

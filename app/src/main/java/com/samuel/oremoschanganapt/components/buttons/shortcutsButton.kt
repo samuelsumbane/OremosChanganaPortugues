@@ -146,7 +146,7 @@ fun ShortcutsButton(navController: NavController) {
                             .padding(end = 5.dp)
                             .width(140.dp)
                             .background(
-                                color = Color.Black.copy(alpha = 0.86f),
+                                color = MaterialTheme.colorScheme.background.copy(alpha = 0.97f),
                                 shape = RoundedCornerShape(10)
                             ),
                         verticalArrangement = Arrangement.SpaceAround
@@ -194,7 +194,7 @@ fun ShortcutsButton(navController: NavController) {
                 Spacer(Modifier.height(16.dp))
 
                 Column {
-                    val bgColor = if (!isSystemInDarkTheme()) LightSecondary else DarkSecondary
+//                    val bgColor = if (!isSystemInDarkTheme()) LightSecondary else DarkSecondary
 
                     IconButton(
                         modifier = Modifier
@@ -205,7 +205,7 @@ fun ShortcutsButton(navController: NavController) {
                                     offsetY += dragAmount.y
                                 }
                             },
-                        colors = IconButtonDefaults.iconButtonColors(containerColor = bgColor),
+                        colors = IconButtonDefaults.iconButtonColors(containerColor = Color.Black.copy(alpha = 0.90f)),
                         onClick = { isActive = !isActive }
                     ) {
                         Icon(

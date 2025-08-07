@@ -3,6 +3,7 @@ package com.samuel.oremoschanganapt
 
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
@@ -46,6 +47,7 @@ import com.samuel.oremoschanganapt.view.sideBar.About
 import com.samuel.oremoschanganapt.view.songsPackage.CanticosAgrupados
 import com.samuel.oremoschanganapt.view.songsPackage.SongsPage
 import com.samuel.oremoschanganapt.db.data.praysData
+import com.samuel.oremoschanganapt.repository.Configs.thememode
 import com.samuel.oremoschanganapt.view.morepagesPackage.Santoral
 import com.samuel.oremoschanganapt.view.morepagesPackage.remindersPages.ConfigureReminder
 import com.samuel.oremoschanganapt.view.morepagesPackage.remindersPages.RemindersPage
@@ -81,6 +83,7 @@ class  MainActivity : ComponentActivity() {
                 appLocale = initialLanguage
 
                 Configs.fontSize = fontSize
+                thememode = themeMode
             }
 
             val appMode = when (themeMode) {
@@ -195,10 +198,10 @@ class  MainActivity : ComponentActivity() {
 
                                     composable("configurereminder/{id}/{table}/{reminderid}") { cR ->
                                         val stringId = cR.arguments?.getString("id") ?: ""
-                                        val id = stringId.toInt()
+                                        val id = stringId.toInt() // item data id (can be Pray or song)
                                         val table = cR.arguments?.getString("table") ?: ""
                                         val rid = cR.arguments?.getString("reminderid") ?: ""
-                                        val rId = rid.toInt()
+                                        val rId = rid.toLong()
 
                                         ConfigureReminder(navController, id, table, rId)
                                     }

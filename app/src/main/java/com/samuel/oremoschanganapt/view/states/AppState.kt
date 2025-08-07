@@ -11,4 +11,6 @@ object AppState {
 //    var configSongNumber by mutableIntStateOf(0)
     var isSearchInputVisible by mutableStateOf(false)
     var isContainerActive by mutableStateOf(false)
+    var isLoading by mutableStateOf(true)
+
 }

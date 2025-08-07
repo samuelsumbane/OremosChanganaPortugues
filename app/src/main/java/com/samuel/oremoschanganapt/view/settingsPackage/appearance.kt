@@ -1,7 +1,5 @@
 package com.samuel.oremoschanganapt.view.settingsPackage
 
-//import com.samuel.oremoschanganapt.functionsKotlin.ColorPickerHSV
-//import com.samuel.oremoschanganapt.getInitialThemeColor
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.border
