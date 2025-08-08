@@ -9,16 +9,8 @@ import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.TimePickerState
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import com.samuel.oremoschanganapt.ReminderReceiver
 import java.time.Instant
 import java.time.LocalDate
@@ -32,29 +24,12 @@ import java.util.Locale
 
 @SuppressLint("ScheduleExactAlarm")
 @RequiresApi(Build.VERSION_CODES.M)
-//fun scheduleNotificationForSongOrPray(context: Context, title: String, message: String, timestamp: Long) {
-//    val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-//
-//    val intent = Intent(context, ReminderReceiver::class.java).apply {
-//        putExtra("NOTIFICATION_TITLE", title)
-//        putExtra("NOTIFICATION_MESSAGE", message)
-//    }
-//
-//    val pendingIntent = PendingIntent.getBroadcast(
-//        context,
-//        0,
-//        intent,
-//        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-//    )
-//
-//    alarmManager.setExactAndAllowWhileIdle(
-//        AlarmManager.RTC_WAKEUP,
-//        timestamp,
-//        pendingIntent
-//    )
-//}
-
-fun scheduleNotificationForSongOrPray(context: Context, title: String, message: String, timestamp: Long) {
+fun scheduleNotificationForSongOrPray(
+    context: Context,
+    title: String,
+    message: String,
+    timestamp: Long,
+) {
     val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
     // Check permission (from Android 12)
@@ -116,7 +91,7 @@ fun getCurrentTimestamp(): Long = System.currentTimeMillis()
 // Verify if is number or not --------->>
 fun isNumber(valor: Any): Boolean {
     return try {
-        // Tenta converter o valor para um tipo numérico
+        // Try to convert value to numeric type
         when (valor) {
             is Byte, is Short, is Int, is Long, is Float, is Double -> true
             is String -> {
@@ -127,11 +102,9 @@ fun isNumber(valor: Any): Boolean {
             else -> false
         }
     } catch (e: NumberFormatException) {
-        // Captura a exceção se a conversão falhar
         false
     }
 }
-
 
 fun shareText(context: Context, text: String) {
     val shareIntent = Intent(Intent.ACTION_SEND)
@@ -139,20 +112,6 @@ fun shareText(context: Context, text: String) {
     shareIntent.putExtra(Intent.EXTRA_TEXT, text)
     context.startActivity(Intent.createChooser(shareIntent, "Compartilhar via"))
 }
-
-@Composable
-fun ShareIconButton(context: Context, text: String) {
-    IconButton(
-        onClick = { shareText(context, text) },
-        modifier = Modifier.padding(8.dp)
-    ) {
-        Icon(
-            imageVector = Icons.Outlined.Share,
-            contentDescription = null
-        )
-    }
-}
-
 
 @RequiresApi(Build.VERSION_CODES.O)
 fun convertLongToDateString(long: Long): String{
@@ -168,7 +127,6 @@ fun convertTimePickerStateToLong(timePickerState: TimePickerState): Long {
     val selectedTime = LocalTime.of(timePickerState.hour, timePickerState.minute)
     return selectedTime.toSecondOfDay() * 1000L
 }
-
 
 @RequiresApi(Build.VERSION_CODES.O)
 fun convertLongToTimeString(timeInMillis: Long): String {
@@ -222,26 +180,17 @@ fun splitTimestamp(timestamp: Long): Pair<Long, Long> {
     val zoneId = ZoneId.of("Africa/Maputo")
     val dateTime = Instant.ofEpochMilli(timestamp).atZone(zoneId).toLocalDateTime()
 
-    // Extrair a data em milissegundos
+    // Extract date in milissegundos
     val dateMillis = dateTime.toLocalDate()
         .atStartOfDay(zoneId)
         .toInstant()
         .toEpochMilli()
 
-    // Extrair o tempo em milissegundos
+    // Extract time in milissegundos
     val timeMillis = dateTime.toLocalTime().toSecondOfDay() * 1000L
     return Pair(dateMillis, timeMillis)
 }
 
-//fun compareWithCurrentTime(targetMillis: Long): String {
-//    val currentMillis = System.currentTimeMillis() // Obtém a hora atual em milissegundos
-//
-//    return when {
-//        targetMillis < currentMillis -> "Passado" // A hora está no passado
-//        targetMillis - currentMillis <= 1000 -> "Presente" // Está próximo da hora atual (até 1 segundo de diferença)
-//        else -> "Futuro" // A hora está no futuro
-//    }
-//}
 
 fun compareWithCurrentTime(targetMillis: Long): Boolean = System.currentTimeMillis() < targetMillis
 

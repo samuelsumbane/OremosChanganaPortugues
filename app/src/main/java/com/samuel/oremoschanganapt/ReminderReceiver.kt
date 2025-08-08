@@ -13,6 +13,6 @@ class ReminderReceiver : BroadcastReceiver() {
         val message = intent.getStringExtra("NOTIFICATION_MESSAGE")
 
         val appNotificationService = AppNotificationService(context, title!!, message!!)
-        appNotificationService.showBasicNotication()
+        appNotificationService.showBasicNotification()
     }
 }

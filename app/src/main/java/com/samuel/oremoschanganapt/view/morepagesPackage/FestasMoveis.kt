@@ -88,7 +88,13 @@ fun FestasMoveis(navController: NavController) {
                 Column(
                     Modifier.fillMaxWidth(0.9f)
                         .background(brush = Brush.horizontalGradient(
-                            colors = listOf(itemBgColor, lerp(itemBgColor, ColorObject.secondColor, 0.9f)),
+                            colors = listOf(itemBgColor,
+                                lerp(
+                                    start = ColorObject.mainColor,
+                                    stop = if (ColorObject.secondColor == Color.Unspecified) ColorObject.mainColor else ColorObject.secondColor,
+                                    fraction = 0.9f
+                                )
+                            ),
                         ), RoundedCornerShape(10.dp))
                 ) {
                     Column(

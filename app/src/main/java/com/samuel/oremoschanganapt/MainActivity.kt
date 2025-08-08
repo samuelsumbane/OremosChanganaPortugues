@@ -213,11 +213,7 @@ class  MainActivity : ComponentActivity() {
                         }
                     }
                 }
-//            } else {
-//                LoadingScreen()
-//            }
-                } else LoadingScreen()
-
+            } else LoadingScreen()
         }
     }
 }

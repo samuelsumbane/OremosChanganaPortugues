@@ -42,6 +42,7 @@ import com.samuel.oremoschanganapt.functionsKotlin.convertTimePickerStateToLong
 import com.samuel.oremoschanganapt.functionsKotlin.getCurrentTimestamp
 import com.samuel.oremoschanganapt.functionsKotlin.convertLongToDateString
 import com.samuel.oremoschanganapt.functionsKotlin.scheduleNotificationForSongOrPray
+import com.samuel.oremoschanganapt.functionsKotlin.splitTimestamp
 import com.samuel.oremoschanganapt.repository.ColorObject
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -71,9 +72,18 @@ fun ConfigureReminder(
     ) { paddingVales ->
         val context = LocalContext.current
         val reminderRepo = ReminderRepository(context)
+        val reminders = reminderRepo.getAll()
+
+        val possiblyReminder = reminders.firstOrNull { it.reminderData == itemId && it.reminderTable == table }
 
         var reminderdate by remember { mutableStateOf(getCurrentTimestamp()) }
         var remindertime by remember { mutableStateOf(0L) }
+        possiblyReminder?.let {
+            if (remindertime == 0L) {
+                val (_, time) = splitTimestamp(it.reminderDateTime)
+                remindertime = time
+            }
+        }
 
         val reminderrepeat = "no-repeat"
 
@@ -81,7 +91,6 @@ fun ConfigureReminder(
         var showTimePicker by remember { mutableStateOf(false)}
         val mainColor = ColorObject.mainColor
         var selectedTime: TimePickerState? by remember { mutableStateOf(null) }
-        val reminders = reminderRepo.getAll()
 
         Column (
             Modifier
@@ -141,7 +150,6 @@ fun ConfigureReminder(
                 toastAlert(context, "Lembrete actualizado com sucesso.")
             }
 
-
             submitButtonsRow {
                 CancelButton(text = "Cancelar") { navController.popBackStack() }
 
@@ -158,8 +166,6 @@ fun ConfigureReminder(
                            editReminder(reminderDateTime = reminderDateTime)
                         } else {
                             // Create reminder ---------->>
-                            val possiblyReminder = reminders.firstOrNull { it.reminderData == itemId && it.reminderTable == table }
-
                             if (possiblyReminder != null) {
                                 editReminder(reminderId = possiblyReminder.id, reminderDateTime)
                             } else {
@@ -175,18 +181,14 @@ fun ConfigureReminder(
                         }
 
                         scheduleNotificationForSongOrPray(context,
-                            title = if (table == "Song") "Lembrete de Cântico" else "Lembrete de Oração",
+                            title = if (table == "Song") "Lembrete de dântico" else "Lembrete de oração",
                             message = if (table == "Song") "Eleve o seu espírito com este cântico." else "Fortaleça a sua fé com esta oração.",
-                            reminderDateTime
+                            timestamp = reminderDateTime
                         )
-
                         navController.popBackStack()
                     }
                 }
             }
-
-
-//            }
         }
     }
 }
@@ -194,7 +196,7 @@ fun ConfigureReminder(
 @Composable
 fun DateTimeButtonLabel(text: String, onClick: () -> Unit) {
     val color = MaterialTheme.colorScheme.tertiary
-    TextButton(onClick) {
+    Button(onClick) {
         Text(text, color = color, fontSize = 32.sp, fontWeight = FontWeight.Bold)
     }
 }

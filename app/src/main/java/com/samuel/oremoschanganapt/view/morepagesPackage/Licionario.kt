@@ -34,6 +34,7 @@ import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.samuel.oremoschanganapt.components.ItemRow
 import com.samuel.oremoschanganapt.components.TextIconRow
 import com.samuel.oremoschanganapt.components.buttons.ShortcutsButton
 import com.samuel.oremoschanganapt.repository.ColorObject
@@ -90,26 +91,13 @@ fun BooksCard(dataList: List<BooksItem>) {
             TextIconRow(item.title, expanded, modifier = Modifier.clickable { expanded = !expanded })
 
             AnimatedVisibility(expanded) {
-                Column(
-                    Modifier
-//                        .padding(10.dp)
-                        .fillMaxWidth()
-                        .background(
-                            brush = Brush.horizontalGradient(
-                                colors = listOf(
-                                    itemBgColor,
-                                    lerp(itemBgColor, ColorObject.secondColor, 0.9f)
-                                ),
-                            ), RoundedCornerShape(0.dp, 0.dp, 13.dp, 13.dp)
-                        )
-                        .animateContentSize(),
+                ItemRow(
+                    modifier = Modifier.animateContentSize(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(item.books.replaceFirstChar{ it.uppercase() }, color = textColor)
                 }
             }
-
-
         }
     }
 }

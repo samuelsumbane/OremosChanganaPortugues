@@ -205,7 +205,7 @@ fun RadioButtonDialog(
             shape = RoundedCornerShape(18.dp),
             confirmButton = {
                 TextButton(onClick = onDismiss) {
-                    Text("Cancel", color = textColor)
+                    Text("Cancel", color = ColorObject.mainColor)
                 }
             }
         )
@@ -350,6 +350,39 @@ fun PrayRow(
 }
 
 
+
+@Composable
+fun commonItemRow(
+    onClick: () -> Unit,
+    content: @Composable () -> Unit
+) {
+    // For PrayRow and SongRow
+    Row(
+        modifier = Modifier
+            .padding(8.dp, 0.dp, 0.dp, 0.dp)
+            .fillMaxSize()
+            .height(55.dp)
+            .background(
+                brush = Brush.horizontalGradient(
+                    colors = listOf(
+                        ColorObject.mainColor,
+                        lerp(
+                            start = ColorObject.mainColor,
+                            stop = if (ColorObject.secondColor == Color.Unspecified) ColorObject.mainColor else ColorObject.secondColor,
+                            fraction = 0.9f
+                        )
+                    ),
+                ),
+                shape = RoundedCornerShape(12.dp)
+            )
+            .clickable { onClick() },
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        content()
+    }
+}
+
+
 @Composable
 fun StarButton(
     lovedState: Boolean,
@@ -438,7 +471,6 @@ fun ColorPickerHSV(
     )
     val typography = MaterialTheme.typography
     var firstColorBoxSelected by remember { mutableStateOf(true) }
-
 
     LaunchedEffect(Unit) {
         val hsvArray = FloatArray(3)
@@ -534,7 +566,7 @@ fun ColorPickerHSV(
                             text = tab,
                             style = typography.bodyMedium,
                             fontWeight = if (selectedTabIndex == index) FontWeight.SemiBold else FontWeight.Normal,
-                            color = MaterialTheme.colorScheme.tertiary
+                            color = if (selectedTabIndex == index) Color.White else MaterialTheme.colorScheme.tertiary
                         )
                     },
                     selected = selectedTabIndex == index,
@@ -600,6 +632,32 @@ fun ColorPickerHSV(
 }
 
 @Composable
+fun ItemRow(
+    modifier: Modifier = Modifier,
+    horizontalAlignment: Alignment.Horizontal = Alignment.Start,
+    content: @Composable () -> Unit
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(
+                brush = Brush.horizontalGradient(
+                    colors = listOf(ColorObject.mainColor,
+                        lerp(
+                            start = ColorObject.mainColor,
+                            stop = if (ColorObject.secondColor == Color.Unspecified) ColorObject.mainColor else ColorObject.secondColor,
+                            fraction = 0.9f
+                        )
+                    ),
+                ), RoundedCornerShape(0.dp, 0.dp, 14.dp, 14.dp)
+            ),
+        horizontalAlignment = horizontalAlignment
+    ) {
+        content()
+    }
+}
+
+@Composable
 fun colorSelectBox(
     color: Color,
     selected: Boolean,
@@ -652,7 +710,14 @@ fun TextIconRow(title: String, showContent: Boolean, modifier: Modifier) {
             .height(45.dp)
             .background(
                 brush = Brush.horizontalGradient(
-                    colors = listOf(mainColor, lerp(mainColor, ColorObject.secondColor, 0.9f)),
+                    colors = listOf(
+                        mainColor,
+                        lerp(
+                            start = ColorObject.mainColor,
+                            stop = if (ColorObject.secondColor == Color.Unspecified) ColorObject.mainColor else ColorObject.secondColor,
+                            fraction = 0.9f
+                        )
+                    ),
                 ), shape = if (showContent)
                     RoundedCornerShape(rS, rS, 0.dp, 0.dp) else RoundedCornerShape(rS)
             ),

@@ -155,8 +155,6 @@ fun AppearancePage(navController: NavController) {
             }
         }
 //        LoadingScreen()
-
-
     }
 
 }

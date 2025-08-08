@@ -188,7 +188,7 @@ fun RemindersPage(navController: NavController) {
                                     ReminderButton("Remover") {
                                         repo.deleteById(reminder.id)
                                         showContent()
-                                        toastAlert(context, "Lembrente removido com sucesso.")
+                                        toastAlert(context, "Lembrete removido com sucesso.")
 
                                         allReminders = repo.getAll()
                                     }

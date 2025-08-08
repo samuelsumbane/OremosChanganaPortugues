@@ -48,6 +48,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.samuel.oremoschanganapt.R
+import com.samuel.oremoschanganapt.components.ItemRow
 import com.samuel.oremoschanganapt.components.TextIconRow
 import com.samuel.oremoschanganapt.components.buttons.ShortcutsButton
 import com.samuel.oremoschanganapt.repository.ColorObject
@@ -139,11 +140,7 @@ fun ListWidget(
 
         TextIconRow(title, showContent, modifier = Modifier.clickable { showContent = !showContent })
         AnimatedVisibility(showContent) {
-            Column(
-                Modifier.background(brush = Brush.horizontalGradient(
-                    colors = listOf(mainColor, lerp(mainColor, ColorObject.secondColor, 0.9f)),
-                ), RoundedCornerShape(0.dp, 0.dp, 14.dp, 14.dp)).fillMaxWidth()
-            ) {
+            ItemRow {
                 dataList.forEach { list ->
                     list.forEach { item ->
                         Row(
