@@ -1,9 +1,9 @@
 @file:OptIn(ExperimentalPermissionsApi::class)
 package com.samuel.oremoschanganapt
 
+//import com.samuel.oremoschanganapt.view.DataCollection
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
@@ -19,6 +19,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.view.WindowCompat
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -26,13 +27,14 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.samuel.oremoschanganapt.components.LoadingScreen
+import com.samuel.oremoschanganapt.db.data.praysData
 import com.samuel.oremoschanganapt.functionsKotlin.DataCollection
 import com.samuel.oremoschanganapt.functionsKotlin.updateLocale
 import com.samuel.oremoschanganapt.repository.ColorObject
 import com.samuel.oremoschanganapt.repository.Configs
 import com.samuel.oremoschanganapt.repository.Configs.appLocale
+import com.samuel.oremoschanganapt.repository.Configs.thememode
 import com.samuel.oremoschanganapt.ui.theme.OremosChanganaTheme
-//import com.samuel.oremoschanganapt.view.DataCollection
 import com.samuel.oremoschanganapt.view.Home
 import com.samuel.oremoschanganapt.view.SplashWindow
 import com.samuel.oremoschanganapt.view.eachPage
@@ -41,17 +43,15 @@ import com.samuel.oremoschanganapt.view.morepagesPackage.FestasMoveis
 import com.samuel.oremoschanganapt.view.morepagesPackage.Licionario
 import com.samuel.oremoschanganapt.view.morepagesPackage.LovedDataPage
 import com.samuel.oremoschanganapt.view.morepagesPackage.MorePages
-import com.samuel.oremoschanganapt.view.praysPackage.OracoesPage
-import com.samuel.oremoschanganapt.view.settingsPackage.AppearancePage
-import com.samuel.oremoschanganapt.view.sideBar.About
-import com.samuel.oremoschanganapt.view.songsPackage.CanticosAgrupados
-import com.samuel.oremoschanganapt.view.songsPackage.SongsPage
-import com.samuel.oremoschanganapt.db.data.praysData
-import com.samuel.oremoschanganapt.repository.Configs.thememode
 import com.samuel.oremoschanganapt.view.morepagesPackage.Santoral
 import com.samuel.oremoschanganapt.view.morepagesPackage.remindersPages.ConfigureReminder
 import com.samuel.oremoschanganapt.view.morepagesPackage.remindersPages.RemindersPage
+import com.samuel.oremoschanganapt.view.praysPackage.OracoesPage
+import com.samuel.oremoschanganapt.view.settingsPackage.AppearancePage
+import com.samuel.oremoschanganapt.view.sideBar.About
 import com.samuel.oremoschanganapt.view.sideBar.newColorPage
+import com.samuel.oremoschanganapt.view.songsPackage.CanticosAgrupados
+import com.samuel.oremoschanganapt.view.songsPackage.SongsPage
 import java.util.Locale
 
 
@@ -61,9 +61,11 @@ class  MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+
+            // Enable edge-to-edge (optional, but recommended for consistency)
+            WindowCompat.setDecorFitsSystemWindows(window, false)
+
             val context = LocalContext.current
-//            val reminders by reminderViewModel.reminders.collectAsState()
-            // New
             var fontSize by remember { mutableStateOf("") }
             var themeMode by remember { mutableStateOf("") }
             var themeColor by remember { mutableStateOf(Color.Unspecified) }

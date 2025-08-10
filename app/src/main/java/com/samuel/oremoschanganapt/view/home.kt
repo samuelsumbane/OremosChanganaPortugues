@@ -123,7 +123,9 @@ fun Home(navController: NavController) {
         drawerContent = {
             ModalDrawerSheet(
                 Modifier
-                    .padding(end = 10.dp)
+                    .padding(end = 10.dp, top = 24.dp)
+                    .statusBarsPadding()
+                    .background(Color.Red)
                     .width(if (isPortrait) inVertical.dp else inHorizontal.dp )
             ) {
                 Spacer(modifier = Modifier.height(30.dp))
@@ -201,7 +203,9 @@ fun Home(navController: NavController) {
                         verticalArrangement = Arrangement.SpaceAround,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Row (Modifier.fillMaxWidth()) {
+                        Row (Modifier.fillMaxWidth()
+                            .padding(top = 35.dp)
+                        ) {
                             IconButton(onClick = { scope.launch { drawerState.open() } }) {
                                 Icon(imageVector = Icons.Default.Menu, contentDescription = "Menu",
                                     tint = Color.White, modifier = Modifier.size(30.dp))
@@ -209,8 +213,6 @@ fun Home(navController: NavController) {
                         }
 
                         Spacer(Modifier.height(20.dp))
-
-//                        val searchBgColor =  Color(0xFF242A2D)
 
                         InputSearch(value = textInputValue, onValueChange = { textInputValue = it },
                             placeholder = stringResource(R.string.search_song_or_pray),

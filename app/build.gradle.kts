@@ -20,14 +20,14 @@ android {
         }
     }
     namespace = "com.samuel.oremoschanganapt"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.samuel.oremoschanganapt"
         minSdk = 21
-        targetSdk = 34
-        versionCode = 5
-        versionName = "4.0.1"
+        targetSdk = 35
+        versionCode = 6
+        versionName = "4.0.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -35,6 +35,10 @@ android {
         }
         resourceConfigurations.addAll(listOf("pt", "ts"))
         signingConfig = signingConfigs.getByName("release")
+
+        ndk {
+            abiFilters.addAll(listOf("armeabi-v7a", "arm64-v8a", "x86_64"))
+        }
     }
 
     buildTypes {
@@ -45,10 +49,6 @@ android {
                 getDefaultProguardFile("proguard-android.txt"),
                 "proguard-rules.pro"
             )
-
-            ndk {
-                debugSymbolLevel = "FULL"
-            }
         }
     }
 

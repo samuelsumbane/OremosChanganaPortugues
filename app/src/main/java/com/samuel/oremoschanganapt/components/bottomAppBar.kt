@@ -9,11 +9,15 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -55,7 +59,7 @@ fun SidebarNav(navController: NavController, activePage: String, modifier: Modif
         modifier = if (activePage == "home") modifier else Modifier.padding(0.dp).width(80.dp),
         containerColor = Color.Transparent,
     ) {
-        val bottomBgColor = if (isSystemInDarkTheme()) LightSecondary else DarkSecondary
+        val bottomBgColor = MaterialTheme.colorScheme.background
 
         Card(
             modifier = Modifier
@@ -76,15 +80,22 @@ fun SidebarNav(navController: NavController, activePage: String, modifier: Modif
 }
 
 @Composable
-fun BottomAppBarPrincipal(navController: NavController, activePage: String, iconColorState: String = "Keep") {
+fun BottomAppBarPrincipal(
+    navController: NavController,
+    activePage: String,
+    iconColorState: String = "Keep"
+) {
     BottomAppBar(
         containerColor = Color.Transparent,
-        contentPadding = PaddingValues(0.dp),
-        modifier = Modifier.height(75.dp).fillMaxWidth()
+        modifier = Modifier
+            .height(105.dp)
+            .fillMaxWidth()
+            .navigationBarsPadding()
     ) {
         Card(
             modifier = Modifier
-                .fillMaxSize().height(60.dp)
+                .fillMaxSize()
+                .height(70.dp)
                 .background(Color.Transparent)
                 .padding(10.dp, 0.dp, 10.dp, 7.dp),
             colors = CardDefaults.cardColors(
