@@ -51,9 +51,6 @@ fun OremosChanganaTheme(
                 insets
             }
 
-            window.statusBarColor = Color.Transparent.toArgb()
-            window.navigationBarColor = Color.Transparent.toArgb()
-
             // Set light/dark icons on bars
             val insetsController = WindowCompat.getInsetsController(window, view)
             insetsController.isAppearanceLightStatusBars = !darkTheme

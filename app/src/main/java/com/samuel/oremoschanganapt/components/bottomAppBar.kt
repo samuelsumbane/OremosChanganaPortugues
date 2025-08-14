@@ -88,21 +88,22 @@ fun BottomAppBarPrincipal(
     BottomAppBar(
         containerColor = Color.Transparent,
         modifier = Modifier
-            .height(105.dp)
             .fillMaxWidth()
             .navigationBarsPadding()
+            .background(Color.Transparent)
     ) {
         Card(
             modifier = Modifier
                 .fillMaxSize()
-                .height(70.dp)
+                .height(80.dp)
                 .background(Color.Transparent)
                 .padding(10.dp, 0.dp, 10.dp, 7.dp),
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.background,
             )
         ) {
-            Row(modifier = Modifier.fillMaxSize(),
+            Row(
+                modifier = Modifier.fillMaxSize(),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 MenuContent(navController, activePage, iconColorState)

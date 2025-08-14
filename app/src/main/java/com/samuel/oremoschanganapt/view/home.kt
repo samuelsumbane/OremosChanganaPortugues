@@ -125,7 +125,6 @@ fun Home(navController: NavController) {
                 Modifier
                     .padding(end = 10.dp, top = 24.dp)
                     .statusBarsPadding()
-                    .background(Color.Red)
                     .width(if (isPortrait) inVertical.dp else inHorizontal.dp )
             ) {
                 Spacer(modifier = Modifier.height(30.dp))
@@ -176,7 +175,6 @@ fun Home(navController: NavController) {
             }
         }
     ) {
-//        if (defs.isNotEmpty()){
             Scaffold(
                 bottomBar = {
                     if (isPortrait) BottomAppBarPrincipal(navController, "home", iconColorState)
